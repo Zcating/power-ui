@@ -1,0 +1,53 @@
+{
+  "name": "elementui3",
+  "version": "0.1.7",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ElementUI/theme-chalk.git"
+  },
+  "main": "./dist/element.umd.min.js",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "element",
+    "theme"
+  ],
+  "types": "./dist/lib/index.d.ts",
+  "author": "DayZFE",
+  "license": "MIT",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --target lib --name element ./lib/index.ts",
+    "test:unit": "vue-cli-service test:unit",
+    "build-description": "vue-cli-service build",
+    "lint": "eslint -c .eslintrc.js --ext .ts ./src ./lib --fix"
+  },
+  "dependencies": {
+    "async-validator": "^3.4.0",
+    "core-js": "^3.6.5",
+    "fecha": "^4.2.0",
+    "lodash-es": "^4.17.15",
+    "vue": "^3.0.2",
+    "vue-router": "^4.0.0-beta.13"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.19",
+    "@types/lodash-es": "^4.17.3",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0-0",
+    "@vue/test-utils": "^2.0.0-0",
+    "declaration-bundler-webpack-plugin": "^1.0.3",
+    "eslint": "^7.11.0",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^8.0.2",
+    "typescript": "~3.9.3",
+    "vue-jest": "^5.0.0-0"
+  }
+}

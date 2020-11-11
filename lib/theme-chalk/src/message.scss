@@ -1,0 +1,171 @@
+@import "mixins/mixins";
+@import "common/var";
+
+@include b(message-container) {
+  position: fixed;
+  min-width: 100vw;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+@include b(message) {
+  min-width: $--message-min-width;
+  margin-top: 20px;
+  box-sizing: border-box;
+  border-radius: $--border-radius-base;
+  border-width: $--border-width-base;
+  border-style: $--border-style-base;
+  border-color: $--border-color-lighter;
+  // position: fixed;
+  // left: 50%;
+  // top: 20px;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform .4s, top 0.4s;
+  background-color: $--message-background-color;
+  overflow: hidden;
+  padding: $--message-padding;
+  display: flex;
+  align-items: center;
+
+  pointer-events: auto;
+
+
+  @include when(center) {
+    justify-content: center;
+  }
+
+  @include when(closable) {
+    .el-message__content {
+      padding-right: 16px;
+    }
+  }
+
+  p {
+    margin: 0;
+  }
+
+  @include m(info) {
+    .el-message__content {
+      color: $--message-info-font-color;
+    }
+  }
+
+  @include m(success) {
+    background-color: $--color-success-lighter;
+    border-color: $--color-success-light;
+
+    .el-message__content {
+      color: $--message-success-font-color;
+    }
+  }
+
+  @include m(warning) {
+    background-color: $--color-warning-lighter;
+    border-color: $--color-warning-light;
+
+    .el-message__content {
+      color: $--message-warning-font-color;
+    }
+  }
+
+  @include m(error) {
+    background-color: $--color-danger-lighter;
+    border-color: $--color-danger-light;
+
+    .el-message__content {
+      color: $--message-danger-font-color;
+    }
+  }
+
+  @include e(icon) {
+    margin-right: 10px;
+  }
+
+  @include e(content) {
+    padding: 0;
+    font-size: 14px;
+    line-height: 1;
+    &:focus {
+      outline-width: 0;
+    }
+  }
+
+  @include e(closeBtn) {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: $--message-close-icon-color;
+    font-size: $--message-close-size;
+
+    &:focus {
+      outline-width: 0;
+    }
+    &:hover {
+      color: $--message-close-hover-color;
+    }
+  }
+
+  & .el-icon-success {
+    color: $--message-success-font-color;
+  }
+
+  & .el-icon-error {
+    color: $--message-danger-font-color;
+  }
+
+  & .el-icon-info {
+    color: $--message-info-font-color;
+  }
+
+  & .el-icon-warning {
+    color: $--message-warning-font-color;
+  }
+}
+
+.el-message-fade-enter,
+.el-message-fade-leave-active {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+
+.el-message-move-in {
+  animation-duration: 0.2s;
+  animation-name: message-move-in;
+  opacity: 1;
+}
+
+.el-message-move-out {
+  animation-duration: 0.2s;
+  animation-name: message-move-out;
+  opacity: 0;
+}
+
+@keyframes message-move-in {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0%);
+    opacity: 1;
+  }
+}
+
+
+@keyframes message-move-out {
+  0% {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}

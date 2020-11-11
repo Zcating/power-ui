@@ -1,0 +1,31 @@
+.cdk-overlay-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.cdk-overlay-container__diabled {
+  pointer-events: none;
+}
+
+.cdk-overlay-container__background {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.cdk-overlay {
+  pointer-events: auto;
+}
+
+
+.cdk-overlay-fade-enter-active,
+.cdk-overlay-fade-leave-active {
+  transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.cdk-overlay-fade-enter,
+.cdk-overlay-fade-leave,
+.cdk-overlay-fade-leave-active {
+  opacity: 0;
+}

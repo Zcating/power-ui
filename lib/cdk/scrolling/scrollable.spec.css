@@ -1,0 +1,10 @@
+.scrollable-spec-container {
+  width: 100px;
+  height: 100px;
+  overflow: auto;
+  position: relative;
+}
+
+.scrollable-spec-container p {
+  white-space: nowrap;
+}
