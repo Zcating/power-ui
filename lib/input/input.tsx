@@ -1,14 +1,11 @@
 import { vmodelRef } from '../cdk/hook';
-import { Enum, Method, renderCondition, toAttrComponent } from '../cdk/utils';
+import { Enum, renderCondition, toAttrComponent } from '../cdk/utils';
 import { computed, CSSProperties, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, Ref, ref, renderSlot, SetupContext, toRef, watch, resolveDynamicComponent, InputHTMLAttributes, TextareaHTMLAttributes } from "vue";
 import { calcTextareaHeight } from './utils';
+import { AutosizeData } from '.';
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement;
 
-interface AutosizeData {
-  minRows?: number;
-  maxRows?: number;
-}
 
 /**
  * @function useText
@@ -351,7 +348,7 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
       default: 'off'
     },
     validateEvent: {
-      type: Boolean,
+      type: [Boolean, String],
       default: true
     },
     suffixIcon: String,

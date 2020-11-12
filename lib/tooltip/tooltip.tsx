@@ -1,6 +1,6 @@
-import { cloneVNode, computed, defineComponent, renderSlot, VNode, Transition } from 'vue';
+import { cloneVNode, computed, defineComponent, renderSlot, VNode, Transition, CSSProperties } from 'vue';
 import { Overlay } from '../cdk';
-import { Enum, getElement, isValidElement, List, renderCondition } from '../cdk/utils';
+import { Enum, getElement, isValidElement, List, Model, renderCondition } from '../cdk/utils';
 import { Placement, TriggerType } from './types';
 import { useTooltip } from './use-tooltip';
 
@@ -42,6 +42,10 @@ export const Tooltip = defineComponent({
       type: [String, List<string>()],
       default: 'el-tooltip__popper',
     },
+    popperStyle: {
+      type: [String, Model<CSSProperties>()],
+      default: ''
+    },
     modelValue: {
       type: Boolean,
       default: false,
@@ -76,11 +80,13 @@ export const Tooltip = defineComponent({
       arrowStyle,
       arrowPlacement,
       popoverClass,
+      popperStyle,
       airaHidden,
       content,
       tooltipId,
       visibleArrow,
       visible,
+      transition,
     } = this;
 
 
@@ -104,8 +110,8 @@ export const Tooltip = defineComponent({
     return (
       <>
         {node}
-        <Overlay visible={visible} hasBackdrop={false}>
-          <Transition name={this.transition}>
+        <Overlay v-model={[this.visible, 'visible']} hasBackdrop={false}>
+          <Transition name={transition}>
             <div
               v-show={visible}
               ref="popper"
@@ -113,6 +119,7 @@ export const Tooltip = defineComponent({
               id={tooltipId}
               aria-hidden={airaHidden}
               class={popoverClass}
+              style={popperStyle}
               x-placement={arrowPlacement}
             >
               {renderCondition(slots.default, renderSlot(slots, 'default'), <span>{content}</span>)}

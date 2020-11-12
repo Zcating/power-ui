@@ -1,18 +1,16 @@
-import { Method, toAttrComponent } from '../cdk/utils';
-import { ElSize } from '../types';
-import { computed, defineComponent, HTMLAttributes, inject, renderSlot } from "vue";
-import { ElButtonNativeType, ElButtonType } from './types';
+import { Enum } from '../cdk/utils';
+import { computed, defineComponent, inject, renderSlot } from "vue";
+import { ElButtonNativeType } from './types';
 
-
-export const Button = toAttrComponent<HTMLAttributes>()(defineComponent({
+export const Button = defineComponent({
   name: "ele-button",
   props: {
     type: {
-      type: Method<ElButtonType>(),
+      type: String,
       default: "default",
     },
     size: {
-      type: Method<ElSize>(),
+      type: String,
       default: "medium",
     },
     icon: {
@@ -20,7 +18,7 @@ export const Button = toAttrComponent<HTMLAttributes>()(defineComponent({
       default: "",
     },
     nativeType: {
-      type: Method<ElButtonNativeType>(),
+      type: Enum<ElButtonNativeType>(),
       default: "button",
     },
 
@@ -45,7 +43,7 @@ export const Button = toAttrComponent<HTMLAttributes>()(defineComponent({
       <button
         disabled={buttonDisabled.value || props.loading}
         autofocus={props.autofocus}
-        type={props.nativeType}
+        type={props.nativeType as ElButtonNativeType}
         class={[
           "el-button",
           props.type ? "el-button--" + props.type : "",
@@ -58,6 +56,7 @@ export const Button = toAttrComponent<HTMLAttributes>()(defineComponent({
             "is-circle": props.circle,
           },
         ]}
+        onClick={(e) => ctx.emit('click', e)}
         {...ctx.attrs}
       >
         {props.loading ? <i class='el-icon-loading' v-if='loading'></i> : null}
@@ -66,4 +65,4 @@ export const Button = toAttrComponent<HTMLAttributes>()(defineComponent({
       </button>
     );
   },
-}));
+});

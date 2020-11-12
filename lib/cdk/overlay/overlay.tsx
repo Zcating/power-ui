@@ -10,8 +10,8 @@ import {
   Transition,
   computed,
   inject,
-  provide, 
-  nextTick, 
+  provide,
+  nextTick,
   ref
 } from "vue";
 import { PositionStrategy, GlobalPositionStrategy } from './position';
@@ -133,6 +133,10 @@ export const Overlay = defineComponent({
         positionedStyle.value = value;
       }, { immediate: true });
 
+      if (!container.value) {
+        throw Error('overlay container is null.');
+      }
+
       nextTick(() => {
         strategy.apply?.(container.value!);
       });
@@ -145,7 +149,7 @@ export const Overlay = defineComponent({
         } else {
           strategy.disapply?.();
         }
-      });
+      }, {flush: 'sync'});
     });
 
     onUnmounted(() => {
@@ -162,44 +166,27 @@ export const Overlay = defineComponent({
       return clazz;
     });
 
-    return {
-      containerClass,
-      clickBackground,
-      container,
-      containerStyle,
-      positionedStyle,
-    }
-  },
-  render() {
-    const { 
-      visible,
-      containerClass,
-      containerStyle,
-      clickBackground,
-      positionedStyle,
-      $slots,
-    } = this;
-    return (
+    return () => (
       <Teleport to="#vue-cdk-overlay">
         <Transition name="cdk-overlay-fade">
-          <div v-show={visible}>
+          <div v-show={props.visible}>
             <div
-              class={containerClass}
-              style={containerStyle}
+              class={containerClass.value}
+              style={containerStyle.value}
               onClick={clickBackground}
             >
               <div
-                ref="container"
+                ref={container}
                 class="cdk-overlay"
-                style={positionedStyle}
+                style={positionedStyle.value}
                 onClick={event => event.cancelBubble = true}
               >
-                {renderSlot($slots, 'default')}
+                {renderSlot(ctx.slots, 'default')}
               </div>
             </div>
           </div>
         </Transition>
       </Teleport>
-    );
+    )
   }
 });

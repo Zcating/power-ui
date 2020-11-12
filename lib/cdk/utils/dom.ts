@@ -22,3 +22,21 @@ export function getElement(element: any): HTMLElement | null {
 }
 
 export const renderCondition = (test: unknown, node: VNode | JSX.Element | undefined, elseNode?: VNode | JSX.Element | undefined) => !!test ? node : elseNode;
+
+export const isEqual = (value1: any[] | string | number, value2: any[] | string | number) => {
+  const isArray1 = Array.isArray(value1);
+  const isArray2 = Array.isArray(value2);
+  if (isArray1 && isArray2) {
+    const array1 = value1 as any[];
+    const array2 = value2 as any[];
+    if (array1.length === array2.length) {
+      return array1.every((value, index) => array2[index] === value);
+    } else {
+      return false;
+    }
+  } else if (!isArray1 && !isArray2) {
+    return value1 === value2;
+  } else {
+    return false;
+  }
+}

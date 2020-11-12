@@ -29,7 +29,9 @@ import {
   RadioButton,
   Drawer,
   Input,
-  Card
+  Card,
+  Select,
+  SelectOption
 } from "../../lib";
 
 
@@ -58,11 +60,10 @@ export default defineComponent({
     const radioRef = ref('上海');
 
     const input = ref('');
-    
-    watch(input, (value) => console.log(value));
 
-    const test1 = ref(false);
-    const test2 = ref(false);
+    const selectValue = ref('');
+
+    watch(selectValue, (value) => console.log(value));
 
     return () => (
       <div>
@@ -113,7 +114,7 @@ export default defineComponent({
             <BreadcrumbItem value='345'>test</BreadcrumbItem>
           </Breadcrumb>
         </div>
-        <p>
+        <p id="button">
           <Button type='primary'>test</Button>
           <Button icon='el-icon-search' circle></Button>
           <Button type='primary' icon='el-icon-edit' circle></Button>
@@ -176,6 +177,14 @@ export default defineComponent({
             content="这是一条测试内容！"
             v-slots={{ reference: () => 'tooltips!!!!' }}
           />
+
+          <div v-tooltip="tooltip" style={{ width: "100px", border: '1px solid black' }}>test</div>
+          <Tooltip
+            ref="tooltip"
+            trigger="click"
+          >
+            <div>fuck content</div>
+          </Tooltip>
         </p>
 
         <p>
@@ -305,7 +314,7 @@ export default defineComponent({
         </p>
 
         <p style="width: 256px">
-          <Card bodyStyle={{ padding: '0px', }}>
+          {/* <Card bodyStyle={{ padding: '0px', }}>
             <img 
               src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" 
               style={{
@@ -320,7 +329,16 @@ export default defineComponent({
                 <Button type="text" class="button">操作按钮</Button>
               </div>
             </div>
-          </Card>
+          </Card> */}
+        </p>
+        <p>
+          <Select v-model={selectValue}>
+            <SelectOption value="1">test1</SelectOption>
+            <SelectOption value="2">test2</SelectOption>
+            <SelectOption value="3">test3</SelectOption>
+            <SelectOption value="4">test4</SelectOption>
+            <SelectOption value="5">test5</SelectOption>
+          </Select>
         </p>
 
         <div style='height:200px;overflow-y:auto'>

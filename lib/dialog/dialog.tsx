@@ -1,4 +1,5 @@
-import { defineComponent, inject, ref, renderSlot, toRef, Transition, watch } from "vue";
+import { vmodelRef } from '../cdk/hook';
+import { defineComponent, renderSlot, toRef, Transition, watch } from "vue";
 import { Overlay, GlobalPositionStrategy, provideStrategy } from '../cdk';
 import '../theme-chalk/src/dialog.scss';
 export default defineComponent({
@@ -33,8 +34,12 @@ export default defineComponent({
     width: String,
   },
   setup(props, ctx) {
+    const visible = vmodelRef(toRef(props, 'visible'), (value) => {
+      ctx.emit('update:visible', value);
+    });
+
     const hide = () => {
-      ctx.emit('update:visible', false);
+      visible.value = false;
     }
 
     const handleClose = () => {
@@ -56,13 +61,13 @@ export default defineComponent({
       ) : undefined;
       return (
         <Overlay 
-          visible={props.visible} 
+          visible={visible.value} 
           backdropClick={hide}
           backgroundBlock={true}
         >
           <Transition name="el-dialog-fade">
             <div
-              v-show={props.visible}
+              v-show={visible.value}
               aria-modal="true"
               aria-label={props.title || 'dialog'}
               class={`el-dialog ${props.customClass} ${center}`}

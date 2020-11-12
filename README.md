@@ -1,7 +1,7 @@
 # Element UI 3
 
 
-## minestone
+## Milestone
 
 - [x] alert
 - [x] avatar

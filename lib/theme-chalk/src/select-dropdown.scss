@@ -3,7 +3,6 @@
 @import "./popper";
 
 @include b(select-dropdown) {
-  position: absolute;
   z-index: #{$--index-top + 1};
   border: $--select-dropdown-border;
   border-radius: $--border-radius-base;
@@ -11,6 +10,7 @@
   box-shadow: $--select-dropdown-shadow;
   box-sizing: border-box;
   margin: 5px 0;
+  outline: none;
 
   @include when(multiple) {
     & .el-select-dropdown__item.selected {
