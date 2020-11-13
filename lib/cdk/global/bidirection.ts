@@ -1,5 +1,5 @@
 import { inject, ref, watch } from "vue";
-import { platformToken } from ".";
+import Platform from './platform';
 
 /**
  * rtl or ltr content directions
@@ -9,8 +9,8 @@ import { platformToken } from ".";
  */
 export default class {
   direction = ref("ltr");
-  constructor() {
-    const body = inject(platformToken)!.BODY;
+  constructor(platform: Platform) {
+    const body = platform.BODY;
     if (!body) return;
     this.direction.value = body.dir || "ltr";
     watch(this.direction, (val) => {

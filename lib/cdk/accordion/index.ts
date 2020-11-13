@@ -1,3 +1,4 @@
+// export { CdkAccordion } from './accordion';
 export { CdkAccordion } from './accordion';
-export { CdkAccordionContainer } from './accordion_container';
-export { CdkAccordionItem } from './accordion_item';
+export { CdkAccordionItem } from './accordion-item';
+export { default as CdkAccordionTest} from './accordion.spec';

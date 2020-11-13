@@ -1,5 +1,6 @@
 import { inject, onBeforeUnmount, ref } from "vue";
 import { platformToken } from ".";
+import Platform from './platform';
 
 const breakPoints = {
   xs: "(max-width: 599.99px)",
@@ -37,9 +38,9 @@ export default class {
     });
   };
 
-  constructor() {
-    if (!inject(platformToken)!.BROWSER) return;
-    const { TOP } = inject(platformToken)!;
+  constructor(platform: Platform) {
+    if (!platform.BROWSER) return;
+    const { TOP } = platform;
     for (const key in breakPoints) {
       this.queryMedia(TOP, (breakPoints as any)[key], (e) => {
         if (e) {

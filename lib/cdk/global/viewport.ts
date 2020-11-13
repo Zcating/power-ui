@@ -1,6 +1,7 @@
 import { inject, ref, watch } from "vue";
 import { platformToken } from ".";
 import { runWhileResize } from "../tools";
+import Platform from './platform';
 
 /**
  * current viewport rect & size
@@ -11,7 +12,7 @@ import { runWhileResize } from "../tools";
 export default class ViewPort {
   size = ref({ width: 0, height: 0 });
   rect = ref({ top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0 });
-  isBrowser = inject(platformToken)!.BROWSER;
+  isBrowser: boolean;
 
   /**
    * update viewport size
@@ -24,7 +25,8 @@ export default class ViewPort {
       : { width: 0, height: 0 };
   };
 
-  constructor() {
+  constructor(platform: Platform) {
+    this.isBrowser = platform.BROWSER;
     if (!this.isBrowser) return;
     runWhileResize(this.updateSize);
     const body = document.documentElement || document.body;

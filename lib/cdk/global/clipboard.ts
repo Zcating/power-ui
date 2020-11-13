@@ -1,5 +1,6 @@
 import { inject, ref } from "vue";
 import { platformToken } from ".";
+import Platform from './platform';
 
 class Copy {
   textarea: HTMLTextAreaElement | undefined;
@@ -59,8 +60,8 @@ class Copy {
 export default class Clipboard {
   private doc: Document | undefined;
   nodeRef = ref<HTMLElement | null>(null);
-  constructor() {
-    if (!inject(platformToken)!.BROWSER) return;
+  constructor(platform: Platform) {
+    if (!platform.BROWSER) return;
     this.doc = document;
   }
 

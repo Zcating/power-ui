@@ -17,7 +17,7 @@ import Clipboard from "./clipboard";
 import ViewPort from "./viewport";
 import * as lang from "../lang";
 // provide token
-export const platformToken = Symbol('cdk-platform') as  InjectionKey<Platform>;
+export const platformToken = getClassToken(Platform);
 export const breakpointToken = getClassToken(Breakpoint);
 export const bidirectionToken = getClassToken(Bidirection);
 export const clipboardToken = getClassToken(Clipboard);
@@ -36,16 +36,16 @@ export const setLangToken: InjectionKey<Ref<string>> = "cdk-lang-setter" as any;
  * @export
  */
 export default function () {
+  const platform = new Platform();
   provide(platformToken, new Platform());
   // ! order should be manage carefully
   // ! platform first
-  provide(breakpointToken, new Breakpoint());
-  provide(bidirectionToken, new Bidirection());
-  provide(clipboardToken, new Clipboard());
-  provide(viewportToken, new ViewPort());
+  provide(breakpointToken, new Breakpoint(platform));
+  provide(bidirectionToken, new Bidirection(platform));
+  provide(clipboardToken, new Clipboard(platform));
+  provide(viewportToken, new ViewPort(platform));
 
   // add overlay anchor
-  const platform = inject(platformToken)!;
   if (platform.BROWSER) {
     // if at browser environment
     const overlayAnchor = document.createElement("div");
