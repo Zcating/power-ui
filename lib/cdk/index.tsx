@@ -10,3 +10,4 @@ export * from "./date/dataUtils";
 export { default as month } from "./date/month";
 export * from "./overlay";
 export * from './tree';
+export * from './selection';

@@ -4,13 +4,13 @@ import BP from "./global/breakpoint.spec";
 import PLAT from "./global/platform.spec";
 import CB from "./global/clipboard.spec";
 import SB from "./scrolling/scrollable.spec";
-import ACCORDION from "./accordion/accordion.spec";
+import SELECTION from "./selection/selection.spec";
 import TV from "./table/tableVirtual.spec";
 import TR from "./tree/TreeNode.spec";
 import OVERLAY from "./overlay/overlay.spec";
 
 export default defineComponent({
-  name: "test",
+  name: "cdk-test",
   setup() {
     return () => (
       <>
@@ -27,7 +27,7 @@ export default defineComponent({
         <h2>scrollable</h2>
         <SB />
         <h2>accordion</h2>
-        <ACCORDION />
+        <SELECTION />
         <h2>virtual table</h2>
         <TV />
         <h2>tree</h2>

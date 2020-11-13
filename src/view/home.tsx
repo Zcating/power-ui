@@ -31,7 +31,8 @@ import {
   Input,
   Card,
   Select,
-  SelectOption
+  SelectOption,
+  CdkAccordionTest
 } from "../../lib";
 
 
@@ -314,7 +315,7 @@ export default defineComponent({
         </p>
 
         <p style="width: 256px">
-          {/* <Card bodyStyle={{ padding: '0px', }}>
+          <Card bodyStyle={{ padding: '0px', }}>
             <img 
               src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" 
               style={{
@@ -329,7 +330,7 @@ export default defineComponent({
                 <Button type="text" class="button">操作按钮</Button>
               </div>
             </div>
-          </Card> */}
+          </Card>
         </p>
         <p>
           <Select v-model={selectValue}>
@@ -339,6 +340,9 @@ export default defineComponent({
             <SelectOption value="4">test4</SelectOption>
             <SelectOption value="5">test5</SelectOption>
           </Select>
+        </p>
+        <p>
+          <CdkAccordionTest />
         </p>
 
         <div style='height:200px;overflow-y:auto'>
