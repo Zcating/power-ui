@@ -1,4 +1,4 @@
-import { defineComponent, inject, KeepAlive, ref, watch } from "vue";
+import { defineComponent, inject, ref, watch } from "vue";
 import {
   Alert,
   Avatar,
@@ -32,8 +32,7 @@ import {
   Card,
   Select,
   SelectOption,
-  CdkAccordionTest
-} from "../../lib";
+} from "@lib";
 
 
 export default defineComponent({
@@ -341,15 +340,11 @@ export default defineComponent({
             <SelectOption value="5">test5</SelectOption>
           </Select>
         </p>
-        <p>
-          <CdkAccordionTest />
-        </p>
-
         <div style='height:200px;overflow-y:auto'>
           <div ref={divRef} style='height:1000px'></div>
         </div>
         <div style='height:3000px'></div>
-      </div >
+      </div>
     );
   },
 });
