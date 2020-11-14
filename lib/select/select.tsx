@@ -1,9 +1,10 @@
 import { List, renderCondition, isEqual } from '../cdk/utils';
-import { computed, defineComponent, Ref, ref, SetupContext, watch } from "vue";
+import { computed, defineComponent, Ref, ref, SetupContext } from "vue";
 import { Tooltip, vTooltip } from '../tooltip';
 // import { TagInput } from './tag-input';
 import { Input } from '../input';
 import { SelectSerivce } from './select.service';
+import { CdkSelection } from '../cdk';
 
 
 function useClear(
@@ -89,12 +90,6 @@ export const Select = defineComponent({
   },
 
   setup(props, ctx) {
-    const selectService = new SelectSerivce();
-
-    selectService.watchSelectValue((value) => {
-      selectedLabel
-      ctx.emit('update:modelValue', value);
-    });
 
     const emptyText = computed(() => '');
     const selectedLabel = ref('');
@@ -108,7 +103,6 @@ export const Select = defineComponent({
       selectedLabel,
       iconClass: '',
       handleClearClick: () => { },
-      options: selectService.options,
     }
   },
 
@@ -128,7 +122,6 @@ export const Select = defineComponent({
       showClose,
       iconClass,
       handleClearClick,
-      options,
       emptyText,
       inputWidth,
     } = this;
@@ -151,7 +144,7 @@ export const Select = defineComponent({
           readonly={readonly}
           validate-event="false"
           // class={{ 'is-focus': visible }}
-          style={{width: `${inputWidth}px`}}
+          style={{ width: `${inputWidth}px` }}
           tabindex={(multiple && filterable) ? -1 : undefined}
           // onFocus={handleFocus}
           // onBlur={handleBlur}
@@ -172,26 +165,33 @@ export const Select = defineComponent({
         transition="el-zoom-in-top"
         visibleArrow={false}
         popperClass={'el-select-dropdown'}
-        popperStyle={{width: `${inputWidth}px`}}
+        popperStyle={{ width: `${inputWidth}px` }}
       >
-        <div class="el-select-dropdown__wrap">
-          <ul
-            v-show={options.length > 0 && !loading}
-            class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
-          >
-            {this.$slots.default?.()}
-          </ul>
-        </div>
-        {renderCondition(
-          emptyText && (!allowCreate || loading || (allowCreate && options.length === 0)),
-          renderCondition(
-            this.$slots.empty,
-            this.$slots.empty?.(),
-            <p class="el-select-dropdown__empty">
-              {emptyText}
-            </p>
-          )
-        )}
+        <CdkSelection
+          multiple={multiple}
+          v-slots={{
+            default: () => (
+              <div class="el-select-dropdown__wrap">
+                <ul
+                  v-show={!loading}
+                  class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
+                >
+                  {this.$slots.default?.()}
+                </ul>
+              </div>
+            ),
+            placeholder: () => renderCondition(
+              emptyText && (!allowCreate || loading),
+              renderCondition(
+                this.$slots.empty,
+                this.$slots.empty?.(),
+                <p class="el-select-dropdown__empty">
+                  {emptyText}
+                </p>
+              )
+            )
+          }}
+        />
       </Tooltip>,
     ];
   }

@@ -1,3 +1,4 @@
+import { Method, renderCondition } from '../utils';
 import { defineComponent, renderSlot, watch } from "vue";
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 
@@ -36,6 +37,9 @@ export const CdkSelection = defineComponent({
     return () => (
       <>
         {renderSlot(ctx.slots, 'default')}
+        {renderCondition(dispatcher.count.value === 0,
+          renderSlot(ctx.slots, 'empty')
+        )}
       </>
     );
   }

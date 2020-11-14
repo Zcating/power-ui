@@ -1,7 +1,6 @@
+import { defineComponent, ref, renderSlot, toRef } from "vue";
+import { CdkSelectionItem } from '../../cdk';
 import { watchRef } from '../../cdk/hook';
-import { defineComponent, inject, Ref, ref, renderSlot, toRef } from "vue";
-import { SelectSerivce } from '../select.service';
-import { OptionService } from './option.service';
 
 export const Option = defineComponent({
   name: 'el-option',
@@ -24,64 +23,30 @@ export const Option = defineComponent({
     }
   },
 
-  setup(props) {
+  setup(props, ctx) {
     const elDisabled = watchRef(toRef(props, 'disabled'));
     const hover = ref(false);
     const limitReached = ref(false);
 
-    const service = inject(OptionService.key);
-    if (service) {
-      service.watchDisabled((value) => elDisabled.value = value);
-    }
-
-    let selected: Ref<boolean>;
-    
-    const selectSerivce = inject(SelectSerivce.key);
-    if (selectSerivce) {
-      selected = selectSerivce.watchOptions(toRef(props, 'label'), toRef(props, 'value'), Symbol());
-    } else {
-      selected = ref(false);
-    }
-
-    const hoverItem = () => {}
-
-    const optionClick = () => {
-      selected.value = true;
-    }
-  
-
-    return {
-      elDisabled,
-      hover,
-      limitReached,
-      hoverItem,
-      optionClick,
-      selected,
-    };
-  },
-
-  render() {
-    const {
-      $slots,
-      hoverItem,
-      optionClick,
-      selected,
-      elDisabled,
-      limitReached,
-      hover
-    } = this;
     return (
-      <li
-        onMouseenter={hoverItem}
-        onClick={optionClick}
-        class={["el-select-dropdown__item", {
-          'selected': selected,
-          'is-disabled': elDisabled || limitReached,
-          'hover': hover
-        }]}
-      >
-        {renderSlot($slots, 'default')}
-      </li>
+      <CdkSelectionItem 
+        v-slots={{
+          default: (state: { selected: boolean }) => (
+            <li
+              onMouseenter={() => hover.value = true}
+              onMouseleave={() => hover.value = false}
+              onClick={() => state.selected = true}
+              class={["el-select-dropdown__item", {
+                'selected': state.selected,
+                'is-disabled': elDisabled.value || limitReached.value,
+                'hover': hover.value
+              }]}
+            >
+              {renderSlot(ctx.slots, 'default')}
+            </li>
+          )
+        }} 
+      />
     );
   }
 });

@@ -17,34 +17,6 @@ import {
 import { PositionStrategy, GlobalPositionStrategy } from './position';
 import './overlay.scss';
 
-
-/**
- * @description
- *  This class will provider a <div /> in
- *  <body />, it can help teleport find the
- *  right tag. After that, The Overlay can 
- *  render the content in slot.
- * 
- * @date 2020-10-21
- * 
- * @export
- * @class OverlayPrivider
- */
-class OverlayProvider {
-  static instance = new OverlayProvider(document);
-
-  div?: Element | null;
-  constructor(document: Document) {
-    let div = this.div = document.getElementById('vue-cdk-overlay');
-    if (!div) {
-      div = this.div = document.createElement('div');
-      div.id = 'vue-cdk-overlay';
-      div.className = 'vue-cdk-overlay-container';
-      document.body.append(div);
-    }
-  }
-}
-
 /**
  * @description
  * overlay config.
@@ -97,8 +69,6 @@ export const Overlay = defineComponent({
     panelClass: String,
   },
   setup(props, ctx) {
-    inject('cdk-overlay-provider', OverlayProvider.instance);
-
     const strategy = inject('cdk-overlay-strategy', new GlobalPositionStrategy());
 
     const container = ref<HTMLElement>();
@@ -167,7 +137,7 @@ export const Overlay = defineComponent({
     });
 
     return () => (
-      <Teleport to="#vue-cdk-overlay">
+      <Teleport to="#cdk-overlay-anchor">
         <Transition name="cdk-overlay-fade">
           <div v-show={props.visible}>
             <div

@@ -1,4 +1,4 @@
-import { inject, onUnmounted, provide, watch } from 'vue';
+import { computed, inject, onUnmounted, provide, readonly, ref, unref, watch } from 'vue';
 import { getClassToken } from '../tools';
 import { SelectionItemState } from './types';
 
@@ -21,9 +21,14 @@ export class CdkSelectionDispatcher {
 
   readonly states: SelectionItemState[] = [];
 
+  readonly count = computed(() => this._count.value);
+  
+  private readonly _count = ref(0);
+
   multiple = false;
 
   initValue = false;
+
 
   constructor() {
     provide(CdkSelectionDispatcher.key, this);
@@ -34,6 +39,8 @@ export class CdkSelectionDispatcher {
       state.selected = this.initValue;
     }
     this.states.push(state);
+    this._count.value = this.states.length;
+
     watch(() => state.selected, (value) => {
       if (this.multiple || !value) {
         return
@@ -51,6 +58,7 @@ export class CdkSelectionDispatcher {
         return;
       }
       this.states.splice(index, 1);
+      this._count.value = this.states.length;
     });
   }
 
