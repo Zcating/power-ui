@@ -1,4 +1,5 @@
 import { defineComponent, renderSlot } from "vue";
+import { globalInject } from '.';
 import { getClassToken } from "./cdk/tools";
 import { MessageService, MessageServiceImpl } from "./message/message.service";
 import { NotificationService, NotificationServiceImpl } from './notification/notification.service';
@@ -9,6 +10,7 @@ export const $notify = getClassToken<NotificationService>(NotificationServiceImp
 
 export const EleUIProvider = defineComponent({
   setup(_, ctx) {
+    globalInject();
     const messageService = new MessageServiceImpl($message);
     const notificationService = new NotificationServiceImpl($notify);
     return () => (

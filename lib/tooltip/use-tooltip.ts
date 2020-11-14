@@ -26,7 +26,7 @@ export const useTooltip = (
   const referenceRef = ref<HTMLElement | null>(null);
   const popperRef = ref<HTMLElement | null>(null);
 
-  const strategy = new FlexiblePositionStrategy(referenceRef, window);
+  const strategy = new FlexiblePositionStrategy(referenceRef);
   watch(
     () => props.placement,
     (value) => {

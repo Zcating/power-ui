@@ -2,8 +2,6 @@ import { ENTER } from '../cdk/keycodes';
 import { renderCondition } from "../cdk/utils"
 import { computed, defineComponent, nextTick, ref, watch } from 'vue'
 
-import '../theme-chalk/src/switch.scss';
-
 export const Switch = defineComponent({
   props: {
     modelValue: {

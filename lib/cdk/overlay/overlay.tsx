@@ -16,6 +16,8 @@ import {
 } from "vue";
 import { PositionStrategy, GlobalPositionStrategy } from './position';
 import './overlay.scss';
+import { watchRef } from '../hook';
+import { platformToken } from '../global';
 
 /**
  * @description
@@ -70,11 +72,10 @@ export const Overlay = defineComponent({
   },
   setup(props, ctx) {
     const strategy = inject('cdk-overlay-strategy', new GlobalPositionStrategy());
-
+    const overlayProps = strategy.setup();
+    const positionedStyle = watchRef(overlayProps.positionedStyle);
+    const containerStyle = ref(overlayProps.containerStyle);
     const container = ref<HTMLElement>();
-    const containerStyle = ref<CSSProperties>({});
-    const positionedStyle = ref<CSSProperties>({});
-
 
     const clickBackground = (event: Event) => {
       event.preventDefault();
@@ -85,28 +86,23 @@ export const Overlay = defineComponent({
       }
     }
 
-    const originOverflow = document.body.style.overflow;
-    watchEffect((onInvalidate) => {
-      if (props.backgroundBlock) {
-        document.body.style.overflow = props.visible ? 'hidden' : originOverflow;
-      }
-      onInvalidate(() => {
-        document.body.style.overflow = originOverflow;
+    const body = inject(platformToken)?.BODY;
+    if (body) {
+      const originOverflow = body.style.overflow;
+      watchEffect((onInvalidate) => {
+        if (props.backgroundBlock) {
+          body.style.overflow = props.visible ? 'hidden' : originOverflow;
+        }
+        onInvalidate(() => {
+          body.style.overflow = originOverflow;
+        });
       });
-    });
+    }
 
     onMounted(() => {
-      const overlayProps = strategy.setup();
-
-      containerStyle.value = overlayProps.containerStyle;
-      watch(overlayProps.positionedStyle, (value) => {
-        positionedStyle.value = value;
-      }, { immediate: true });
-
       if (!container.value) {
         throw Error('overlay container is null.');
       }
-
       nextTick(() => {
         strategy.apply?.(container.value!);
       });
@@ -119,7 +115,7 @@ export const Overlay = defineComponent({
         } else {
           strategy.disapply?.();
         }
-      }, {flush: 'sync'});
+      }, {immediate: true});
     });
 
     onUnmounted(() => {

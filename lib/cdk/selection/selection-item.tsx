@@ -1,4 +1,5 @@
-import { defineComponent, reactive, renderSlot } from "vue";
+import { defineComponent, reactive, renderSlot, watch } from "vue";
+import { Method } from '../utils';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionItemState } from './types';
 
@@ -11,6 +12,9 @@ import { SelectionItemState } from './types';
  */
 export const CdkSelectionItem = defineComponent({
   name: 'cdk-selection-item',
+  props: {
+    onSelectedChange: Method<(value: boolean) => void>(),
+  },
   setup(props, ctx) {
     const state = reactive<SelectionItemState>({selected: false});
 
@@ -18,6 +22,10 @@ export const CdkSelectionItem = defineComponent({
     if (dispatcher) {
       dispatcher.subscribe(state);
     }
+
+    watch(() => state.selected, (value) => {
+      props.onSelectedChange?.(value);
+    });
     
     return () => (
       <>

@@ -1,6 +1,5 @@
-import { renderCondition } from '@/cdk/utils';
-import { defineComponent, ref, renderSlot, toRef, watch } from "vue";
-import { CdkSelectionItem } from '../../cdk';
+import { defineComponent, ref, toRef, watch } from "vue";
+import { CdkSelectionItem } from '../../cdk/selection';
 import { watchRef } from '../../cdk/hook';
 import { SelectSerivce } from '../select.service';
 
@@ -38,8 +37,7 @@ export const Option = defineComponent({
     }
 
     const service = SelectSerivce.instance();
-    const handleState = (state: {selected: boolean}) => {
-      watch(() => state.selected, (value) => {
+    const handleChange = (value: boolean) => {
         if (!service) {
           return;
         }
@@ -51,15 +49,14 @@ export const Option = defineComponent({
         } else {
           service.removeValue(props.value);
         }
-      }, {immediate: true});
-    }
+      }
 
     return () => (
       <CdkSelectionItem 
         key={props.value}
+        onSelectedChange={handleChange}
         v-slots={{
           default: (state: { selected: boolean }) => {
-            handleState(state)
             return (
               <li
                 onMouseenter={() => hover.value = true}

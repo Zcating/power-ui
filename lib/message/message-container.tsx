@@ -1,7 +1,6 @@
 import { computed, defineComponent, Ref, renderList } from "vue";
 import { Message } from './message';
 import { MessageData } from "./types";
-import '../theme-chalk/src/message.scss';
 import { Overlay } from '../cdk';
 
 export const MessageContainerFactory = (datas: Ref<Required<MessageData>[]>, destroy: (id: string) => void) => defineComponent({

@@ -1,4 +1,4 @@
-import { Method, renderCondition } from '../utils';
+import { renderCondition } from '../utils';
 import { defineComponent, renderSlot, watch } from "vue";
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 
@@ -19,6 +19,9 @@ export const CdkSelection = defineComponent({
     selected: {
       type: Boolean,
       default: false
+    },
+    onSelected: {
+      type: Function,
     }
   },
   setup(props, ctx) {

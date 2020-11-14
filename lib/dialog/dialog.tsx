@@ -1,7 +1,6 @@
 import { vmodelRef } from '../cdk/hook';
 import { defineComponent, renderSlot, toRef, Transition, watch } from "vue";
 import { Overlay, GlobalPositionStrategy, provideStrategy } from '../cdk';
-import '../theme-chalk/src/dialog.scss';
 export default defineComponent({
   props: {
     visible: {

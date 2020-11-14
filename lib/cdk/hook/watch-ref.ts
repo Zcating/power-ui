@@ -9,7 +9,7 @@ export type ArraySource = Readonly<Array<WatchSource<unknown> | object>>;
 
 export function watchRef<T extends ArraySource, V>(arg: T, mapper: (arg: MapSources<T>) => V): Ref<V>;
 
-export function watchRef<T extends Ref<any>, V>(arg: T, mapper?: (arg: UnwrapRef<T>) => V): Ref<V>;
+export function watchRef<T extends Ref<any>, V = UnwrapRef<T>>(arg: T, mapper?: (arg: UnwrapRef<T>) => V): Ref<V>;
 
 export function watchRef<T extends any, V>(arg: T, mapper: (arg: any) => V = (args) => args): Ref<V> {
   let watchSource: any;

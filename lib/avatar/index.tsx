@@ -1,14 +1,16 @@
-import { computed, defineComponent, ref, renderSlot, toRefs } from "vue";
+import { Enum } from '../cdk/utils';
+import { ElSize } from '@/types';
+import { computed, defineComponent, ref, renderSlot } from "vue";
 
 export default defineComponent({
   name: "ele-avatar",
   props: {
     size: {
-      type: [Number, String as () => "large" | "medium" | "small"],
+      type: [Number, Enum<ElSize>()],
       default: "medium",
     },
     shape: {
-      type: String as () => "circle" | "square",
+      type: Enum<"circle" | "square">(),
       default: "circle",
     },
     icon: String,
@@ -34,7 +36,7 @@ export default defineComponent({
     const isImageExist = ref(true);
     // witch class to use uppon avatar component
     const avatarClass = computed(() => {
-      let classList = ["el-avatar"];
+      const classList = ["el-avatar"];
       if (props.size && typeof props.size === "string") {
         classList.push(`el-avatar--${props.size}`);
       }

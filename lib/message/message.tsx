@@ -1,6 +1,5 @@
 import { computed, defineComponent, onMounted, onUnmounted, ref, renderSlot, Transition } from "vue";
 import { CdkTimer } from '../cdk/utils';
-import '../theme-chalk/src/message.scss';
 
 
 export const Message = defineComponent({

@@ -46,13 +46,13 @@ export const Tooltip = defineComponent({
       type: [String, Model<CSSProperties>()],
       default: ''
     },
-    modelValue: {
-      type: Boolean,
-      default: false,
-    },
     trigger: {
       type: Enum<TriggerType>(),
       default: 'hover'
+    },
+    modelValue: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, ctx) {

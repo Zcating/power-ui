@@ -1,14 +1,15 @@
-import { CSSProperties, isRef, ref, Ref, ComponentPublicInstance } from 'vue';
+import { CSSProperties, isRef, ref, Ref, ComponentPublicInstance, inject } from 'vue';
 import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from "./position-pair";
 import { PositionStrategy, OverlayProps } from "./position-strategy";
 import { coerceCssPixelValue } from '../../coercion';
 import { getElement } from '../../utils';
+import { platformToken } from '../../global';
 interface Point {
   x: number;
   y: number;
 }
 
-export type FlexiblePositionStrategyOrigin = Element | Ref<ComponentPublicInstance | Element | undefined | null> | (Point & {
+export type FlexiblePositionOrigin = Element | Ref<ComponentPublicInstance | Element | undefined | null> | (Point & {
   width?: number;
   height?: number;
 });
@@ -34,16 +35,19 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
   private isVisible = false;
 
-  private positionedStyle = ref<CSSProperties>({ position: 'static' });
+  private readonly positionedStyle = ref<CSSProperties>({ position: 'static' });
 
-  private height = 100;
-  private width = 100;
+  private readonly window: Window;
 
   constructor(
-    private _origin: FlexiblePositionStrategyOrigin,
-    private window: Window,
+    private _origin: FlexiblePositionOrigin,
   ) {
     super();
+    const window = inject(platformToken)?.TOP;
+    if (!window) {
+      throw Error('window is null');
+    }
+    this.window = window;
   }
 
   setup(): OverlayProps {
@@ -82,7 +86,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
    * 
    * @param value New origin.
    */
-  origin(value: FlexiblePositionStrategyOrigin) {
+  origin(value: FlexiblePositionOrigin) {
     this._origin = value;
     return this;
   }
@@ -202,14 +206,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
       if (element) {
         return element.getBoundingClientRect();
       } else {
-        return {
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 0,
-          width: 0,
-        }
+        throw Error('Make sure your element is bound by ref param.');
       }
     }
 
@@ -228,18 +225,19 @@ export class FlexiblePositionStrategy extends PositionStrategy {
   }
 
   private _caculateScroll(style: Ref<CSSProperties>, originPoint: Point) {
+    const { window } = this;
     const offsetX = window.pageXOffset;
     const offsetY = window.pageYOffset;
     this.subscribe = () => {
       if (this.isVisible) {
-        const nowTop = this.window.pageYOffset;
-        const nowLeft = this.window.pageXOffset;
+        const nowTop = window.pageYOffset;
+        const nowLeft = window.pageXOffset;
         style.value.left = coerceCssPixelValue(originPoint.x - nowLeft + offsetX);
         style.value.top = coerceCssPixelValue(originPoint.y - nowTop + offsetY);
         // trigger change
         style.value = style.value;
       }
     }
-    this.window.addEventListener('scroll', this.subscribe);
+    window.addEventListener('scroll', this.subscribe);
   }
 }
