@@ -1,6 +1,8 @@
-import { defineComponent, ref, renderSlot, toRef } from "vue";
+import { renderCondition } from '@/cdk/utils';
+import { defineComponent, ref, renderSlot, toRef, watch } from "vue";
 import { CdkSelectionItem } from '../../cdk';
 import { watchRef } from '../../cdk/hook';
+import { SelectSerivce } from '../select.service';
 
 export const Option = defineComponent({
   name: 'el-option',
@@ -10,8 +12,9 @@ export const Option = defineComponent({
       required: true,
     },
     label: {
-      type: [String, Number],
+      type: String,
       default: '',
+      required: true,
     },
     created: {
       type: Boolean,
@@ -28,23 +31,50 @@ export const Option = defineComponent({
     const hover = ref(false);
     const limitReached = ref(false);
 
-    return (
+    // const innerLabel = watchRef(toRef(props, 'label'));
+
+    const handleClick = (state: {selected: boolean}) => {
+      state.selected = true;
+    }
+
+    const service = SelectSerivce.instance();
+    const handleState = (state: {selected: boolean}) => {
+      watch(() => state.selected, (value) => {
+        if (!service) {
+          return;
+        }
+        if (value) {
+          service.updateValue({
+            label: props.label,
+            value: props.value
+          });
+        } else {
+          service.removeValue(props.value);
+        }
+      }, {immediate: true});
+    }
+
+    return () => (
       <CdkSelectionItem 
+        key={props.value}
         v-slots={{
-          default: (state: { selected: boolean }) => (
-            <li
-              onMouseenter={() => hover.value = true}
-              onMouseleave={() => hover.value = false}
-              onClick={() => state.selected = true}
-              class={["el-select-dropdown__item", {
-                'selected': state.selected,
-                'is-disabled': elDisabled.value || limitReached.value,
-                'hover': hover.value
-              }]}
-            >
-              {renderSlot(ctx.slots, 'default')}
-            </li>
-          )
+          default: (state: { selected: boolean }) => {
+            handleState(state)
+            return (
+              <li
+                onMouseenter={() => hover.value = true}
+                onMouseleave={() => hover.value = false}
+                onClick={() => handleClick(state)}
+                class={["el-select-dropdown__item", {
+                  'selected': state.selected,
+                  'is-disabled': elDisabled.value || limitReached.value,
+                  'hover': hover.value
+                }]}
+              >
+                {ctx.slots.default ? ctx.slots.default : props.label}
+              </li>
+            )
+          }
         }} 
       />
     );

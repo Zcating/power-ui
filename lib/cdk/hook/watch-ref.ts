@@ -7,11 +7,11 @@ type MapSources<T> = {
 
 export type ArraySource = Readonly<Array<WatchSource<unknown> | object>>;
 
-export function watchRef<T extends ArraySource, V>(arg: T, fn: (arg: MapSources<T>) => V): Ref<V>;
+export function watchRef<T extends ArraySource, V>(arg: T, mapper: (arg: MapSources<T>) => V): Ref<V>;
 
-export function watchRef<T extends Ref<any>, V>(arg: T, fn?: (arg: UnwrapRef<T>) => V): Ref<V>;
+export function watchRef<T extends Ref<any>, V>(arg: T, mapper?: (arg: UnwrapRef<T>) => V): Ref<V>;
 
-export function watchRef<T extends any, V>(arg: T, fn: (arg: any) => V = (args) => args): Ref<V> {
+export function watchRef<T extends any, V>(arg: T, mapper: (arg: any) => V = (args) => args): Ref<V> {
   let watchSource: any;
   if (Array.isArray(arg)) {
     watchSource = () => arg;
@@ -23,7 +23,7 @@ export function watchRef<T extends any, V>(arg: T, fn: (arg: any) => V = (args) 
   return customRef((track, trigger) => {
     let value: V;
     watch(watchSource, (source) => {
-      value = fn(source);
+      value = mapper(source);
     }, { immediate: true });
 
     return {

@@ -1,24 +1,52 @@
-import { InjectionKey, provide, ref, Ref } from 'vue';
+import { inject, InjectionKey, provide, ref, Ref, watch } from 'vue';
 
 export interface OptionData {
   value: string | number;
-  label: string | number;
+  label: string;
 }
 
-export interface OptionUniqueData {
-  readonly __$current: Symbol;
-  value: string | number;
-  label: string | number;
-}
 
-type SelectValue = OptionData | (OptionData)[] | null;
+type SelectData = OptionData | OptionData[] | null;
 
 export class SelectSerivce {
   static key: InjectionKey<SelectSerivce> = Symbol();
+  static instance() {
+    return inject(SelectSerivce.key);
+  }
 
-  private readonly optionsRef: Ref<SelectValue> = ref([]);
+  private readonly dataRef: Ref<SelectData> = ref([]);
 
   constructor(private multiple: Ref<boolean> = ref(false)) {
     provide(SelectSerivce.key, this);
+  }
+
+  updateValue(data: OptionData) {
+    if (this.multiple.value) {
+      const dataValues = this.dataRef.value;
+      if (Array.isArray(dataValues)) {
+        this.dataRef.value = [...dataValues, data];
+      } else {
+        this.dataRef.value = [data];
+      }
+    } else {
+      this.dataRef.value = data
+    }
+  }
+
+  removeValue(value: string | number) {
+    if (this.multiple.value) {
+      const dataValues = this.dataRef.value;
+      if (Array.isArray(dataValues)) {
+        this.dataRef.value = dataValues.filter((data) => data.value !== value)
+      } else {
+        this.dataRef.value = []
+      }
+    }
+  }
+
+  watchValue(hook: (data: SelectData, multiple: boolean) => void) {
+    watch([this.dataRef, this.multiple], (values) => {
+      hook(values[0] as SelectData, values[1] as boolean);
+    }, {immediate: true});
   }
 }

@@ -333,11 +333,11 @@ export default defineComponent({
         </p>
         <p>
           <Select v-model={selectValue.value}>
-            <SelectOption value="1">test1</SelectOption>
-            <SelectOption value="2">test2</SelectOption>
-            <SelectOption value="3">test3</SelectOption>
-            <SelectOption value="4">test4</SelectOption>
-            <SelectOption value="5">test5</SelectOption>
+            <SelectOption value="1" label="test1" />
+            <SelectOption value="2" label="test2" />
+            <SelectOption value="3" label="test3" />
+            <SelectOption value="4" label="test4" />
+            <SelectOption value="5" label="test5" />
           </Select>
         </p>
         <div style='height:200px;overflow-y:auto'>

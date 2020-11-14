@@ -1,5 +1,5 @@
 import { List, renderCondition, isEqual } from '../cdk/utils';
-import { computed, defineComponent, Ref, ref, SetupContext } from "vue";
+import { computed, defineComponent, Ref, ref, SetupContext, toRef } from "vue";
 import { Tooltip, vTooltip } from '../tooltip';
 // import { TagInput } from './tag-input';
 import { Input } from '../input';
@@ -93,6 +93,24 @@ export const Select = defineComponent({
 
     const emptyText = computed(() => '');
     const selectedLabel = ref('');
+
+    const service = new SelectSerivce(toRef(props, 'multiple'));
+
+    service.watchValue((data, multiple) => {
+      if (!data) {
+        return;
+      }
+
+      if (multiple) {
+        const array = Array.isArray(data) ? data.map(value => value.value) : [data.value];
+        ctx.emit('update:modelValue', array);
+      } else {
+        if (!Array.isArray(data)) {
+          ctx.emit('update:modelValue', data.value);
+          selectedLabel.value = data.label;
+        }
+      }
+    });
 
     return {
       emptyText,
