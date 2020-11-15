@@ -104,6 +104,21 @@ export const useTooltip = (
           }
         })
       );
+    } else if (trigger === 'click-close') {
+      destroyFns.push(
+        addEvent(reference, 'click', () => visible.value = !visible.value),
+        addEvent(reference, 'keydown', (e) => e.keyCode === ESCAPE && close()),
+        addEvent(document, 'click', (e) => {
+          if (!visible.value) {
+            return;
+          }
+          const target = e.target as HTMLElement
+          const isContain = reference.contains(target) || popper.contains(target);
+          if (!isContain) {
+            close();
+          }
+        })
+      );
     } else if (trigger === 'focus') {
       if (props.tabindex < 0) {
         console.warn('[Element Warn][Popover]a negative taindex means that the element cannot be focused by tab key');

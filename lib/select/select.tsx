@@ -181,7 +181,7 @@ export const Select = defineComponent({
         <Tooltip
           v-model={tooltipVisible.value}
           ref="tooltip"
-          trigger="click"
+          trigger="click-close"
           placement="bottom"
           effect="light"
           transition="el-zoom-in-top"

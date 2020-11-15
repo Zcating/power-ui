@@ -31,7 +31,7 @@ export const Tooltip = defineComponent({
       default: 0
     },
     effect: {
-      type: String as () => 'dark' | 'light' | undefined,
+      type: String as () => 'dark' | 'light',
       default: 'dark'
     },
     transition: {

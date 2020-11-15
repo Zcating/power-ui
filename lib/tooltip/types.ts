@@ -4,7 +4,7 @@ export type Placement = 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-sta
 
 export type ArrowPlacement = 'top' | 'left' | 'bottom' | 'right';
 
-export type TriggerType = 'click' | 'focus' | 'hover';
+export type TriggerType = 'click' | 'focus' | 'hover' | 'click-close';
 
 export const OVERLAY_POSITION_MAP: { [key in string]: ConnectionPosition } = {
   'top': { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' },

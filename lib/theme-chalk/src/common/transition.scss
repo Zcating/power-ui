@@ -29,41 +29,84 @@
   opacity: 0;
 }
 
-.el-zoom-in-center-enter-active,
-.el-zoom-in-center-leave-active {
-  transition: all .3s cubic-bezier(.55,0,.1,1);
-}
-.el-zoom-in-center-enter,
-.el-zoom-in-center-leave-active {
-  opacity: 0;
-  transform: scaleX(0);
+.el-zoom-in-top {
+  @mixin el-zoom-in-top-animation {
+    animation-name: el-zoom-in-top;
+    animation-duration: 0.3s;
+  }
+
+  @keyframes el-zoom-in-top {
+    0% {
+      opacity: 0;
+      transform: scaleY(0);
+      transform-origin: top center;
+    }
+    100% {
+      opacity: 1;
+      transform: scaleY(1);
+      transform-origin: top center;
+    }
+  }
+
+  &-enter {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+
+  &-enter-active {
+    @include el-zoom-in-top-animation;
+  }
+
+  &-leave {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  &-leave-active {
+    @include el-zoom-in-top-animation;
+    animation-direction: reverse;
+  }
 }
 
-.el-zoom-in-top-enter-active,
-.el-zoom-in-top-leave-active {
-  opacity: 1;
-  transform: scaleY(1);
-  transition: $--md-fade-transition;
-  transform-origin: center top;
-}
-.el-zoom-in-top-enter,
-.el-zoom-in-top-leave-active {
-  opacity: 0;
-  transform: scaleY(0);
+.el-zoom-in-bottom {
+  @mixin el-zoom-in-bottom-animation {
+    animation-name: el-zoom-in-bottom;
+    animation-duration: 0.3s;
+  }
+
+  @keyframes el-zoom-in-bottom {
+    0% {
+      opacity: 0;
+      transform: scaleY(0);
+      transform-origin: bottom center;
+    }
+    100% {
+      opacity: 1;
+      transform: scaleY(1);
+      transform-origin: bottom center;
+    }
+  }
+
+  &-enter {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+
+  &-enter-active {
+    @include el-zoom-in-bottom-animation;
+  }
+
+  &-leave {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  &-leave-active {
+    @include el-zoom-in-bottom-animation;
+    animation-direction: reverse;
+  }
 }
 
-.el-zoom-in-bottom-enter-active,
-.el-zoom-in-bottom-leave-active {
-  opacity: 1;
-  transform: scaleY(1);
-  transition: $--md-fade-transition;
-  transform-origin: center bottom;
-}
-.el-zoom-in-bottom-enter,
-.el-zoom-in-bottom-leave-active {
-  opacity: 0;
-  transform: scaleY(0);
-}
 
 .el-zoom-in-left-enter-active,
 .el-zoom-in-left-leave-active {
