@@ -1,9 +1,9 @@
-import { InjectionKey, Ref, ref, provide, computed, toRaw } from "vue";
-import Utils from "../core/Utils";
-import Schema, { Rules, ErrorList, FieldErrorList } from "async-validator";
+import { InjectionKey, Ref, ref, provide, computed, toRaw } from 'vue';
+import Utils from '../core/Utils';
+import Schema, { Rules, ErrorList, FieldErrorList } from 'async-validator';
 
 export default class FormModelService<T> {
-  static token: InjectionKey<FormModelService<unknown>> = "cdk-Form" as any;
+  static token: InjectionKey<FormModelService<unknown>> = 'cdk-Form' as any;
   token: InjectionKey<FormModelService<unknown>> = Utils.token() as any;
 
   data: Ref<T>;

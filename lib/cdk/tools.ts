@@ -7,7 +7,7 @@ import {
   Ref,
   ref,
   watch,
-} from "vue";
+} from 'vue';
 
 /**
  * *handle typescript type by function
@@ -92,14 +92,14 @@ export function reactToService(dirty: Ref<null | undefined>) {
  * @returns
  */
 export function runWhileResize(func: () => void) {
-  if (!(typeof document === "object" && !!document)) return;
+  if (!(typeof document === 'object' && !!document)) return;
   onMounted(() => {
-    window.addEventListener("resize", func);
-    window.addEventListener("orientationchange", func);
+    window.addEventListener('resize', func);
+    window.addEventListener('orientationchange', func);
   });
   onBeforeUnmount(() => {
-    window.removeEventListener("resize", func);
-    window.removeEventListener("orientationchange", func);
+    window.removeEventListener('resize', func);
+    window.removeEventListener('orientationchange', func);
   });
 }
 
@@ -111,12 +111,12 @@ export function runWhileResize(func: () => void) {
  * @returns
  */
 export function runWhileScroll(func: () => void) {
-  if (!(typeof document === "object" && !!document)) return;
+  if (!(typeof document === 'object' && !!document)) return;
   onMounted(() => {
-    window.addEventListener("scroll", func, true);
+    window.addEventListener('scroll', func, true);
   });
   onBeforeUnmount(() => {
-    window.removeEventListener("scroll", func, true);
+    window.removeEventListener('scroll', func, true);
   });
 }
 

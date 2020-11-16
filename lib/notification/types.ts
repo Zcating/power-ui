@@ -27,7 +27,7 @@ export const positionClassTag = {
   'top-right': 'tr',
   'bottom-left': 'bl',
   'bottom-right': 'br',
-}
+};
 
 export const notificationProps = {
   notificationId: {

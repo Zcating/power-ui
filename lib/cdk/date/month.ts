@@ -15,13 +15,13 @@ export default function (time: Date) {
   const monthNum = lastDay.getDate() - firstDay.getDate() + 1;
   const dayList = [];
   for (let i = firstBeforeNum; i > 0; i--) {
-    dayList.push({ time: new Date(year, month, 1 - i), type: "prev" });
+    dayList.push({ time: new Date(year, month, 1 - i), type: 'prev' });
   }
   for (let i = 1; i <= monthNum; i++) {
-    dayList.push({ time: new Date(year, month, i), type: "current" });
+    dayList.push({ time: new Date(year, month, i), type: 'current' });
   }
   for (let i = 1; i <= lastAfterNum; i++) {
-    dayList.push({ time: new Date(year, month, monthNum + i), type: "next" });
+    dayList.push({ time: new Date(year, month, monthNum + i), type: 'next' });
   }
   return dayList;
 }

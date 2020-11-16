@@ -1,4 +1,4 @@
-import { computed, ref, Ref, watch } from 'vue';
+import { ref, Ref, watch } from 'vue';
 
 
 /**
@@ -13,14 +13,9 @@ export function vmodelRef<T>(propValue: Ref<T>, setter: (value: T) => void, mode
     vmodel.value = value;
     modelChange?.(value);
   });
-
-  return computed<T>({
-    get() {
-      return vmodel.value;
-    },
-    set(newValue: any) {
-      vmodel.value = newValue;
-      setter(newValue);
-    }
+  watch(vmodel, (value) => {
+    setter(value);
   });
+
+  return vmodel;
 }

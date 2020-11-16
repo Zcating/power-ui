@@ -1,15 +1,15 @@
-import { inject, ref } from "vue";
-import { platformToken } from ".";
+import { inject, ref } from 'vue';
+import { platformToken } from '.';
 import Platform from './platform';
 
 class Copy {
   textarea: HTMLTextAreaElement | undefined;
   constructor(text: string) {
-    this.textarea = document.createElement("textarea");
-    this.textarea.style.position = "fixed";
-    this.textarea.style.top = "0";
-    this.textarea.style.left = "-10000em";
-    this.textarea.setAttribute("area-hidden", "true");
+    this.textarea = document.createElement('textarea');
+    this.textarea.style.position = 'fixed';
+    this.textarea.style.top = '0';
+    this.textarea.style.left = '-10000em';
+    this.textarea.setAttribute('area-hidden', 'true');
     this.textarea.value = text;
     document.body.appendChild(this.textarea);
   }
@@ -28,7 +28,7 @@ class Copy {
       const focus: HTMLOrSVGElement | null = document.activeElement as any;
       this.textarea.select();
       this.textarea.setSelectionRange(0, this.textarea.value.length);
-      success = document.execCommand("copy");
+      success = document.execCommand('copy');
       if (focus) focus.focus();
     } catch {
       // discard error
@@ -74,7 +74,7 @@ export default class Clipboard {
    */
   copy(text: string) {
     // no doc no functionaility
-    if (!this.doc) return "";
+    if (!this.doc) return '';
     const copyEl = new Copy(text);
     console.log(copyEl);
     const result = copyEl.copy();

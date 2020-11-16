@@ -1,23 +1,20 @@
 import {
   defineComponent,
   Teleport,
-  renderSlot,
-  onMounted,
-  watch,
-  CSSProperties,
-  onUnmounted,
-  watchEffect,
   Transition,
-  computed,
+  renderSlot,
+  watch,
+  onUnmounted,
   inject,
   provide,
   nextTick,
-  ref
+  ref,
+  toRef,
 } from "vue";
 import { PositionStrategy, GlobalPositionStrategy } from './position';
-import './overlay.scss';
-import { watchRef } from '../hook';
+import { vmodelRef, watchRef } from '../hook';
 import { platformToken } from '../global';
+import './overlay.scss';
 
 /**
  * @description
@@ -75,74 +72,90 @@ export const Overlay = defineComponent({
     const overlayProps = strategy.setup();
     const positionedStyle = watchRef(overlayProps.positionedStyle);
     const containerStyle = ref(overlayProps.containerStyle);
-    const container = ref<HTMLElement>();
+
+
+    const visible = vmodelRef(toRef(props, 'visible'), (value) => {
+      ctx.emit('update:visible', value);
+    });
 
     const clickBackground = (event: Event) => {
       event.preventDefault();
 
       props.backdropClick?.();
       if (props.backdropClose) {
-        ctx.emit('update:visible', false);
+        visible.value = false;
       }
     }
 
-    const body = inject(platformToken)?.BODY;
-    if (body) {
-      const originOverflow = body.style.overflow;
-      watchEffect((onInvalidate) => {
-        if (props.backgroundBlock) {
-          body.style.overflow = props.visible ? 'hidden' : originOverflow;
-        }
-        onInvalidate(() => {
-          body.style.overflow = originOverflow;
-        });
-      });
-    }
-
-    onMounted(() => {
-      if (!container.value) {
-        throw Error('overlay container is null.');
+    const overlayRef = ref<HTMLElement>();
+    watch(overlayRef, (overlay) => {
+      if (!overlay) {
+        return;
+        // throw Error('overlay container is null.');
       }
       nextTick(() => {
-        strategy.apply?.(container.value!);
+        strategy.apply?.(overlay);
       });
 
-      watch(() => props.visible, (value) => {
+      watch(visible, (value) => {
         if (value) {
           nextTick(() => {
-            strategy.apply?.(container.value!);
+            strategy.apply?.(overlay);
           });
         } else {
           strategy.disapply?.();
         }
-      }, {immediate: true});
+      }, { immediate: true });
+
     });
 
     onUnmounted(() => {
       strategy.dispose();
     });
 
-    const containerClass = computed(() => {
-      const clazz = ['cdk-overlay-container'];
-      if (!props.hasBackdrop) {
-        clazz.push('cdk-overlay-container__diabled');
-      } else {
-        clazz.push(props.backgroundClass);
-      }
-      return clazz;
-    });
+    const body = inject(platformToken)?.BODY;
+    if (body) {
+      const originOverflow = body.style.overflow;
+      watch(visible, (value) => {
+        if (props.backgroundBlock) {
+          body.style.overflow = value ? 'hidden' : originOverflow;
+        }
+      });
+      onUnmounted(() => {
+        body.style.overflow = originOverflow;
+      });
+    }
+
+    // const containerClass = computed(() => {
+    //   const clazz = ['cdk-overlay-container'];
+    //   if (!props.hasBackdrop) {
+    //     clazz.push('cdk-overlay-container__disabled');
+    //   } else {
+    //     clazz.push(props.backgroundClass);
+    //   }
+    //   return clazz;
+    // });
 
     return () => (
       <Teleport to="#cdk-overlay-anchor">
         <Transition name="cdk-overlay-fade">
-          <div v-show={props.visible}>
+          <div 
+            v-show={visible.value} 
+            class={[
+              'cdk-overlay-container',
+              {
+                [props.backgroundClass]: props.hasBackdrop,
+                'cdk-overlay-container__disabled': !props.hasBackdrop
+              }
+            ]}
+          >
             <div
-              class={containerClass.value}
+              class={!props.hasBackdrop ? 'cdk-overlay-container__disabled' : undefined}
               style={containerStyle.value}
               onClick={clickBackground}
             >
               <div
-                ref={container}
+                ref={overlayRef}
                 class="cdk-overlay"
                 style={positionedStyle.value}
                 onClick={event => event.cancelBubble = true}

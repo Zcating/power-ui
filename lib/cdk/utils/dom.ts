@@ -4,12 +4,12 @@ export function addEvent<T extends Element | Document, K extends keyof HTMLEleme
   target.addEventListener(type, fn as any);
   return function destroy() {
     target.removeEventListener(type, fn as any);
-  }
+  };
 }
 
 export const isValidElement = (element: any) => {
   return element && typeof element === 'object' && element['__v_isVNode'] && typeof element.type !== 'symbol';
-}
+};
 
 export function getElement(element: any): HTMLElement | null {
   if (element instanceof HTMLElement) {
@@ -39,4 +39,4 @@ export const isEqual = (value1: any[] | string | number, value2: any[] | string 
   } else {
     return false;
   }
-}
+};

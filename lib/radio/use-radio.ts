@@ -46,7 +46,7 @@ export function useRadio(props: RadioProps, ctx: SetupContext) {
   const valueChange = (newValue: any) => {
     ctx.emit('update:modelValue', newValue);
     service?.select(newValue);
-  }
+  };
 
   const elValue = vmodelRef(toRef(props, 'modelValue'), valueChange);
 
@@ -69,14 +69,14 @@ export function useRadio(props: RadioProps, ctx: SetupContext) {
       e.preventDefault();
       valueChange(disabledRef.value ? props.modelValue : props.label);
     }
-  }
+  };
 
   const handleChange = () => {
     nextTick(() => {
       const value = elValue.value;
       props.onChange ? props.onChange(value) : ctx.emit('change', value);
     });
-  }
+  };
 
   return reactive({
     checked: checkedRef,

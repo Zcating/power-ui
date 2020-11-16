@@ -1,4 +1,4 @@
-import { TreeData } from "./tree-node";
+import { TreeData } from './tree-node';
 
 export interface TreeNodeData {
   label: string;

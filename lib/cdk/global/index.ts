@@ -7,15 +7,15 @@ import {
   Ref,
   ref,
   watch,
-} from "vue";
-import { setGlobalDateI18n, Days, Months } from "fecha";
-import { getClassToken } from "../tools";
-import Breakpoint from "./breakpoint";
-import Bidirection from "./bidirection";
-import Platform from "./platform";
-import Clipboard from "./clipboard";
-import ViewPort from "./viewport";
-import * as lang from "../lang";
+} from 'vue';
+import { setGlobalDateI18n, Days, Months } from 'fecha';
+import { getClassToken } from '../tools';
+import Breakpoint from './breakpoint';
+import Bidirection from './bidirection';
+import Platform from './platform';
+import Clipboard from './clipboard';
+import ViewPort from './viewport';
+import * as lang from '../lang';
 // provide token
 export const platformToken = getClassToken(Platform);
 export const breakpointToken = getClassToken(Breakpoint);
@@ -24,8 +24,8 @@ export const clipboardToken = getClassToken(Clipboard);
 export const viewportToken = getClassToken(ViewPort);
 export const langToken: InjectionKey<ComputedRef<
   lang.LangConfig
->> = "cdk-lang" as any;
-export const setLangToken: InjectionKey<Ref<string>> = "cdk-lang-setter" as any;
+>> = 'cdk-lang' as any;
+export const setLangToken: InjectionKey<Ref<string>> = 'cdk-lang-setter' as any;
 
 /**
  * all the global apis will only have single instace
@@ -48,18 +48,18 @@ export default function () {
   // add overlay anchor
   if (platform.BROWSER) {
     // if at browser environment
-    const overlayAnchor = document.createElement("div");
-    overlayAnchor.setAttribute("id", "cdk-overlay-anchor");
-    overlayAnchor.style.position = "fixed";
-    overlayAnchor.style.left = "0";
-    overlayAnchor.style.top = "0";
+    const overlayAnchor = document.createElement('div');
+    overlayAnchor.setAttribute('id', 'cdk-overlay-anchor');
+    overlayAnchor.style.position = 'fixed';
+    overlayAnchor.style.left = '0';
+    overlayAnchor.style.top = '0';
     platform.BODY!.appendChild(overlayAnchor);
   }
 
   // add language provider
-  const langValue = ref("zhCN");
+  const langValue = ref('zhCN');
   const cdkLang: ComputedRef<lang.LangConfig> = computed(() => {
-    if (langValue.value === "index") {
+    if (langValue.value === 'index') {
       return lang.zhCN;
     }
     return (lang as any)[langValue.value] || lang.zhCN;
@@ -68,32 +68,32 @@ export default function () {
     cdkLang,
     (res) => {
       // get week name ignore shor/long
-      const weeks = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"].map(
+      const weeks = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map(
         (el) => (res.datepicker.weeks as any)[el]
       ) as Days;
       const months = [
-        "jan",
-        "feb",
-        "mar",
-        "apr",
-        "may",
-        "jun",
-        "jul",
-        "aug",
-        "sep",
-        "oct",
-        "nov",
-        "dec",
+        'jan',
+        'feb',
+        'mar',
+        'apr',
+        'may',
+        'jun',
+        'jul',
+        'aug',
+        'sep',
+        'oct',
+        'nov',
+        'dec',
       ].map((el) => (res.datepicker.months as any)[el]) as Months;
       const shortMonths = new Array(12).map(
-        (_, index) => (res.datepicker as any)["month" + (index + 1)]
+        (_, index) => (res.datepicker as any)['month' + (index + 1)]
       ) as Months;
       setGlobalDateI18n({
         dayNamesShort: weeks,
         dayNames: weeks,
         monthNamesShort: shortMonths,
         monthNames: months,
-        amPm: ["am", "pm"],
+        amPm: ['am', 'pm'],
       });
     },
     { immediate: true }

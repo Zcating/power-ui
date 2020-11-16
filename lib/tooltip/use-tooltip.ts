@@ -1,7 +1,7 @@
-import { computed, watch, onUnmounted, ref, toRef, SetupContext, Ref, isRef } from "vue";
+import { computed, watch, onUnmounted, ref, toRef, SetupContext, Ref, isRef } from 'vue';
 import { Placement, TriggerType, ArrowPlacement, OVERLAY_POSITION_MAP } from './types';
-import { ESCAPE } from "../cdk/keycodes";
-import { addEvent } from "../cdk/utils";
+import { ESCAPE } from '../cdk/keycodes';
+import { addEvent } from '../cdk/utils';
 import { FlexiblePositionStrategy, provideStrategy } from '../cdk/overlay';
 import { vmodelRef } from '../cdk/hook';
 
@@ -49,23 +49,23 @@ export const useTooltip = (
     const alignment = props.placement.match(/(start|end)/)?.[0] || 'center';
     if (alignment == 'center') {
       switch (arrowPlacement.value) {
-        case 'top':
-        case 'bottom':
-          return { left: '50%', transform: 'translateX(-50%)' };
-        case 'left':
-        case 'right':
-          return { top: '50%', transform: 'translateY(-50%)' };
+      case 'top':
+      case 'bottom':
+        return { left: '50%', transform: 'translateX(-50%)' };
+      case 'left':
+      case 'right':
+        return { top: '50%', transform: 'translateY(-50%)' };
       }
     } else {
       switch (arrowPlacement.value) {
-        case 'top':
-        case 'bottom':
-          const horizontal = alignment === 'start' ? 'left' : 'right';
-          return { [horizontal]: `${props.arrowOffset || 8}px` };
-        case 'left':
-        case 'right':
-          const vertical = alignment === 'start' ? 'top' : 'bottom';
-          return { [vertical]: `${props.arrowOffset || 8}px` };
+      case 'top':
+      case 'bottom':
+        const horizontal = alignment === 'start' ? 'left' : 'right';
+        return { [horizontal]: `${props.arrowOffset || 8}px` };
+      case 'left':
+      case 'right':
+        const vertical = alignment === 'start' ? 'top' : 'bottom';
+        return { [vertical]: `${props.arrowOffset || 8}px` };
       }
     }
   });
@@ -81,8 +81,8 @@ export const useTooltip = (
     if (!(reference && popper)) {
       return;
     }
-    const show = () => { visible.value = true; }
-    const close = () => { visible.value = false; }
+    const show = () => { visible.value = true; };
+    const close = () => { visible.value = false; };
 
     reference.setAttribute('aria-describedby', tooltipId);
     reference.setAttribute('tabindex', `${props.tabindex}`);
@@ -97,7 +97,7 @@ export const useTooltip = (
           if (!visible.value) {
             return;
           }
-          const target = e.target as HTMLElement
+          const target = e.target as HTMLElement;
           const isContain = reference.contains(target) || popper.contains(target);
           if (!isContain) {
             close();
@@ -112,7 +112,7 @@ export const useTooltip = (
           if (!visible.value) {
             return;
           }
-          const target = e.target as HTMLElement
+          const target = e.target as HTMLElement;
           const isContain = reference.contains(target) || popper.contains(target);
           if (!isContain) {
             close();
@@ -148,4 +148,4 @@ export const useTooltip = (
     reference: referenceRef,
     popper: popperRef,
   };
-}
+};

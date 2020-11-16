@@ -1,4 +1,4 @@
-import { computed, inject, onUnmounted, provide, readonly, ref, unref, watch } from 'vue';
+import { computed, inject, onUnmounted, provide, ref, watch } from 'vue';
 import { getClassToken } from '../tools';
 import { SelectionItemState } from './types';
 
@@ -43,7 +43,7 @@ export class CdkSelectionDispatcher {
 
     watch(() => state.selected, (value) => {
       if (this.multiple || !value) {
-        return
+        return;
       }
       this.states.forEach((curState) => {
         if (curState !== state) {

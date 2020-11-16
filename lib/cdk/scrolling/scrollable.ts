@@ -1,5 +1,5 @@
-import { inject, onBeforeMount, onMounted, Ref, ref } from "vue";
-import { platformToken } from "../global";
+import { inject, onBeforeMount, onMounted, Ref, ref } from 'vue';
+import { platformToken } from '../global';
 import { noop } from '../types';
 
 /**
@@ -9,12 +9,12 @@ import { noop } from '../types';
  * @enum {number}
  */
 export enum ScrollFrom {
-  top = "top",
-  left = "left",
-  right = "right",
-  bottom = "bottom",
-  start = "start",
-  end = "end",
+  top = 'top',
+  left = 'left',
+  right = 'right',
+  bottom = 'bottom',
+  start = 'start',
+  end = 'end',
 }
 
 /**
@@ -24,9 +24,9 @@ export enum ScrollFrom {
  * @enum {number}
  */
 export enum ScrollAxisType {
-  normal = "normal",
-  negated = "negated",
-  inverted = "inverted",
+  normal = 'normal',
+  negated = 'negated',
+  inverted = 'inverted',
 }
 
 /**
@@ -55,11 +55,11 @@ export default class {
   constructor() {
     onMounted(() => {
       if (this.nodeRef.value)
-        this.nodeRef.value.addEventListener("scroll", this.handleScroll);
+        this.nodeRef.value.addEventListener('scroll', this.handleScroll);
     });
     onBeforeMount(() => {
       if (this.nodeRef.value)
-        this.nodeRef.value.removeEventListener("scroll", this.handleScroll);
+        this.nodeRef.value.removeEventListener('scroll', this.handleScroll);
     });
   }
 
@@ -82,7 +82,7 @@ export default class {
   scrollTo = (options: ScrollToOptions) => {
     if (!this.nodeRef.value) return;
     const el = this.nodeRef.value;
-    const isRtl = this.body?.dir && this.body?.dir === "rtl";
+    const isRtl = this.body?.dir && this.body?.dir === 'rtl';
     if (options.left === undefined) {
       options.left = isRtl ? options.end : options.start;
     }
@@ -136,7 +136,7 @@ export default class {
     if (from === ScrollFrom.bottom)
       return el.scrollHeight - el.clientHeight - el.scrollTop;
     // switch from left/right while rtl
-    const isRtl = this.body?.dir && this.body?.dir === "rtl";
+    const isRtl = this.body?.dir && this.body?.dir === 'rtl';
     if (from === ScrollFrom.start) {
       from = isRtl ? ScrollFrom.right : ScrollFrom.left;
     } else if (from === ScrollFrom.end) {
@@ -174,16 +174,16 @@ export default class {
       return this.scrollAxisType;
     }
     if (this.scrollAxisType === undefined) {
-      const container = document.createElement("div");
-      container.dir = "rtl";
-      container.style.width = "1px";
-      container.style.overflow = "auto";
-      container.style.visibility = "hidden";
-      container.style.pointerEvents = "none";
-      container.style.position = "absolute";
-      const content = document.createElement("div");
-      content.style.width = "2px";
-      content.style.height = "1px";
+      const container = document.createElement('div');
+      container.dir = 'rtl';
+      container.style.width = '1px';
+      container.style.overflow = 'auto';
+      container.style.visibility = 'hidden';
+      container.style.pointerEvents = 'none';
+      container.style.position = 'absolute';
+      const content = document.createElement('div');
+      content.style.width = '2px';
+      content.style.height = '1px';
       container.appendChild(content);
       document.body.append(container);
       this.scrollAxisType = ScrollAxisType.normal;

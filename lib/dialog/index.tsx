@@ -1,8 +1,9 @@
 import { vmodelRef } from '../cdk/hook';
-import { defineComponent, renderSlot, toRef, Transition, watch } from "vue";
+import { defineComponent, toRef, Transition } from "vue";
 import { Overlay, GlobalPositionStrategy, provideStrategy } from '../cdk';
-export default defineComponent({
+export const Dialog = defineComponent({
   props: {
+    id: String,
     visible: {
       type: Boolean,
       default: false,
@@ -52,29 +53,24 @@ export default defineComponent({
     provideStrategy(new GlobalPositionStrategy().centerX().centerY());
 
     return () => {
-      const center = props.center ? 'el-dialog--center' : '';
-      const footer = ctx.slots['footer'] ? (
-        <div class="el-dialog__footer">
-          {renderSlot(ctx.slots, 'footer')}
-        </div>
-      ) : undefined;
       return (
-        <Overlay 
-          visible={visible.value} 
+        <Overlay
+          visible={visible.value}
           backdropClick={hide}
           backgroundBlock={true}
         >
           <Transition name="el-dialog-fade">
             <div
+              id={props.id}
               v-show={visible.value}
               aria-modal="true"
               aria-label={props.title || 'dialog'}
-              class={`el-dialog ${props.customClass} ${center}`}
+              class={['el-dialog', props.customClass, {'el-dialog--center': props.center}]}
               style={`${props.style}`}
             >
               <div class="el-dialog__header">
                 <span class="el-dialog__title">{props.title}</span>
-                {renderSlot(ctx.slots, 'title')}
+                {ctx.slots.title?.()}
                 <button
                   type="button"
                   class="el-dialog__headerbtn"
@@ -82,13 +78,17 @@ export default defineComponent({
                   v-show={props.showClose || true}
                   onClick={handleClose}
                 >
-                  <i class="el-dialog__close el-icon el-icon-close"></i>
+                  <i class="el-dialog__close el-icon el-icon-close" />
                 </button>
               </div>
               <div class="el-dialog__body">
-                {renderSlot(ctx.slots, 'default')}
+                {ctx.slots.default?.()}
               </div>
-              {footer}
+              {ctx.slots.footer ? (
+                <div class="el-dialog__footer">
+                  {ctx.slots.footer()}
+                </div>
+              ) : undefined}
             </div>
           </Transition>
         </Overlay>

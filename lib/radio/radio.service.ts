@@ -1,5 +1,5 @@
 import { ElSize } from '../types';
-import { inject, InjectionKey, provide, ref, watch } from "vue";
+import { inject, InjectionKey, provide, ref, watch } from 'vue';
 
 const radioServiceKey = Symbol() as InjectionKey<RadioService>;
 

@@ -1,6 +1,6 @@
-import { onMounted, provide, Ref, ref } from "vue";
-import { markDirty } from "../tools";
-import Scrollable from "./scrollable";
+import { onMounted, provide, Ref, ref } from 'vue';
+import { markDirty } from '../tools';
+import Scrollable from './scrollable';
 
 interface ItemData {
   [key: string]: any;
@@ -74,7 +74,7 @@ export default class {
     onMounted(() => {
       this.handleChange();
     });
-    provide("cdk-virtual-scroll", this);
+    provide('cdk-virtual-scroll', this);
   }
 
   /**

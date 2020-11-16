@@ -1,7 +1,7 @@
-import { InjectionKey, inject, provide, ComputedRef, computed } from 'vue'
-import FormModelService from './FormModelService'
-import { get as _get, set as _set } from 'lodash'
-import { ErrorList } from 'async-validator'
+import { InjectionKey, inject, provide, ComputedRef, computed } from 'vue';
+import FormModelService from './FormModelService';
+import { get as _get, set as _set } from 'lodash';
+import { ErrorList } from 'async-validator';
 
 
 /**
@@ -49,51 +49,51 @@ export default class FormInputService {
   errorList: ComputedRef<ErrorList>
 
   get data() {
-    return _get(this.root.data, ['value', ...this.keyList])
+    return _get(this.root.data, ['value', ...this.keyList]);
   }
 
   set data(val: any) {
-    _set(this.root.data, ['value', ...this.keyList], val)
+    _set(this.root.data, ['value', ...this.keyList], val);
     if (this.validateOn === 'change') {
-      this.root.validate()
+      this.root.validate();
     }
   }
 
   get touched() {
-    return _get(this.root.focused, ['value', ...this.keyList])
+    return _get(this.root.focused, ['value', ...this.keyList]);
   }
   focus = () => {
-    _set(this.root.focused, ['value', ...this.keyList], true)
+    _set(this.root.focused, ['value', ...this.keyList], true);
   }
   blur = () => {
-    _set(this.root.focused, ['value', ...this.keyList], false)
+    _set(this.root.focused, ['value', ...this.keyList], false);
     if (this.validateOn === 'blur') {
-      this.root.validate()
+      this.root.validate();
     }
   }
   constructor(key?: string, initialValue?: any, rootToken?: InjectionKey<FormModelService<any>>) {
     if (rootToken) {
-      this.root = inject(rootToken, null) as any
+      this.root = inject(rootToken, null) as any;
     } else {
-      this.root = inject(FormModelService.token) as any
+      this.root = inject(FormModelService.token) as any;
     }
-    this.parent = inject(FormInputService.token, null) as any
-    this.bindKey(key)
+    this.parent = inject(FormInputService.token, null) as any;
+    this.bindKey(key);
     if (this.root && initialValue !== undefined) {
-      _set(this.root.data, ['value', ...this.keyList], initialValue)
+      _set(this.root.data, ['value', ...this.keyList], initialValue);
     }
-    if (!this.root) throw new Error('formInputService needs a formModelService as a root')
+    if (!this.root) throw new Error('formInputService needs a formModelService as a root');
     this.errorList = computed(() => {
-      console.log(this.root.fieldErrors.value)
-      const errorKeys = Object.keys(this.root.fieldErrors.value)
-      const currentError = errorKeys.find(err => err === this.keyList.join('.'))
+      console.log(this.root.fieldErrors.value);
+      const errorKeys = Object.keys(this.root.fieldErrors.value);
+      const currentError = errorKeys.find(err => err === this.keyList.join('.'));
       if (currentError) {
-        return this.root.fieldErrors.value[currentError]
+        return this.root.fieldErrors.value[currentError];
       } else {
-        return []
+        return [];
       }
-    })
-    provide(FormInputService.token, this)
+    });
+    provide(FormInputService.token, this);
 
   }
 
@@ -111,24 +111,24 @@ export default class FormInputService {
     // key will indicate that use the parent's keyList or not
     // if parent also have no keyList or neither have key none parent
     // then service cannot work, throw an error
-    this.key = key || ''
+    this.key = key || '';
     if (this.parent) {
       if (key) {
-        this.keyList = [...this.parent.keyList, key]
+        this.keyList = [...this.parent.keyList, key];
       } else {
         if (!this.parent.key) {
-          throw new Error('formInputService need key to indicate model')
+          throw new Error('formInputService need key to indicate model');
         }
-        this.key = this.parent.key
-        this.keyList = this.parent.keyList
+        this.key = this.parent.key;
+        this.keyList = this.parent.keyList;
       }
     } else {
       // neither parent no key
       // some error
       if (!this.key) {
-        throw new Error('formInputService need key to indicate model')
+        throw new Error('formInputService need key to indicate model');
       }
-      this.keyList = [this.key]
+      this.keyList = [this.key];
     }
   }
 }

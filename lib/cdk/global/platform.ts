@@ -2,7 +2,7 @@ let hasV8BreakIterator: boolean;
 
 try {
   hasV8BreakIterator =
-    typeof Intl !== "undefined" && (Intl as any).v8BreakIterator;
+    typeof Intl !== 'undefined' && (Intl as any).v8BreakIterator;
 } catch (e) {
   hasV8BreakIterator = false;
 }
@@ -13,7 +13,7 @@ export default class Platform {
    *
    * @memberof Platform
    */
-  readonly BROWSER = typeof document === "object" && !!document;
+  readonly BROWSER = typeof document === 'object' && !!document;
 
   /**
    * the body element, when browser active
@@ -35,7 +35,7 @@ export default class Platform {
   readonly BLINK: boolean =
     this.BROWSER &&
     !!((this.TOP as any).chrome || hasV8BreakIterator) &&
-    typeof CSS !== "undefined" &&
+    typeof CSS !== 'undefined' &&
     !this.EDGE &&
     !this.TRIDENT;
 
@@ -49,7 +49,7 @@ export default class Platform {
   readonly IOS: boolean =
     this.BROWSER &&
     /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-    !("MSStream" in (this.TOP as any));
+    !('MSStream' in (this.TOP as any));
 
   readonly FIREFOX: boolean =
     this.BROWSER && /firefox|minefield/i.test(navigator.userAgent);

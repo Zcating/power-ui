@@ -1,5 +1,5 @@
-import { inject, ref, watch } from "vue";
-import { platformToken } from "../global";
+import { inject, ref, watch } from 'vue';
+import { platformToken } from '../global';
 
 /**
  * get reactive value and controller in localstorage

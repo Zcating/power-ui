@@ -1,6 +1,6 @@
-import { inject, ref, watch } from "vue";
-import { platformToken } from ".";
-import { runWhileResize } from "../tools";
+import { inject, ref, watch } from 'vue';
+import { platformToken } from '.';
+import { runWhileResize } from '../tools';
 import Platform from './platform';
 
 /**

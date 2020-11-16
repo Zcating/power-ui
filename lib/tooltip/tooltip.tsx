@@ -15,7 +15,7 @@ export const Tooltip = defineComponent({
       default: '',
     },
     placement: {
-      type: String as () => Placement,
+      type: Enum<Placement>(),
       default: 'top',
     },
     visibleArrow: {
@@ -31,7 +31,7 @@ export const Tooltip = defineComponent({
       default: 0
     },
     effect: {
-      type: String as () => 'dark' | 'light',
+      type: Enum<'dark' | 'light'>(),
       default: 'dark'
     },
     transition: {

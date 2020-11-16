@@ -1,4 +1,4 @@
 export * from './cdk_any';
 
 
-export function noop() { return }
+export function noop() { return; }

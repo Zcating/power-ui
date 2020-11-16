@@ -1,1 +1,1 @@
-export type ElSize = "medium" | "small" | "mini" | 'large' | '';
+export type ElSize = 'medium' | 'small' | 'mini' | 'large' | '';

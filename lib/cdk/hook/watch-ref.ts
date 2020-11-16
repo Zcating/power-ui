@@ -1,4 +1,4 @@
-import { Ref, UnwrapRef, isRef, customRef, watch, WatchSource } from "vue";
+import { Ref, UnwrapRef, isRef, customRef, watch, WatchSource } from 'vue';
 
 
 type MapSources<T> = {
@@ -35,6 +35,6 @@ export function watchRef<T extends any, V>(arg: T, mapper: (arg: any) => V = (ar
         value = newValue;
         trigger();
       }
-    }
+    };
   });
 }

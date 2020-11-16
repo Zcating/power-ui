@@ -1,15 +1,6 @@
 @import "mixins/mixins";
 @import "common/var";
 
-@keyframes el-drawer-fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 @mixin drawer-animation($direction) {
   @keyframes #{$direction}-drawer-in {
     0% {
@@ -90,7 +81,7 @@
 
 @mixin animation-in($direction) {
   &.el-drawer__open.#{$direction} {
-    animation: #{$direction}-drawer-in .3s 1ms;
+    animation: #{$direction}-drawer-in 0.3s 1ms;
   }
 }
 
@@ -188,10 +179,20 @@ $directions: rtl, ltr, ttb, btt;
   }
 }
 
-.el-drawer-fade-enter-active {
-  animation: el-drawer-fade-in 0.3s;
-}
+.el-drawer-fade {
+  @keyframes el-drawer-fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 
-.el-drawer-fade-leave-active {
-  animation: el-drawer-fade-in 0.3s reverse;
+  &-enter-active {
+    animation: el-drawer-fade-in 0.3s;
+  }
+  &-leave-active {
+    animation: el-drawer-fade-in 0.3s reverse;
+  }
 }

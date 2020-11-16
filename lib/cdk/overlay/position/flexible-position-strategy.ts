@@ -1,6 +1,6 @@
 import { CSSProperties, isRef, ref, Ref, ComponentPublicInstance, inject } from 'vue';
-import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from "./position-pair";
-import { PositionStrategy, OverlayProps } from "./position-strategy";
+import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './position-pair';
+import { PositionStrategy, OverlayProps } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
 import { getElement } from '../../utils';
 import { platformToken } from '../../global';
@@ -120,7 +120,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
           overlayX: values[2],
           overlayY: values[3],
         }
-      )
+      );
     }
     return this;
   }
@@ -237,7 +237,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         // trigger change
         style.value = style.value;
       }
-    }
+    };
     window.addEventListener('scroll', this.subscribe);
   }
 }

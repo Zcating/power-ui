@@ -64,8 +64,6 @@ export default defineComponent({
 
     const selectValue = ref('');
 
-    const show = ref(false);
-
     return () => (
       <Layout>
         <div>
@@ -73,11 +71,8 @@ export default defineComponent({
           <Badge value='快点我'>
             <Button
               type='primary'
-              onClick={() => {
-                showModal.value = true;
-              }}
             >
-              打开弹框
+              click me
           </Button>
           </Badge>
           <Alert
@@ -104,7 +99,7 @@ export default defineComponent({
           ></Avatar>
           <Button type='danger' onClick={() => message.info("hello")}>
             打开消息
-        </Button>
+          </Button>
           <div>
             <Breadcrumb
               onSelected={(e: string) => {
@@ -142,14 +137,23 @@ export default defineComponent({
           {/* dialog */}
           <p>
             <Button onClick={() => showModal.value = true}>show Dialog</Button>
-            <Dialog title="提示" width="30%" v-model={[showModal.value, 'visible']} v-slots={{
-              footer: () => (
-                <span class="dialog-footer">
-                  <Button onClick={() => showModal.value = false}>取 消</Button>
-                  <Button type="primary" onClick={() => showModal.value = false}>确 定</Button>
-                </span>
-              ),
-            }}>
+            <Dialog
+              id="fuck"
+              title="提示"
+              width="30%"
+              v-model={[showModal.value, 'visible']}
+              v-slots={{
+                footer: () => (
+                  <span class="dialog-footer">
+                    <Button onClick={() => showModal.value = false}>取 消</Button>
+                    <Button type="primary" onClick={() => {
+                      showModal.value = false
+                      console.log(showDrawer.value)
+                    }}>确 定</Button>
+                  </span>
+                ),
+              }}
+            >
               <div>测试内容</div>
             </Dialog>
           </p>
@@ -341,12 +345,6 @@ export default defineComponent({
               <SelectOption value="4" label="test4" />
               <SelectOption value="5" label="test5" />
             </Select>
-          </p>
-          <p>
-            <Button onClick={() => show.value = !show.value}>click me</Button>
-            <Transition name="el-zoom-in-top">
-              <p v-show={show.value}>test</p>
-            </Transition>
           </p>
           <div style='height:200px;overflow-y:auto'>
             <div ref={divRef} style='height:1000px'></div>

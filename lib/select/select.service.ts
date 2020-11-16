@@ -29,7 +29,7 @@ export class SelectSerivce {
         this.dataRef.value = [data];
       }
     } else {
-      this.dataRef.value = data
+      this.dataRef.value = data;
     }
   }
 
@@ -37,9 +37,9 @@ export class SelectSerivce {
     if (this.multiple.value) {
       const dataValues = this.dataRef.value;
       if (Array.isArray(dataValues)) {
-        this.dataRef.value = dataValues.filter((data) => data.value !== value)
+        this.dataRef.value = dataValues.filter((data) => data.value !== value);
       } else {
-        this.dataRef.value = []
+        this.dataRef.value = [];
       }
     }
   }

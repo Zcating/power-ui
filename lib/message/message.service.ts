@@ -1,5 +1,5 @@
-import { DefineComponent, InjectionKey, provide, ref } from "vue";
-import { MessageContainerFactory } from "./message-container";
+import { DefineComponent, InjectionKey, provide, ref } from 'vue';
+import { MessageContainerFactory } from './message-container';
 import { MessageData, MessageDataOptions } from './types';
 
 let _$counter = 0;

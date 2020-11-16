@@ -4,28 +4,50 @@
   left: 0;
   height: 100%;
   width: 100%;
+
+  &__disabled {
+    pointer-events: none;
+  }
+
+  &__background {
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .cdk-overlay {
+    pointer-events: auto;
+  }
 }
 
-.cdk-overlay-container__diabled {
-  pointer-events: none;
-}
 
-.cdk-overlay-container__background {
-  background: rgba(0, 0, 0, 0.4);
-}
+.cdk-overlay-fade {
+  @mixin cdk-overlay-fade-animation {
+    animation-name: cdk-overlay-fade;
+    animation-duration: 0.3s;
+  }
 
-.cdk-overlay {
-  pointer-events: auto;
-}
+  @keyframes cdk-overlay-fade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 
+  &-enter {
+    opacity: 0;
+  }
 
-.cdk-overlay-fade-enter-active,
-.cdk-overlay-fade-leave-active {
-  transition: all 0.3s cubic-bezier(0.55, 0, 0.1, 1);
-}
+  &-enter-active {
+    @include cdk-overlay-fade-animation;
+  }
 
-.cdk-overlay-fade-enter,
-.cdk-overlay-fade-leave,
-.cdk-overlay-fade-leave-active {
-  opacity: 0;
+  &-leave {
+    opacity: 1;
+  }
+
+  &-leave-active {
+    @include cdk-overlay-fade-animation;
+    animation-direction: reverse;
+  }
 }

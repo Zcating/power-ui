@@ -19,4 +19,4 @@ export const OVERLAY_POSITION_MAP: { [key in string]: ConnectionPosition } = {
   'right': { originX: 'right', originY: 'center', overlayX: 'left', overlayY: 'center' },
   'right-start': { originX: 'right', originY: 'top', overlayX: 'left', overlayY: 'top' },
   'right-end': { originX: 'right', originY: 'bottom', overlayX: 'left', overlayY: 'bottom' },
-}
+};

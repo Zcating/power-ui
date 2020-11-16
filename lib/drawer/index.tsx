@@ -74,7 +74,9 @@ export const Drawer = defineComponent({
       return direction === 'rtl' || direction === 'ltr';
     });
 
-    const elVisible = vmodelRef(toRef(props, 'visible'), (value) => ctx.emit('update:visible', value ?? false));
+    const elVisible = vmodelRef(toRef(props, 'visible'), (value) => {
+      ctx.emit('update:visible', value);
+    });
 
     const closeDrawer = () => {
       elVisible.value = false;

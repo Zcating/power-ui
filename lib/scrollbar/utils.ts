@@ -2,7 +2,7 @@ import { CSSProperties } from 'vue';
 
 export type BarProps = (typeof BAR_MAP.horizontal) | (typeof BAR_MAP.vertical);
 
- export const BAR_MAP = {
+export const BAR_MAP = {
   vertical: {
     offset: 'offsetHeight',
     scroll: 'scrollTop',
