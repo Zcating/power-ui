@@ -1,4 +1,4 @@
-import { defineComponent, inject, ref, Transition, watch } from "vue";
+import { defineComponent, inject, ref, Transition, watch } from 'vue';
 import {
   Alert,
   Avatar,
@@ -32,12 +32,12 @@ import {
   Card,
   Select,
   SelectOption,
-} from "../../lib";
+} from '../../lib';
 import { Layout } from './layout';
 
 
 export default defineComponent({
-  name: "home",
+  name: 'home',
   directives: {
     'popover': vPopover,
     'tooltip': vTooltip,
@@ -73,18 +73,18 @@ export default defineComponent({
               type='primary'
             >
               click me
-          </Button>
+            </Button>
           </Badge>
           <Alert
-            v-slots={{ title: () => "sdfsdfdsf" }}
+            v-slots={{ title: () => 'sdfsdfdsf' }}
             showIcon={true}
             type='error'
             onClose={() => {
-              console.log("closed");
+              console.log('closed');
             }}
           >
             this is test
-        </Alert>
+          </Alert>
           <Avatar
             size='large'
             src='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
@@ -97,7 +97,7 @@ export default defineComponent({
             size='small'
             src='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
           ></Avatar>
-          <Button type='danger' onClick={() => message.info("hello")}>
+          <Button type='danger' onClick={() => message.info('hello')}>
             打开消息
           </Button>
           <div>
@@ -124,7 +124,7 @@ export default defineComponent({
             <ButtonGroup>
               <Button type='primary' icon='el-icon-arrow-left'>
                 上一页
-            </Button>
+              </Button>
               <Button type='primary'>
                 下一页<i class='el-icon-arrow-right el-icon--right'></i>
               </Button>
@@ -147,8 +147,8 @@ export default defineComponent({
                   <span class="dialog-footer">
                     <Button onClick={() => showModal.value = false}>取 消</Button>
                     <Button type="primary" onClick={() => {
-                      showModal.value = false
-                      console.log(showDrawer.value)
+                      showModal.value = false;
+                      console.log(showDrawer.value);
                     }}>确 定</Button>
                   </span>
                 ),
@@ -161,11 +161,11 @@ export default defineComponent({
           {/* popover */}
           <p>
             <Popover {...popoverProps}>
-              <Button ref="button">click popover</Button>
+              <Button ref="button">click popover1</Button>
             </Popover>
 
             <Popover ref="popover" {...popoverProps} />
-            <Button v-popover="popover"> click popover</Button>
+            <Button v-popover="popover"> click popover2</Button>
 
             <Popover ref="popover_ts" title="标题" placement="top-start" trigger="hover" content="这是一条内容" />
             <Button v-popover="popover_ts">hover</Button>
@@ -184,7 +184,7 @@ export default defineComponent({
               v-slots={{ reference: () => 'tooltips!!!!' }}
             />
 
-            <div v-tooltip="tooltip" style={{ width: "100px", border: '1px solid black' }}>test</div>
+            <div v-tooltip="tooltip" style={{ width: '100px', border: '1px solid black' }}>test</div>
             <Tooltip
               ref="tooltip"
               trigger="click"
@@ -313,7 +313,7 @@ export default defineComponent({
 
           <p>
             <Input v-model={input.value} placeholder="不能输入空格" onInput={(e: Event) => {
-              input.value = (e.target! as any).value.replace(/\s*/g, '')
+              input.value = (e.target! as any).value.replace(/\s*/g, '');
             }} />
             <Input v-model={input.value} placeholder="请输入内容2" clearable />
             <Input v-model={input.value} placeholder="请输入内容2" type="textarea" autosize />

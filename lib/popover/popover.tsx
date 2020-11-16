@@ -1,7 +1,6 @@
-import { defineComponent, computed, renderSlot, Transition, VNode, cloneVNode } from 'vue';
-import { Overlay } from '../cdk/overlay';
-import { Enum, getElement, isValidElement } from '../cdk/utils';
-import { Placement, TriggerType, useTooltip } from '../tooltip';
+import { defineComponent, computed } from 'vue';
+import { Enum } from '../cdk/utils';
+import { Placement, Tooltip, TriggerType } from '../tooltip';
 
 export const Popover = defineComponent({
   name: 'el-popover',
@@ -57,8 +56,6 @@ export const Popover = defineComponent({
     popperClass: String,
   },
   setup(props, ctx) {
-    const state = useTooltip(props, ctx, props.trigger);
-
     const popoverClass = computed(() => {
       const clazz = ['el-popover', 'el-popper'];
       if (props.popperClass) {
@@ -70,47 +67,9 @@ export const Popover = defineComponent({
       return clazz;
     });
 
-    return {
-      eltype: 'popover',
-      popoverClass,
-      ...state
-    }
-  },
 
-  render() {
-    const {
-      $slots: slots,
-      title,
-      width,
-      content,
-      arrowStyle,
-      arrowPlacement,
-      popoverClass,
-      airaHidden,
-      visible,
-      transition,
-    } = this;
-
-    let node: VNode | VNode[] | undefined = slots.default?.();
-    if (node) {
-      // set the reference
-      const setReference = (ref: any) => {
-        this.reference = getElement(ref)
-      };
-      // get the node
-      node = node.length === 1 ? node[0] : node;
-      if (isValidElement(node)) {
-        // create a new node to set the reference
-        node = cloneVNode(node as VNode, { ref: setReference }, true);
-      } else {
-        // set a wrapper dom for the node.
-        node = (<span ref={setReference}>{node}</span>) as VNode;
-      }
-    }
-
-    return (
-      <>
-        {node}
+    // <>
+    /* {node}
         <Overlay visible={visible} hasBackdrop={false}>
           <Transition name={transition}>
             <div
@@ -127,7 +86,29 @@ export const Popover = defineComponent({
             </div>
           </Transition>
         </Overlay>
-      </>
+      </> */
+    return () => (
+      <Tooltip
+        ref="tooltip"
+        trigger={props.trigger}
+        popperClass={popoverClass.value}
+        popperStyle={{ width: `${props.width}px` }}
+        placement={props.placement}
+        visibleArrow={props.visibleArrow}
+        v-slots={{
+          default: () => [
+            <div class="el-popover__title">{props.title}</div>,
+            ctx.slots.content ? ctx.slots.content() : (<div>{props.content}</div>)
+          ],
+          reference: ctx.slots.default
+        }}
+      />
     );
+  },
+
+  data() {
+    return {
+      eltype: 'popover'
+    };
   }
 });

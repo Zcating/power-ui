@@ -165,7 +165,6 @@ export const Select = defineComponent({
             readonly={readonly}
             validate-event="false"
             class={{ 'is-focus': tooltipVisible.value }}
-            // style={{ width: `${inputWidth.value - 32}px`, maxWidth: `${inputWidth.value - 42}px` }}
             tabindex={(multiple && filterable) ? -1 : undefined}
             // onFocus={handleFocus}
             // onBlur={handleBlur}
@@ -193,7 +192,7 @@ export const Select = defineComponent({
             multiple={multiple}
             v-slots={{
               default: () => (
-                <div class={['el-select-dropdown__wrap', ]}>
+                <div class={['el-select-dropdown__wrap',]}>
                   <ul
                     v-show={!loading}
                     class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}

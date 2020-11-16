@@ -53,6 +53,7 @@ export default function () {
     overlayAnchor.style.position = 'fixed';
     overlayAnchor.style.left = '0';
     overlayAnchor.style.top = '0';
+    overlayAnchor.style.zIndex = '1000';
     platform.BODY!.appendChild(overlayAnchor);
   }
 

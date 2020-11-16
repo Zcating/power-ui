@@ -13,11 +13,15 @@
     background: rgba(0, 0, 0, 0.4);
   }
 
+  .cdk-overlay-panel {
+    position: relative;
+    z-index: 1000;
+  }
+
   .cdk-overlay {
     pointer-events: auto;
   }
 }
-
 
 .cdk-overlay-fade {
   @mixin cdk-overlay-fade-animation {

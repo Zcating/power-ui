@@ -122,7 +122,7 @@ export const Tooltip = defineComponent({
               style={popperStyle}
               x-placement={arrowPlacement}
             >
-              {renderCondition(slots.default, renderSlot(slots, 'default'), <span>{content}</span>)}
+              {renderCondition(slots.default, slots.default?.(), <span>{content}</span>)}
               {renderCondition(visibleArrow, <div x-arrow class="popper__arrow" style={arrowStyle}></div>)}
             </div>
           </Transition>

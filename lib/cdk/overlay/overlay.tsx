@@ -139,8 +139,8 @@ export const Overlay = defineComponent({
     return () => (
       <Teleport to="#cdk-overlay-anchor">
         <Transition name="cdk-overlay-fade">
-          <div 
-            v-show={visible.value} 
+          <div
+            v-show={visible.value}
             class={[
               'cdk-overlay-container',
               {
@@ -150,7 +150,7 @@ export const Overlay = defineComponent({
             ]}
           >
             <div
-              class={!props.hasBackdrop ? 'cdk-overlay-container__disabled' : undefined}
+              class={['cdk-overlay-panel', !props.hasBackdrop ? 'cdk-overlay-container__disabled' : '']}
               style={containerStyle.value}
               onClick={clickBackground}
             >

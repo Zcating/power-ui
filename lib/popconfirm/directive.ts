@@ -7,10 +7,11 @@ export const vPopconfirm: Directive = {
     }
     const popconfirm = instance.$refs[binding.value] as any;
     if (popconfirm && typeof popconfirm === 'object' && popconfirm.eltype === 'popconfirm') {
-      if (!popconfirm.$refs.popover) {
+      const popover = popconfirm.$refs.popover;
+      if (!popover) {
         throw Error('Popconfirm\'s popover is null, you need to add ref named popover on it.');
       }
-      popconfirm.$refs.popover.reference = el;
+      popover.$refs.tooltip.reference = el;
     }
   }
 };

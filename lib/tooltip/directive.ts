@@ -1,17 +1,14 @@
 import { Directive } from 'vue';
 
-export const tooltipDirectiveFactory: (type: string) => Directive = (type: string) => ({
+export const vTooltip: Directive = {
   mounted(el, binding) {
     const instance = binding.instance;
     if (!instance || !instance.$refs) {
       return;
     }
     const tooltips = instance.$refs[binding.value] as any;
-    if (tooltips && typeof tooltips === 'object' && tooltips.eltype === type) {
+    if (tooltips && typeof tooltips === 'object' && tooltips.eltype === 'tooltip') {
       tooltips.reference = el;
     }
   }
-});
-
-export const vTooltip = tooltipDirectiveFactory('tooltip');
-
+};
