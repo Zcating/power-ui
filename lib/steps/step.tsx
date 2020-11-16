@@ -1,5 +1,5 @@
 import { Enum, renderCondition } from '../cdk/utils';
-import { computed, defineComponent, onUnmounted, reactive, ref, renderSlot, toRefs, watch } from 'vue';
+import { defineComponent, reactive, renderSlot } from 'vue';
 import { injectService } from './step.service';
 import { ElStepData, ElStepStatus } from './types';
 
@@ -27,26 +27,24 @@ export const Step = defineComponent({
 
     service.control(data);
     const serviceState = service.stateRefs();
-    const style = service.style(data);
-    const isLast = service.testLast(data);
 
     return {
-      isSimple: serviceState.simple,
+      simple: serviceState.simple,
       isCenter: serviceState.isCenter,
       isVertical: serviceState.isVertical,
       space: serviceState.space,
       stepOffset: serviceState.stepOffset,
       direction: serviceState.direction,
-      style,
-      isLast,
+      style: service.style(data),
+      isLast: service.testLast(data),
       data
-    }
+    };
   },
 
   render() {
     const {
       style,
-      isSimple,
+      simple,
       isLast,
       isCenter,
       isVertical,
@@ -66,18 +64,20 @@ export const Step = defineComponent({
 
     const currentStatusClass = `is-${currentStatus}`;
     const mainIconClass = `el-icon-${currentStatus === 'success' ? 'check' : 'close'}`;
-    
+
     return <div
       style={style}
       class={[
-        "el-step",
-        !isSimple && `is-${direction}`,
-        isSimple && 'is-simple',
-        isLast && !space && !isCenter && 'is-flex',
-        isCenter && !isVertical && !isSimple && 'is-center'
+        'el-step',
+        {
+          [`is-${direction}`]: !simple,
+          'is-simple': simple,
+          'is-flex': isLast && !space && !isCenter,
+          'is-center': isCenter && !isVertical && !simple
+        }
       ]}>
       {/* <!-- icon & line --> */}
-      <div class={["el-step__head", currentStatusClass]}>
+      <div class={['el-step__head', currentStatusClass]}>
         <div
           class="el-step__line"
           style={isLast ? '' : { marginRight: stepOffset + 'px' }}
@@ -91,7 +91,7 @@ export const Step = defineComponent({
             [
               renderSlot($slots, 'default'),
               renderCondition(icon, <i class={['el-step__icon-inner', icon]} />),
-              renderCondition(!icon && !isSimple, <div class="el-step__icon-inner">{index + 1}</div>)
+              renderCondition(!icon && !simple, <div class="el-step__icon-inner">{index + 1}</div>)
             ],
             <i class={[
               'el-step__icon-inner',
@@ -108,7 +108,7 @@ export const Step = defineComponent({
           {title}
         </div>
         {renderCondition(
-          isSimple,
+          simple,
           <div class="el-step__arrow" />,
           <div class={['el-step__description', currentStatusClass]}>
             {renderSlot($slots, 'description')}

@@ -1,4 +1,4 @@
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue';
 
 import { coerceCssPixelValue } from '../cdk/coercion';
 
@@ -39,6 +39,6 @@ export const Spinner = defineComponent({
       >
         <circle class="path" cx="25" cy="25" r="20" fill="none" stroke={strokeColor} stroke-width={strokeWidth} />
       </svg>
-    </span>
+    </span>;
   }
 });

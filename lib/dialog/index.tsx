@@ -1,5 +1,5 @@
 import { vmodelRef } from '../cdk/hook';
-import { defineComponent, toRef, Transition } from "vue";
+import { defineComponent, toRef, Transition } from 'vue';
 import { Overlay, GlobalPositionStrategy, provideStrategy } from '../cdk';
 export const Dialog = defineComponent({
   props: {
@@ -40,7 +40,7 @@ export const Dialog = defineComponent({
 
     const hide = () => {
       visible.value = false;
-    }
+    };
 
     const handleClose = () => {
       if (typeof props.beforeClose === 'function') {
@@ -48,7 +48,7 @@ export const Dialog = defineComponent({
       } else {
         hide();
       }
-    }
+    };
 
     provideStrategy(new GlobalPositionStrategy().centerX().centerY());
 
@@ -93,6 +93,6 @@ export const Dialog = defineComponent({
           </Transition>
         </Overlay>
       );
-    }
+    };
   }
 });

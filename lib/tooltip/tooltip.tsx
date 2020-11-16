@@ -71,7 +71,7 @@ export const Tooltip = defineComponent({
       eltype: 'tooltip',
       popoverClass,
       ...state,
-    }
+    };
   },
 
   render() {
@@ -94,7 +94,7 @@ export const Tooltip = defineComponent({
     if (node) {
       // set the reference
       const setReference = (ref: any | null) => {
-        this.reference = getElement(ref)
+        this.reference = getElement(ref);
       };
       // get the node
       node = node.length === 1 ? node[0] : node;

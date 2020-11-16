@@ -10,7 +10,7 @@ import {
   nextTick,
   ref,
   toRef,
-} from "vue";
+} from 'vue';
 import { PositionStrategy, GlobalPositionStrategy } from './position';
 import { vmodelRef, watchRef } from '../hook';
 import { platformToken } from '../global';
@@ -37,7 +37,7 @@ export interface OverlayConfig {
 
 export const provideStrategy = (strategy: PositionStrategy) => {
   provide('cdk-overlay-strategy', strategy);
-}
+};
 
 /**
  * @description
@@ -85,7 +85,7 @@ export const Overlay = defineComponent({
       if (props.backdropClose) {
         visible.value = false;
       }
-    }
+    };
 
     const overlayRef = ref<HTMLElement>();
     watch(overlayRef, (overlay) => {
@@ -166,6 +166,6 @@ export const Overlay = defineComponent({
           </div>
         </Transition>
       </Teleport>
-    )
+    );
   }
 });

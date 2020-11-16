@@ -1,4 +1,4 @@
-import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, Ref, ref, SetupContext, toRef } from "vue";
+import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, Ref, ref, SetupContext, toRef } from 'vue';
 import { List, renderCondition, isEqual } from '../cdk/utils';
 import { CdkSelection } from '../cdk/selection';
 import { Tooltip, vTooltip } from '../tooltip';
@@ -26,12 +26,12 @@ function useClear(
     ctx.emit('input', value);
     ctx.emit('clear');
     visible.value = false;
-  }
+  };
 
   return {
     iconClass,
     onClear
-  }
+  };
 }
 
 
@@ -112,7 +112,7 @@ export const Select = defineComponent({
     const handleClearClick = () => {
       selectedLabel.value = '';
       ctx.emit('update:modelValue', undefined);
-    }
+    };
 
     const iconClass = computed(() => {
       return tooltipVisible.value ? 'arrow-up is-reverse' : 'arrow-up';
@@ -149,7 +149,7 @@ export const Select = defineComponent({
 
       return [
         <div
-          class={["el-select", size ? 'el-select--' + size : '']}
+          class={['el-select', size ? 'el-select--' + size : '']}
           v-tooltip="tooltip"
         >
           <Input
@@ -193,7 +193,7 @@ export const Select = defineComponent({
             multiple={multiple}
             v-slots={{
               default: () => (
-                <div class={["el-select-dropdown__wrap", ]}>
+                <div class={['el-select-dropdown__wrap', ]}>
                   <ul
                     v-show={!loading}
                     class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
@@ -216,6 +216,6 @@ export const Select = defineComponent({
           />
         </Tooltip>,
       ];
-    }
+    };
   }
 });

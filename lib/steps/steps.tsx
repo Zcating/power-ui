@@ -1,5 +1,5 @@
 import { Enum } from '../cdk/utils';
-import { defineComponent, renderSlot, watch } from "vue";
+import { defineComponent, renderSlot, watch } from 'vue';
 import { StepService } from './step.service';
 import { ElStepDirection, ElStepStatus } from './types';
 
@@ -29,7 +29,7 @@ export const Steps = defineComponent({
 
   setup(props, ctx) {
     const service = new StepService(props);
-    
+
     watch(() => props.active, (value, oldValue) => {
       ctx.emit('change', value, oldValue);
     });
