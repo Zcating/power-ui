@@ -10,7 +10,8 @@ module.exports = {
   rules: {
     'indent': [
       2,
-      2
+      2,
+      { 'SwitchCase': 1 }
     ],
     'quotes': [
       2,
@@ -24,7 +25,7 @@ module.exports = {
       2,
       'always'
     ],
-    
+
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',

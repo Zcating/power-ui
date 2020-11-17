@@ -1,10 +1,21 @@
 import { VNode } from 'vue';
 
-export function addEvent<T extends Element | Document, K extends keyof HTMLElementEventMap>(target: T, type: K, fn: (this: T, event: HTMLElementEventMap[K]) => void) {
-  target.addEventListener(type, fn as any);
-  return function destroy() {
-    target.removeEventListener(type, fn as any);
-  };
+export function addEvent<T extends Element | Document | Window, K extends keyof HTMLElementEventMap>(target: T, type: K | K[], fn: (this: T, event: HTMLElementEventMap[K]) => void) {
+  if (Array.isArray(type)) {
+    for (const key of type) {
+      target.addEventListener(key, fn as any);
+    }
+    return function () {
+      for (const key of type) {
+        target.removeEventListener(key, fn as any);
+      }
+    };
+  } else {
+    target.addEventListener(type, fn as any);
+    return function destroy() {
+      target.removeEventListener(type, fn as any);
+    };
+  }
 }
 
 export const isValidElement = (element: any) => {

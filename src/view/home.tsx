@@ -1,4 +1,4 @@
-import { defineComponent, inject, ref, Transition, watch } from 'vue';
+import { defineComponent, inject, ref } from 'vue';
 import {
   Alert,
   Avatar,
@@ -32,6 +32,7 @@ import {
   Card,
   Select,
   SelectOption,
+  Slider,
 } from '../../lib';
 import { Layout } from './layout';
 
@@ -164,7 +165,7 @@ export default defineComponent({
             </Popover>
 
             <Popover ref="popover" {...popoverProps} />
-            <Button v-popover="popover"> click popover2</Button>
+            <Button v-popover="popover">click popover2</Button>
 
             <Popover ref="popover_ts" title="标题" placement="top-start" trigger="hover" content="这是一条内容" />
             <Button v-popover="popover_ts">hover</Button>
@@ -180,16 +181,14 @@ export default defineComponent({
             <Tooltip
               ref="tooltip"
               content="这是一条测试内容！"
-              v-slots={{ reference: () => 'tooltips!!!!' }}
-            />
+            >tooltips!!!!</Tooltip>
 
             <div v-tooltip="tooltip" style={{ width: '100px', border: '1px solid black' }}>test</div>
             <Tooltip
               ref="tooltip"
               trigger="click"
-            >
-              <div>fuck content</div>
-            </Tooltip>
+              v-slots={{ content: () => (<div>test content</div>) }}
+            />
           </p>
 
           <p>
@@ -344,6 +343,9 @@ export default defineComponent({
               <SelectOption value="4" label="test4" />
               <SelectOption value="5" label="test5" />
             </Select>
+          </p>
+          <p>
+            <Slider style={{ paddingLeft: '20px', width: '100px' }}></Slider>
           </p>
           <div style='height:200px;overflow-y:auto'>
             <div ref={divRef} style='height:1000px'></div>

@@ -67,26 +67,6 @@ export const Popover = defineComponent({
       return clazz;
     });
 
-
-    // <>
-    /* {node}
-        <Overlay visible={visible} hasBackdrop={false}>
-          <Transition name={transition}>
-            <div
-              ref="popper"
-              v-show={visible}
-              class={popoverClass}
-              style={{ width: `${width}px` }}
-              aria-hidden={airaHidden}
-              x-placement={arrowPlacement}
-            >
-              <div class="el-popover__title">{title}</div>
-              {slots.content ? renderSlot(slots, 'content') : (<div>{content}</div>)}
-              <div x-arrow class="popper__arrow" style={arrowStyle}></div>
-            </div>
-          </Transition>
-        </Overlay>
-      </> */
     return () => (
       <Tooltip
         ref="tooltip"

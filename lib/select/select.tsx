@@ -36,9 +36,6 @@ function useClear(
 
 
 export const Select = defineComponent({
-  directives: {
-    tooltip: vTooltip,
-  },
   props: {
     id: String,
     name: String,
@@ -147,39 +144,9 @@ export const Select = defineComponent({
         size
       } = props;
 
-      return [
-        <div
-          class={['el-select', size ? 'el-select--' + size : '']}
-          v-tooltip="tooltip"
-        >
-          <Input
-            ref="reference"
-            v-model={selectedLabel.value}
-            type="text"
-            placeholder={placeholder}
-            id={id}
-            name={name}
-            autocomplete={autocomplete}
-            size={size}
-            disabled={disabled}
-            readonly={readonly}
-            validate-event="false"
-            class={{ 'is-focus': tooltipVisible.value }}
-            tabindex={(multiple && filterable) ? -1 : undefined}
-            // onFocus={handleFocus}
-            // onBlur={handleBlur}
-            v-slots={{
-              prefix: renderCondition(ctx.slots.prefix, ctx.slots.prefix),
-              suffix: () => [
-                <i v-show={!showClose.value} class={['el-select__caret', 'el-input__icon', 'el-icon-' + iconClass.value]} />,
-                renderCondition(showClose.value, <i class="el-select__caret el-input__icon el-icon-circle-close" onClick={handleClearClick} />)
-              ],
-            }}
-          />
-        </div>,
+      return (
         <Tooltip
           v-model={tooltipVisible.value}
-          ref="tooltip"
           trigger="click-close"
           placement="bottom"
           effect="light"
@@ -187,34 +154,73 @@ export const Select = defineComponent({
           visibleArrow={false}
           popperClass={'el-select-dropdown'}
           popperStyle={{ minWidth: `${inputWidth.value}px` }}
+          v-slots={{
+            content: () => (
+              <CdkSelection
+                multiple={multiple}
+                v-slots={{
+                  default: () => (
+                    <div class={['el-select-dropdown__wrap',]}>
+                      <ul
+                        v-show={!loading}
+                        class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
+                      >
+                        {ctx.slots.default?.()}
+                      </ul>
+                    </div>
+                  ),
+                  placeholder: () => renderCondition(
+                    emptyText && (!allowCreate || loading),
+                    renderCondition(
+                      ctx.slots.empty,
+                      ctx.slots.empty?.(),
+                      <p class="el-select-dropdown__empty">
+                        {emptyText}
+                      </p>
+                    )
+                  )
+                }}
+              />
+            )
+          }}
         >
-          <CdkSelection
-            multiple={multiple}
-            v-slots={{
-              default: () => (
-                <div class={['el-select-dropdown__wrap',]}>
-                  <ul
-                    v-show={!loading}
-                    class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
-                  >
-                    {ctx.slots.default?.()}
-                  </ul>
-                </div>
-              ),
-              placeholder: () => renderCondition(
-                emptyText && (!allowCreate || loading),
-                renderCondition(
-                  ctx.slots.empty,
-                  ctx.slots.empty?.(),
-                  <p class="el-select-dropdown__empty">
-                    {emptyText}
-                  </p>
-                )
-              )
-            }}
-          />
-        </Tooltip>,
-      ];
+          <div class={['el-select', size ? 'el-select--' + size : '']}>
+            <Input
+              ref="reference"
+              v-model={selectedLabel.value}
+              type="text"
+              placeholder={placeholder}
+              id={id}
+              name={name}
+              autocomplete={autocomplete}
+              size={size}
+              disabled={disabled}
+              readonly={readonly}
+              validate-event="false"
+              class={{ 'is-focus': tooltipVisible.value }}
+              tabindex={(multiple && filterable) ? -1 : undefined}
+              // onFocus={handleFocus}
+              // onBlur={handleBlur}
+              v-slots={{
+                prefix: renderCondition(ctx.slots.prefix, ctx.slots.prefix),
+                suffix: () => [
+                  <i
+                    v-show={!showClose.value}
+                    class={['el-select__caret', 'el-input__icon', 'el-icon-' + iconClass.value]}
+                  />,
+                  renderCondition(
+                    showClose.value,
+                    <i
+                      class="el-select__caret el-input__icon el-icon-circle-close"
+                      onClick={handleClearClick}
+                    />
+                  )
+                ],
+              }}
+            />
+          </div>
+        </Tooltip>
+      );
     };
   }
 });

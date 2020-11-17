@@ -1,5 +1,5 @@
-# Element UI 3
-
+# Power UI
+An Vue3 UI Component Libary using design of Element-UI, inspired from Angular CDK. 
 
 ## Milestone
 

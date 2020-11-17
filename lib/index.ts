@@ -22,6 +22,7 @@ export { Drawer } from './drawer';
 export { Input } from './input';
 export { Card } from './card';
 export { Select, SelectOption, SelectOptionGroup } from './select';
+export { Slider } from './slider';
 
 export {
   default as globalInject,

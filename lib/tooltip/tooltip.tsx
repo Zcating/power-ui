@@ -1,8 +1,12 @@
-import { cloneVNode, computed, defineComponent, renderSlot, VNode, Transition, CSSProperties } from 'vue';
-import { Overlay } from '../cdk';
-import { Enum, getElement, isValidElement, List, Model, renderCondition } from '../cdk/utils';
-import { Placement, TriggerType } from './types';
-import { useTooltip } from './use-tooltip';
+import { vmodelRef } from '../cdk/hook';
+import { ESCAPE } from '../cdk/keycodes';
+import { cloneVNode, computed, defineComponent, VNode, Transition, CSSProperties, inject, onUnmounted, ref, toRef, watch } from 'vue';
+import { platformToken } from '..';
+import { FlexiblePositionStrategy, Overlay, provideStrategy } from '../cdk';
+import { addEvent, Enum, getElement, isValidElement, List, Model, renderCondition } from '../cdk/utils';
+import { ArrowPlacement, OVERLAY_POSITION_MAP, Placement, TriggerType } from './types';
+
+let tooltipCounter = 0;
 
 export const Tooltip = defineComponent({
   props: {
@@ -56,7 +60,129 @@ export const Tooltip = defineComponent({
     },
   },
   setup(props, ctx) {
-    const state = useTooltip(props, ctx, props.trigger);
+    const visible = vmodelRef(toRef(props, 'modelValue'), (value) => ctx.emit('update:modelValue', value));
+    const referenceRef = ref<HTMLElement | null>(null);
+    const popperRef = ref<HTMLElement | null>(null);
+    const strategy = new FlexiblePositionStrategy(referenceRef);
+
+    watch(
+      () => props.placement,
+      (value) => {
+        strategy.positionPair(OVERLAY_POSITION_MAP[value]);
+      },
+      { immediate: true }
+    );
+    provideStrategy(strategy);
+
+
+    const tooltipId = `el-tooltip-${tooltipCounter++}`;
+
+    const airaHidden = computed(() => props.disabled ? 'true' : 'false');
+
+    // get placement
+    const arrowPlacement = computed(() => (props.placement.match(/(top|left|bottom|right)/)?.[0] || 'top') as ArrowPlacement);
+
+    // set the arrow's position
+    const arrowStyle = computed(() => {
+      const alignment = props.placement.match(/(start|end)/)?.[0] || 'center';
+      if (alignment == 'center') {
+        switch (arrowPlacement.value) {
+          case 'top':
+          case 'bottom':
+            return { left: '50%', transform: 'translateX(-50%)' };
+          case 'left':
+          case 'right':
+            return { top: '50%', transform: 'translateY(-50%)' };
+        }
+      } else {
+        switch (arrowPlacement.value) {
+          case 'top':
+          case 'bottom':
+            const horizontal = alignment === 'start' ? 'left' : 'right';
+            return { [horizontal]: `${props.arrowOffset || 8}px` };
+          case 'left':
+          case 'right':
+            const vertical = alignment === 'start' ? 'top' : 'bottom';
+            return { [vertical]: `${props.arrowOffset || 8}px` };
+        }
+      }
+    });
+
+    const destroyFns: (() => void)[] = [];
+
+    const triggerRef = toRef(props, 'trigger');
+
+    const doc = inject(platformToken)?.TOP?.document;
+
+    watch(() => [referenceRef.value, popperRef.value, triggerRef.value], (values) => {
+      const reference = values[0] as HTMLElement;
+      const popper = values[1] as HTMLElement;
+      const trigger = values[2] as TriggerType;
+      if (!(reference && popper && doc)) {
+        return;
+      }
+      // clear all listeners
+      destroyFns.forEach(fn => fn());
+      destroyFns.splice(0, destroyFns.length - 1);
+
+      const show = () => { visible.value = true; };
+      const close = () => { visible.value = false; };
+
+      reference.setAttribute('aria-describedby', tooltipId);
+      reference.setAttribute('tabindex', `${props.tabindex}`);
+
+      popper.setAttribute('tabindex', '0');
+
+      if (trigger === 'click') {
+        destroyFns.push(
+          addEvent(reference, 'click', show),
+          addEvent(reference, 'keydown', (e) => e.keyCode === ESCAPE && close()),
+          addEvent(doc, 'click', (e) => {
+            if (!visible.value) {
+              return;
+            }
+            const target = e.target as HTMLElement;
+            const isContain = reference.contains(target) || popper.contains(target);
+            if (!isContain) {
+              close();
+            }
+          })
+        );
+      } else if (trigger === 'click-close') {
+        destroyFns.push(
+          addEvent(reference, 'click', () => visible.value = !visible.value),
+          addEvent(reference, 'keydown', (e) => e.keyCode === ESCAPE && close()),
+          addEvent(doc, 'click', (e) => {
+            if (!visible.value) {
+              return;
+            }
+            const target = e.target as HTMLElement;
+            const isContain = reference.contains(target) || popper.contains(target);
+            if (!isContain) {
+              close();
+            }
+          })
+        );
+      } else if (trigger === 'focus') {
+        if (props.tabindex < 0) {
+          console.warn('[Element Warn][Popover]a negative taindex means that the element cannot be focused by tab key');
+        }
+        destroyFns.push(
+          addEvent(reference, 'focusin', show),
+          addEvent(reference, 'focusout', close),
+        );
+      } else if (trigger === 'hover') {
+        destroyFns.push(
+          addEvent(reference, 'mouseenter', show),
+          addEvent(reference, 'mouseleave', close),
+          addEvent(popper, 'mouseenter', show),
+          addEvent(popper, 'mouseleave', close)
+        );
+      } else if (trigger === 'custom') {
+      }
+    });
+
+    onUnmounted(() => destroyFns.forEach(value => value()));
 
     const popoverClass = computed(() => {
       const { popperClass } = props;
@@ -70,7 +196,13 @@ export const Tooltip = defineComponent({
     return {
       eltype: 'tooltip',
       popoverClass,
-      ...state,
+      arrowStyle,
+      arrowPlacement,
+      airaHidden,
+      tooltipId,
+      visible,
+      popper: popperRef,
+      reference: referenceRef,
     };
   },
 
@@ -89,11 +221,10 @@ export const Tooltip = defineComponent({
       transition,
     } = this;
 
-
     let node: VNode | VNode[] | undefined = slots.default?.();
     if (node) {
       // set the reference
-      const setReference = (ref: any | null) => {
+      const setReference = (ref: any) => {
         this.reference = getElement(ref);
       };
       // get the node
