@@ -21,7 +21,17 @@ export function getElement(element: any): HTMLElement | null {
   return null;
 }
 
-export const renderCondition = (test: unknown, node: VNode | JSX.Element | undefined, elseNode?: VNode | JSX.Element | undefined) => !!test ? node : elseNode;
+type JSVNode = VNode | JSX.Element | undefined
+
+type VueNode<T> = JSVNode | ((value: T) => JSVNode);
+
+export const renderCondition = <T>(test: T, node: VueNode<T>, elseNode?: VueNode<T>) => {
+  if (!!test) {
+    return typeof node === 'function' ? node(test) : node;
+  } else {
+    return typeof elseNode === 'function' ? elseNode(test) : elseNode;
+  }
+};
 
 export const isEqual = (value1: any[] | string | number, value2: any[] | string | number) => {
   const isArray1 = Array.isArray(value1);

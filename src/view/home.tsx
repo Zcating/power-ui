@@ -148,7 +148,6 @@ export default defineComponent({
                     <Button onClick={() => showModal.value = false}>取 消</Button>
                     <Button type="primary" onClick={() => {
                       showModal.value = false;
-                      console.log(showDrawer.value);
                     }}>确 定</Button>
                   </span>
                 ),
@@ -173,7 +172,7 @@ export default defineComponent({
 
           <p>
             <Popconfirm ref="popconfirm" title="test content" />
-            <Button v-popconfirm="popconfirm">click </Button>
+            <Button v-popconfirm="popconfirm">click</Button>
           </p>
 
           {/* tooltips */}

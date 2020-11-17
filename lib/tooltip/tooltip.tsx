@@ -90,7 +90,7 @@ export const Tooltip = defineComponent({
     } = this;
 
 
-    let node: VNode | VNode[] | undefined = slots.reference?.();
+    let node: VNode | VNode[] | undefined = slots.default?.();
     if (node) {
       // set the reference
       const setReference = (ref: any | null) => {
@@ -122,7 +122,7 @@ export const Tooltip = defineComponent({
               style={popperStyle}
               x-placement={arrowPlacement}
             >
-              {renderCondition(slots.default, slots.default?.(), <span>{content}</span>)}
+              {slots.content ? slots.content?.() : <span>{content}</span>}
               {renderCondition(visibleArrow, <div x-arrow class="popper__arrow" style={arrowStyle}></div>)}
             </div>
           </Transition>

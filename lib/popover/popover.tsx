@@ -96,11 +96,11 @@ export const Popover = defineComponent({
         placement={props.placement}
         visibleArrow={props.visibleArrow}
         v-slots={{
-          default: () => [
+          content: () => [
             <div class="el-popover__title">{props.title}</div>,
             ctx.slots.content ? ctx.slots.content() : (<div>{props.content}</div>)
           ],
-          reference: ctx.slots.default
+          default: ctx.slots.default
         }}
       />
     );
