@@ -238,27 +238,25 @@ export const Tooltip = defineComponent({
       }
     }
 
-    return (
-      <>
-        {node}
-        <Overlay v-model={[this.visible, 'visible']} hasBackdrop={false}>
-          <Transition name={transition}>
-            <div
-              v-show={visible}
-              ref="popper"
-              role="tooltip"
-              id={tooltipId}
-              aria-hidden={airaHidden}
-              class={popoverClass}
-              style={popperStyle}
-              x-placement={arrowPlacement}
-            >
-              {slots.content ? slots.content?.() : <span>{content}</span>}
-              {renderCondition(visibleArrow, <div x-arrow class="popper__arrow" style={arrowStyle}></div>)}
-            </div>
-          </Transition>
-        </Overlay>
-      </>
-    );
+    return [
+      node,
+      <Overlay v-model={[this.visible, 'visible']} hasBackdrop={false}>
+        <Transition name={transition}>
+          <div
+            v-show={visible}
+            ref="popper"
+            role="tooltip"
+            id={tooltipId}
+            aria-hidden={airaHidden}
+            class={popoverClass}
+            style={popperStyle}
+            x-placement={arrowPlacement}
+          >
+            {slots.content ? slots.content?.() : <span>{content}</span>}
+            {renderCondition(visibleArrow, <div x-arrow class="popper__arrow" style={arrowStyle}></div>)}
+          </div>
+        </Transition>
+      </Overlay>
+    ];
   }
 });

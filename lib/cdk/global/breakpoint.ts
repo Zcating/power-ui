@@ -45,17 +45,17 @@ export default class {
       this.queryMedia(TOP, (breakPoints as any)[key], (e) => {
         if (e) {
           switch (key) {
-          case 'xs':
-          case 's':
-          case 'm':
-          case 'l':
-          case 'xl':
-            this.span.value = key;
-            break;
-          case 'portrait':
-          case 'landscape':
-            this.direction.value = key;
-            break;
+            case 'xs':
+            case 's':
+            case 'm':
+            case 'l':
+            case 'xl':
+              this.span.value = key;
+              break;
+            case 'portrait':
+            case 'landscape':
+              this.direction.value = key;
+              break;
           }
         }
       });

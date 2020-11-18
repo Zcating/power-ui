@@ -1,10 +1,11 @@
 import { platformToken } from '../cdk/global';
 import { addEvent, Method } from '../cdk/utils';
 import { Tooltip } from '../tooltip';
-import { computed, customRef, defineComponent, inject, nextTick, reactive, ref } from 'vue';
+import { computed, customRef, defineComponent, getCurrentInstance, inject, nextTick, reactive, ref, watch } from 'vue';
+import { Slider } from '.';
 
 function toFixed(value: number, radix: number) {
-  const times = (10 ** radix);
+  const times = (10 ** radix) || 1;
   return Math.round(value * times / times);
 }
 
@@ -37,18 +38,27 @@ export const SliderButton = defineComponent({
       type: Number,
       default: 100,
     },
+
     min: {
       type: Number,
       default: 0,
     },
+
     steps: {
       type: Number,
-      default: 0,
+      default: 1,
     },
+
     precision: {
       tyep: Number,
       default: 0
-    }
+    },
+
+  },
+
+  emits: {
+    'drag': (value: boolean) => undefined as void,
+    'update:modelValue': (value: number) => undefined as void
   },
 
   setup(props, ctx) {
@@ -63,7 +73,10 @@ export const SliderButton = defineComponent({
       hovering: false,
       dragging: false,
       isClick: false,
-      oldValue: props.modelValue,
+    });
+
+    watch(() => state.dragging, (value) => {
+      ctx.emit('drag', value);
     });
 
     const positionRef = customRef((track, trigger) => {
@@ -86,18 +99,11 @@ export const SliderButton = defineComponent({
           }
           trigger();
 
-          const { max, min, steps, precision, modelValue } = props;
+          const { max, min, steps, precision } = props;
           const lengthPerStep = 100 / ((max - min) / steps);
           const stepCount = Math.round(position / lengthPerStep);
           const nextValue = toFixed(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
           ctx.emit('update:modelValue', nextValue);
-
-          if (!state.dragging && modelValue !== state.oldValue) {
-            state.oldValue = modelValue;
-          }
-          nextTick(() => {
-            // TODO: update tooltip
-          });
         }
       };
     });
@@ -107,9 +113,12 @@ export const SliderButton = defineComponent({
       state.hovering = true;
     };
     const handleMouseLeave = () => {
-      state.showTooltip = false;
       state.hovering = false;
+      if (!state.isClick) {
+        state.hovering = false;
+      }
     };
+
     const handleDrag = (event: Event) => {
       if (props.disabled) {
         return;
@@ -127,6 +136,8 @@ export const SliderButton = defineComponent({
         prevX = touch.clientX;
         prevY = touch.clientY;
       }
+
+      const start = positionRef.value;
 
       const disposes = [
         addEvent(WINDOW, ['mousemove', 'touchmove'], (event: MouseEvent | TouchEvent) => {
@@ -148,27 +159,28 @@ export const SliderButton = defineComponent({
 
           let diff = 0;
           if (props.vertical) {
-            diff = prevY - currentY / props.size * 100;
+            diff = (prevY - currentY) / props.size * 100;
           } else {
-            diff = prevX - currentX / props.size * 100;
+            diff = (currentX - prevX) / props.size * 100;
           }
-
-          positionRef.value = positionRef.value + diff;
-
+          positionRef.value = start + diff;
         }),
         addEvent(WINDOW, ['mouseup', 'touchend', 'contextmenu'], () => {
-          setTimeout(() => {
-            state.dragging = false;
-            state.showTooltip = false;
-            if (!state.isClick) {
-              disposes.forEach(fn => fn());
-            }
-          }, 0);
+          state.dragging = false;
+          state.showTooltip = false;
+          if (!state.isClick) {
+            disposes.forEach(fn => fn());
+          }
         })
       ];
     };
 
     const buttonRef = ref<HTMLDivElement | null>(null);
+
+    const wrapperStyle = computed(() => {
+      const position = `${positionRef.value}%`;
+      return props.vertical ? { bottom: position } : { left: position };
+    });
 
     return () => (
       <div
@@ -179,6 +191,7 @@ export const SliderButton = defineComponent({
         onTouchstart={handleDrag}
         tabindex={0}
         ref={buttonRef}
+        style={wrapperStyle.value}
       >
         <Tooltip
           v-model={state.showTooltip}

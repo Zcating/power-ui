@@ -10,6 +10,9 @@ import {
   nextTick,
   ref,
   toRef,
+  onMounted,
+  getCurrentInstance,
+  onUpdated,
 } from 'vue';
 import { PositionStrategy, GlobalPositionStrategy } from './position';
 import { vmodelRef, watchRef } from '../hook';
@@ -88,11 +91,12 @@ export const Overlay = defineComponent({
     };
 
     const overlayRef = ref<HTMLElement>();
-    watch(overlayRef, (overlay) => {
+    onMounted(() => {
+      const overlay = overlayRef.value;
       if (!overlay) {
         return;
-        // throw Error('overlay container is null.');
       }
+
       nextTick(() => {
         strategy.apply?.(overlay);
       });
@@ -107,10 +111,16 @@ export const Overlay = defineComponent({
         }
       }, { immediate: true });
 
-    });
+      onUpdated(() => {
+        // TODO: maybe add update API
+        nextTick(() => {
+          strategy.apply?.(overlay);
+        });
+      });
 
-    onUnmounted(() => {
-      strategy.dispose();
+      onUnmounted(() => {
+        strategy.dispose();
+      });
     });
 
     const body = inject(platformToken)?.BODY;
@@ -126,15 +136,15 @@ export const Overlay = defineComponent({
       });
     }
 
-    // const containerClass = computed(() => {
-    //   const clazz = ['cdk-overlay-container'];
-    //   if (!props.hasBackdrop) {
-    //     clazz.push('cdk-overlay-container__disabled');
-    //   } else {
-    //     clazz.push(props.backgroundClass);
-    //   }
-    //   return clazz;
-    // });
+
+
+    onMounted(() => {
+      const instance = getCurrentInstance();
+      if (!instance) {
+        return;
+      }
+      // instance.appContext
+    });
 
     return () => (
       <Teleport to="#cdk-overlay-anchor">

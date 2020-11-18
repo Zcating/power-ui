@@ -4,6 +4,14 @@ import { SliderButton } from './button';
 
 export const Slider = defineComponent({
   props: {
+    min: {
+      type: Number,
+      default: 0
+    },
+    max: {
+      type: Number,
+      default: 100
+    },
     disabled: {
       type: Boolean,
       default: false,
@@ -73,10 +81,15 @@ export const Slider = defineComponent({
       }
     });
 
+    const onSliderClick = (event: MouseEvent) => {
+
+    };
+
     return () => (
       <div class="el-slider" {...ctx.attrs} ref={sliderRef}>
         <div
           class={['el-slider__runway', { 'disabled': props.disabled }]}
+          onClick={onSliderClick}
         >
           <div class="el-slider__bar" />
           <SliderButton
@@ -84,6 +97,8 @@ export const Slider = defineComponent({
             tooltipClass={props.tooltipClass}
             vertical={props.vertical}
             size={size.value}
+            max={props.max}
+            min={props.min}
           />
           {renderCondition(
             props.range,
@@ -92,6 +107,8 @@ export const Slider = defineComponent({
               vertical={props.vertical}
               v-model={secondValue.value}
               size={size.value}
+              max={props.max}
+              min={props.min}
             />)}
           {/* {renderCondition(props.showStop, )} */}
         </div>
