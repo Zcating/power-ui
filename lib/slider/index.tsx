@@ -1,6 +1,8 @@
-import { List, renderCondition } from '../cdk/utils';
+import { List, renderCondition, toFixedNumber } from '../cdk/utils';
 import { computed, defineComponent, ref, watch } from 'vue';
 import { SliderButton } from './button';
+import { range } from 'lodash-es';
+
 
 export const Slider = defineComponent({
   props: {
@@ -11,6 +13,10 @@ export const Slider = defineComponent({
     max: {
       type: Number,
       default: 100
+    },
+    step: {
+      type: Number,
+      default: 1
     },
     disabled: {
       type: Boolean,
@@ -32,7 +38,10 @@ export const Slider = defineComponent({
     modelValue: {
       type: [Number, List<number>()],
       default: 0,
-    }
+    },
+    height: {
+      type: String
+    },
   },
   setup(props, ctx) {
     const firstValue = ref(0);
@@ -81,17 +90,68 @@ export const Slider = defineComponent({
       }
     });
 
+    const barStyle = computed(() => {
+      const rangeSize = props.max - props.min;
+      let barSize: number | string;
+      let barStart: number | string;
+      if (props.range) {
+        const first = firstValue.value;
+        const second = secondValue.value;
+        barSize = Math.abs(first - second) / rangeSize;
+        barStart = (Math.min(first, second) - props.min) / rangeSize;
+      } else {
+        barSize = (firstValue.value - props.min) / rangeSize;
+        barStart = 0;
+      }
+      barSize = `${barSize * 100}%`;
+      barStart = `${barStart * 100}%`;
+      return props.vertical ? { height: barSize, top: barStart } : { width: barSize, left: barStart };
+    });
+
+    const precision = computed(() => {
+      return Math.max(...[props.min, props.max, props.step].map(item => {
+        const decimal = ('' + item).split('.')[1];
+        return decimal ? decimal.length : 0;
+      }));
+    });
+
     const onSliderClick = (event: MouseEvent) => {
+      const slider = sliderRef.value;
+      if (!slider) {
+        return;
+      }
+      const rect = slider.getBoundingClientRect();
+      let offset: number;
+      if (props.vertical) {
+        offset = (rect.bottom - event.clientY) / size.value * 100;
+      } else {
+        offset = (event.clientX - rect.left) / size.value * 100;
+      }
+      if (props.range) {
+
+      } else {
+        firstValue.value = toFixedNumber(offset, precision.value);
+      }
 
     };
 
     return () => (
-      <div class="el-slider" {...ctx.attrs} ref={sliderRef}>
+      <div
+        ref={sliderRef}
+        class={['el-slider', { 'is-vertical': props.vertical }]}
+        role="slider"
+        aria-valuemax={props.max}
+        aria-valuemin={props.min}
+        aria-orientation={props.vertical ? 'vertical' : 'horizontal'}
+        aria-disabled={props.disabled}
+        {...ctx.attrs}
+      >
         <div
           class={['el-slider__runway', { 'disabled': props.disabled }]}
+          style={props.vertical ? { height: props.height } : undefined}
           onClick={onSliderClick}
         >
-          <div class="el-slider__bar" />
+          <div class="el-slider__bar" style={barStyle.value} />
           <SliderButton
             v-model={firstValue.value}
             tooltipClass={props.tooltipClass}
@@ -103,9 +163,9 @@ export const Slider = defineComponent({
           {renderCondition(
             props.range,
             <SliderButton
+              v-model={secondValue.value}
               tooltipClass={props.tooltipClass}
               vertical={props.vertical}
-              v-model={secondValue.value}
               size={size.value}
               max={props.max}
               min={props.min}

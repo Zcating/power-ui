@@ -141,10 +141,6 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     style.position = 'absolute';
     style.left = coerceCssPixelValue(point.x);
     style.top = coerceCssPixelValue(point.y);
-    style.minWidth = coerceCssPixelValue(rect.width);
-    style.minHeight = coerceCssPixelValue(rect.height);
-
-    this.positionedStyle.value = style;
 
     // at last, we need to caculate the position
     // when scrolling.

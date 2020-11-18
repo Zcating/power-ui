@@ -5,7 +5,6 @@
 @import "common/var";
 
 @include b(slider) {
-
   @include utils-clearfix;
 
   @include e(runway) {
@@ -94,7 +93,7 @@
     height: $--slider-button-wrapper-size;
     width: $--slider-button-wrapper-size;
     position: absolute;
-    z-index: 1001;
+    z-index: 100;
     top: $--slider-button-wrapper-offset;
     transform: translateX(-50%);
     background-color: transparent;
@@ -102,11 +101,6 @@
     user-select: none;
     line-height: normal;
     @include utils-vertical-center;
-
-    .el-tooltip {
-      vertical-align: middle;
-      display: inline-block;
-    }
 
     &:hover,
     &.hover {
@@ -124,8 +118,11 @@
     border: solid 2px $--slider-main-background-color;
     background-color: $--color-white;
     border-radius: 50%;
-    transition: .2s;
+    transition: 0.2s;
     user-select: none;
+
+    vertical-align: middle;
+    display: inline-block;
 
     &:hover,
     &.hover,
@@ -202,8 +199,7 @@
           padding-right: 5px;
         }
         .el-input-number__decrease,
-        .el-input-number__increase
-        {
+        .el-input-number__increase {
           top: $--input-small-height;
           margin-top: -1px;
           border: $--input-border;
@@ -226,15 +222,13 @@
         }
         &:hover {
           .el-input-number__decrease,
-          .el-input-number__increase
-          {
+          .el-input-number__increase {
             border-color: $--input-hover-border;
           }
         }
         &:active {
           .el-input-number__decrease,
-          .el-input-number__increase
-          {
+          .el-input-number__increase {
             border-color: $--input-focus-border;
           }
         }

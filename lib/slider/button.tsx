@@ -1,13 +1,7 @@
 import { platformToken } from '../cdk/global';
-import { addEvent, Method } from '../cdk/utils';
+import { addEvent, Method, toFixedNumber } from '../cdk/utils';
 import { Tooltip } from '../tooltip';
-import { computed, customRef, defineComponent, getCurrentInstance, inject, nextTick, reactive, ref, watch } from 'vue';
-import { Slider } from '.';
-
-function toFixed(value: number, radix: number) {
-  const times = (10 ** radix) || 1;
-  return Math.round(value * times / times);
-}
+import { computed, customRef, defineComponent, inject, reactive, ref, watch } from 'vue';
 
 export const SliderButton = defineComponent({
   props: {
@@ -57,8 +51,8 @@ export const SliderButton = defineComponent({
   },
 
   emits: {
-    'drag': (value: boolean) => undefined as void,
-    'update:modelValue': (value: number) => undefined as void
+    'drag': (value: boolean) => true,
+    'update:modelValue': (value: number) => true
   },
 
   setup(props, ctx) {
@@ -102,7 +96,7 @@ export const SliderButton = defineComponent({
           const { max, min, steps, precision } = props;
           const lengthPerStep = 100 / ((max - min) / steps);
           const stepCount = Math.round(position / lengthPerStep);
-          const nextValue = toFixed(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
+          const nextValue = toFixedNumber(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
           ctx.emit('update:modelValue', nextValue);
         }
       };
@@ -114,8 +108,8 @@ export const SliderButton = defineComponent({
     };
     const handleMouseLeave = () => {
       state.hovering = false;
-      if (!state.isClick) {
-        state.hovering = false;
+      if (state.isClick) {
+        state.showTooltip = false;
       }
     };
 
@@ -201,7 +195,7 @@ export const SliderButton = defineComponent({
               <div class={['el-slider__button', { 'hover': state.hovering, 'dragging': state.dragging }]} />
             ),
             content: () => (
-              <span>{formatValue.value}</span>
+              <span style={{ textAlign: 'center' }}>{formatValue.value}</span>
             )
           }}
         />

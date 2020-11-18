@@ -3,3 +3,4 @@ export * from './dom';
 export * from './isType';
 export * from './props';
 export * from './transform';
+export * from './number';
