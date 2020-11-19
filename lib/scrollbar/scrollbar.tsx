@@ -1,5 +1,5 @@
 import { Model, renderCondition } from '../cdk/utils';
-import { CSSProperties, defineComponent, h, provide, ref } from 'vue'
+import { CSSProperties, defineComponent, h, provide, ref } from 'vue';
 import { Bar } from './bar';
 import scrollBarWidth from './utils';
 
@@ -39,7 +39,7 @@ export default defineComponent({
 
     return {
       wrap: wrapRef,
-    }
+    };
   },
 
   methods: {
@@ -95,7 +95,7 @@ export default defineComponent({
     const gutterWith = `-${gutter}px`;
     if (!wrapStyle) {
       style = { marginBottom: gutterWith, marginRight: gutterWith };
-    } else if (typeof wrapStyle === "object") {
+    } else if (typeof wrapStyle === 'object') {
       style = { ...wrapStyle };
       style.marginRight = style.marginBottom = gutterWith;
     } else {
@@ -103,7 +103,7 @@ export default defineComponent({
     }
 
     const divProps = {
-      ref: "wrap",
+      ref: 'wrap',
       class: [wrapClass, 'el-scrollbar__wrap'],
       style: style,
       onScroll: undefined as any,

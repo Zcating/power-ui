@@ -1,19 +1,19 @@
-import VirtualScroll from "../scrolling/virtualScroll";
-import { defineComponent } from "vue";
-import { clone } from "lodash-es";
-import VirtualContainer from "../scrolling/VirtualContainer";
+import VirtualScroll from '../scrolling/virtualScroll';
+import { defineComponent } from 'vue';
+import { clone } from 'lodash-es';
+import VirtualContainer from '../scrolling/VirtualContainer';
 
 export default defineComponent({
-  name: "cdk-table-virtual-spect",
+  name: 'cdk-table-virtual-spect',
   setup() {
-    const headers = ["test", "test1", "test2"];
+    const headers = ['test', 'test1', 'test2'];
     const dataSource = [
-      { test: "test", test1: "test1", test2: "test2" },
-      { test: "testtt", test1: "testtt1", test2: "testtt2" },
+      { test: 'test', test1: 'test1', test2: 'test2' },
+      { test: 'testtt', test1: 'testtt1', test2: 'testtt2' },
     ];
     for (let i = 0; i < 1000; i++) {
       dataSource.push(
-        clone({ test: "testtt", test1: "testtt1", test2: "testtt2" })
+        clone({ test: 'testtt', test1: 'testtt1', test2: 'testtt2' })
       );
     }
     const virtualScroll = new VirtualScroll(dataSource);
@@ -34,7 +34,7 @@ export default defineComponent({
                 key={index}
                 style={{
                   height:
-                    el.virtualHeight || virtualScroll.defaultHeight + "px",
+                    el.virtualHeight || virtualScroll.defaultHeight + 'px',
                 }}
               >
                 {headers.map((title) => (

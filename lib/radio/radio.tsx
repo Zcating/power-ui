@@ -1,7 +1,7 @@
 
 import { Enum, Method, renderCondition } from '../cdk/utils';
 import { ElSize } from '@/types';
-import { defineComponent, renderSlot } from "vue";
+import { defineComponent, renderSlot } from 'vue';
 import { useRadio } from './use-radio';
 
 export const Radio = defineComponent({
@@ -45,11 +45,11 @@ export const Radio = defineComponent({
 
     const updateFocus = (val: boolean) => {
       this.focus = val;
-    }
+    };
 
     return <label
       class={[
-        "el-radio",
+        'el-radio',
         border && radioSize ? 'el-radio--' + radioSize : '',
         { 'is-disabled': isDisabled },
         { 'is-focus': focus },
@@ -64,7 +64,7 @@ export const Radio = defineComponent({
     >
       <span
         class={[
-          "el-radio__input",
+          'el-radio__input',
           {
             'is-disabled': isDisabled,
             'is-checked': checked
@@ -97,6 +97,6 @@ export const Radio = defineComponent({
           label
         )}
       </span>
-    </label>
+    </label>;
   }
-})
+});

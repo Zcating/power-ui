@@ -68,8 +68,8 @@ export default defineComponent({
   },
   setup(props, ctx) {
     const { data, emptyText, highlightCurrent, } = props;
-    provide("cdk-tree-node", data);
-    provide("cdk-tree-node-layer", 0);
+    provide('cdk-tree-node', data);
+    provide('cdk-tree-node-layer', 0);
     
     const dragState = reactive({
       showDropIndicator: false,

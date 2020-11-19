@@ -1,9 +1,9 @@
 import { vmodelRef } from '../cdk/hook';
 import { ESCAPE } from '../cdk/keycodes';
-import { cloneVNode, computed, defineComponent, VNode, Transition, CSSProperties, inject, onUnmounted, ref, toRef, watch } from 'vue';
+import { CSSProperties, Transition, VNode, cloneVNode, computed, defineComponent, inject, onUnmounted, ref, toRef, watch } from 'vue';
 import { platformToken } from '..';
 import { FlexiblePositionStrategy, Overlay, provideStrategy } from '../cdk';
-import { addEvent, Enum, getElement, isValidElement, List, Model, renderCondition } from '../cdk/utils';
+import { Enum, List, Model, addEvent, getElement, isValidElement, renderCondition } from '../cdk/utils';
 import { ArrowPlacement, OVERLAY_POSITION_MAP, Placement, TriggerType } from './types';
 
 let tooltipCounter = 0;

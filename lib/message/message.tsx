@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, onUnmounted, ref, renderSlot, Transition } from "vue";
+import { Transition, computed, defineComponent, onMounted, onUnmounted, ref, renderSlot } from 'vue';
 import { CdkTimer } from '../cdk/utils';
 
 
@@ -55,7 +55,7 @@ export const Message = defineComponent({
     });
 
     const iconTypeClass = computed(() => {
-      return [`el-message__icon`, `el-icon-${props.type}`];
+      return ['el-message__icon', `el-icon-${props.type}`];
     });
 
     return function () {
@@ -68,7 +68,7 @@ export const Message = defineComponent({
 
       let closeIcon;
       if (props.showClose) {
-        closeIcon = <i class="el-message__closeBtn el-icon-close" onClick={close}></i>
+        closeIcon = <i class="el-message__closeBtn el-icon-close" onClick={close}></i>;
       }
 
       return (
@@ -88,5 +88,5 @@ export const Message = defineComponent({
       );
     };
   }
-})
+});
 

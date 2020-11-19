@@ -1,7 +1,7 @@
-import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, Ref, ref, SetupContext, toRef } from 'vue';
-import { List, renderCondition, isEqual } from '../cdk/utils';
+import { Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
+import { List, isEqual, renderCondition } from '../cdk/utils';
 import { CdkSelection } from '../cdk/selection';
-import { Tooltip, vTooltip } from '../tooltip';
+import { Tooltip } from '../tooltip';
 import { Input } from '../input';
 import { SelectSerivce } from './select.service';
 

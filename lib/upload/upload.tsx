@@ -1,9 +1,9 @@
-import { computed, defineComponent, inject, onBeforeUnmount, Prop, ref, renderSlot, watch } from "vue";
-import { BeforeMethod, EleUploadType, ElUploadFile, OnChangeMethod, RequestMethod } from './types';
+import { computed, defineComponent, inject, onBeforeUnmount, ref, renderSlot, watch } from 'vue';
 import { UploadService } from './upload.service';
 import { UploadList } from './upload-list';
 import { UploadInput, UploadInputComponent } from './upload-input';
-import { thenable, renderCondition, isObject, Model, List, Enum } from '../cdk/utils';
+import { Enum, List, Model, isObject, renderCondition, thenable } from '../cdk/utils';
+import { BeforeMethod, ElUploadFile, EleUploadType, OnChangeMethod, RequestMethod } from './types';
 
 function noop() { }
 
@@ -29,7 +29,7 @@ export const Upload = defineComponent({
       required: true
     },
     headers: {
-      type: Model<{[x in string] : any}>(),
+      type: Model<{ [x in string]: any }>(),
       default: {}
     },
     name: {
@@ -68,7 +68,7 @@ export const Upload = defineComponent({
       default: 'text'
     },
   },
-  
+
   setup(props, ctx) {
     const uploadService = new UploadService();
 
@@ -122,7 +122,7 @@ export const Upload = defineComponent({
       uploadFiles,
       uploadInput,
       uploadDisabled,
-    }
+    };
   },
 
   methods: {
@@ -142,7 +142,7 @@ export const Upload = defineComponent({
     },
 
     handleStart(file: ElUploadFile) {
-      let targetItem = this.fileToObject(file);
+      const targetItem = this.fileToObject(file);
       targetItem.status = 'uploading';
 
       if (isPicture(this.listType)) {
@@ -208,7 +208,7 @@ export const Upload = defineComponent({
 
     getFile: (file: ElUploadFile, files: ElUploadFile[]) => files.find(item => file.uid === item.uid)!,
 
-    removeFile:(file: ElUploadFile, files: ElUploadFile[]) => files.filter(item => file.uid !== file.uid),
+    removeFile: (file: ElUploadFile, files: ElUploadFile[]) => files.filter(item => file.uid !== file.uid),
 
     abort(file: ElUploadFile) {
       this.uploadInput!.abort(file);
@@ -225,7 +225,7 @@ export const Upload = defineComponent({
     },
   },
 
-  
+
   render() {
     const {
       $slots: slots,

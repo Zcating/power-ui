@@ -1,8 +1,8 @@
-import { defineComponent, renderSlot } from "vue";
-import { globalInject } from '.';
-import { getClassToken } from "./cdk/tools";
-import { MessageService, MessageServiceImpl } from "./message/message.service";
+import { MessageService, MessageServiceImpl } from './message/message.service';
 import { NotificationService, NotificationServiceImpl } from './notification/notification.service';
+import { defineComponent, renderSlot } from 'vue';
+import { getClassToken } from './cdk/tools';
+import { globalInject } from '.';
 
 
 export const $message = getClassToken<MessageService>(MessageServiceImpl);
@@ -19,6 +19,6 @@ export const EleUIProvider = defineComponent({
         <messageService.container />
         <notificationService.container />
       </>
-    )
+    );
   }
 });

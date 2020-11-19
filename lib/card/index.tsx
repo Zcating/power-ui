@@ -1,5 +1,5 @@
 import { Model, renderCondition } from '../cdk/utils';
-import { CSSProperties, defineComponent, renderSlot } from 'vue'
+import { CSSProperties, defineComponent, renderSlot } from 'vue';
 
 export const Card = defineComponent({
   props: {

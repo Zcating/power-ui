@@ -1,8 +1,7 @@
-import { SPACE } from '../cdk/keycodes';
+import { defineComponent, renderSlot } from 'vue';
+
 import { Enum, Method, renderCondition } from '../cdk/utils';
 import { ElSize } from '../types';
-import { computed, CSSProperties, customRef, defineComponent, nextTick, ref, renderSlot, watch } from "vue";
-import { injectRadioService } from './radio.service';
 import { useRadio } from './use-radio';
 
 export const RadioButton = defineComponent({
@@ -43,13 +42,13 @@ export const RadioButton = defineComponent({
 
     const updateFocus = (val: boolean) => {
       this.focus = val;
-    }
+    };
 
-    const handleChange = (e: Event) => { }
+    const handleChange = (e: Event) => { };
 
     return <label
       class={[
-        "el-radio-button",
+        'el-radio-button',
         radioSize ? 'el-radio-button--' + radioSize : '',
         { 'is-disabled': isDisabled },
         { 'is-focus': focus },
@@ -76,8 +75,8 @@ export const RadioButton = defineComponent({
         tabindex={-1}
         checked={checked}
       />
-      <span 
-        class="el-radio-button__inner" 
+      <span
+        class="el-radio-button__inner"
         onKeydown={(e) => e.stopPropagation()}
         style={activeStyle}
       >
@@ -86,6 +85,6 @@ export const RadioButton = defineComponent({
           label
         )}
       </span>
-    </label>
+    </label>;
   }
-})
+});

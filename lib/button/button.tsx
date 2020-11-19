@@ -1,25 +1,25 @@
 import { Enum } from '../cdk/utils';
-import { computed, defineComponent, inject, renderSlot } from "vue";
+import { computed, defineComponent, inject, renderSlot } from 'vue';
 import { ElButtonNativeType } from './types';
 
 export const Button = defineComponent({
-  name: "ele-button",
+  name: 'ele-button',
   props: {
     type: {
       type: String,
-      default: "default",
+      default: 'default',
     },
     size: {
       type: String,
-      default: "medium",
+      default: 'medium',
     },
     icon: {
       type: String,
-      default: "",
+      default: '',
     },
     nativeType: {
       type: Enum<ElButtonNativeType>(),
-      default: "button",
+      default: 'button',
     },
 
     loading: Boolean,
@@ -30,13 +30,13 @@ export const Button = defineComponent({
     circle: Boolean,
   },
 
-  emits: ["click"],
+  emits: ['click'],
 
   setup(props, ctx) {
-    const formItem = inject("ele-form-item", { disabled: false, size: "" });
+    const formItem = inject('ele-form-item', { disabled: false, size: '' });
     const buttonDisabled = computed(() => formItem.disabled || props.disabled);
     const buttonSize = computed(
-      () => formItem.size || props.size || inject("ele-global-size")
+      () => formItem.size || props.size || inject('ele-global-size')
     );
 
     return () => (
@@ -45,15 +45,15 @@ export const Button = defineComponent({
         autofocus={props.autofocus}
         type={props.nativeType as ElButtonNativeType}
         class={[
-          "el-button",
-          props.type ? "el-button--" + props.type : "",
-          buttonSize.value ? "el-button--" + buttonSize.value : "",
+          'el-button',
+          props.type ? 'el-button--' + props.type : '',
+          buttonSize.value ? 'el-button--' + buttonSize.value : '',
           {
-            "is-disabled": buttonDisabled.value,
-            "is-loading": props.loading,
-            "is-plain": props.plain,
-            "is-round": props.round,
-            "is-circle": props.circle,
+            'is-disabled': buttonDisabled.value,
+            'is-loading': props.loading,
+            'is-plain': props.plain,
+            'is-round': props.round,
+            'is-circle': props.circle,
           },
         ]}
         onClick={(e) => ctx.emit('click', e)}
@@ -61,7 +61,7 @@ export const Button = defineComponent({
       >
         {props.loading ? <i class='el-icon-loading' v-if='loading'></i> : null}
         {props.icon && !props.loading ? <i class={props.icon}></i> : null}
-        {renderSlot(ctx.slots, "default")}
+        {renderSlot(ctx.slots, 'default')}
       </button>
     );
   },

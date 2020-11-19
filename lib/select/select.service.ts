@@ -1,4 +1,4 @@
-import { inject, InjectionKey, provide, ref, Ref, watch } from 'vue';
+import { InjectionKey, Ref, inject, provide, ref, watch } from 'vue';
 
 export interface OptionData {
   value: string | number;

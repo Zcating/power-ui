@@ -1,4 +1,4 @@
-import { inject, onBeforeMount, onMounted, Ref, ref } from 'vue';
+import { Ref, inject, onBeforeMount, onMounted, ref } from 'vue';
 import { platformToken } from '../global';
 import { noop } from '../types';
 

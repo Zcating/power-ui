@@ -1,14 +1,13 @@
 import {
-  computed,
   ComputedRef,
-  inject,
   InjectionKey,
-  provide,
   Ref,
+  computed,
+  provide,
   ref,
   watch,
 } from 'vue';
-import { setGlobalDateI18n, Days, Months } from 'fecha';
+import { Days, Months, setGlobalDateI18n } from 'fecha';
 import { getClassToken } from '../tools';
 import Breakpoint from './breakpoint';
 import Bidirection from './bidirection';

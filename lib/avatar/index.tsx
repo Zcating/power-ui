@@ -1,17 +1,17 @@
 import { Enum } from '../cdk/utils';
 import { ElSize } from '@/types';
-import { computed, defineComponent, ref, renderSlot } from "vue";
+import { computed, defineComponent, ref, renderSlot } from 'vue';
 
 export default defineComponent({
-  name: "ele-avatar",
+  name: 'ele-avatar',
   props: {
     size: {
       type: [Number, Enum<ElSize>()],
-      default: "medium",
+      default: 'medium',
     },
     shape: {
-      type: Enum<"circle" | "square">(),
-      default: "circle",
+      type: Enum<'circle' | 'square'>(),
+      default: 'circle',
     },
     icon: String,
     src: String,
@@ -24,39 +24,39 @@ export default defineComponent({
     },
     fit: {
       type: String as () =>
-        | "fill"
-        | "contain"
-        | "cover"
-        | "none"
-        | "scale-down",
-      default: "cover",
+        | 'fill'
+        | 'contain'
+        | 'cover'
+        | 'none'
+        | 'scale-down',
+      default: 'cover',
     },
   },
   setup(props, ctx) {
     const isImageExist = ref(true);
     // witch class to use uppon avatar component
     const avatarClass = computed(() => {
-      const classList = ["el-avatar"];
-      if (props.size && typeof props.size === "string") {
+      const classList = ['el-avatar'];
+      if (props.size && typeof props.size === 'string') {
         classList.push(`el-avatar--${props.size}`);
       }
       if (props.icon) {
-        classList.push("el-avatar--icon");
+        classList.push('el-avatar--icon');
       }
       if (props.shape) {
         classList.push(`el-avatar--${props.shape}`);
       }
-      return classList.join(" ");
+      return classList.join(' ');
     });
 
     // size style if size is number
     const sizeStyle = computed(() =>
-      typeof props.size === "number"
+      typeof props.size === 'number'
         ? {
-            height: `${props.size}px`,
-            width: `${props.size}px`,
-            lineHeight: `${props.size}px`,
-          }
+          height: `${props.size}px`,
+          width: `${props.size}px`,
+          lineHeight: `${props.size}px`,
+        }
         : {}
     );
 
@@ -77,14 +77,14 @@ export default defineComponent({
             onError={handleError}
             alt={props.alt}
             srcset={props.srcSet}
-            style={{ "object-fit": props.fit } as any}
+            style={{ 'object-fit': props.fit } as any}
           />
         );
       }
       if (props.icon) {
         return <i class={props.icon} />;
       }
-      return renderSlot(ctx.slots, "default");
+      return renderSlot(ctx.slots, 'default');
     };
 
     return () => (

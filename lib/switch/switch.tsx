@@ -1,6 +1,6 @@
 import { ENTER } from '../cdk/keycodes';
-import { renderCondition } from "../cdk/utils"
-import { computed, defineComponent, nextTick, ref, watch } from 'vue'
+import { renderCondition } from '../cdk/utils';
+import { computed, defineComponent, nextTick, ref, watch } from 'vue';
 
 export const Switch = defineComponent({
   props: {
@@ -107,7 +107,7 @@ export const Switch = defineComponent({
       checked,
       handleChange,
       switchValue
-    }
+    };
   },
 
   render() {
@@ -174,6 +174,6 @@ export const Switch = defineComponent({
           )}
         </span>
       )}
-    </div>
+    </div>;
   }
 });

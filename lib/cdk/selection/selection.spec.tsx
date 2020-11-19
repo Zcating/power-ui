@@ -1,4 +1,4 @@
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive } from 'vue';
 import { CdkSelection } from './selection';
 import { CdkSelectionItem } from './selection-item';
 import { SelectionItemState } from './types';
@@ -6,20 +6,20 @@ import { SelectionItemState } from './types';
 const widgetBuilder = (value: number) => (state: SelectionItemState) => [
   <p>
     Item {value} :
-      <button onClick={() => state.selected = !state.selected}>
+    <button onClick={() => state.selected = !state.selected}>
       {state.selected ? 'close' : 'expanded'}
     </button>
   </p>,
   <p v-show={state.selected}>
     I only show if item {value} is expanded
   </p>
-]
+];
 
 export default defineComponent({
   name: 'cdk-selection-spec',
   setup() {
     const array = reactive([1, 2, 3, 4, 5]);
-    const state = reactive({ multiple: false, selected: false })
+    const state = reactive({ multiple: false, selected: false });
     return () => (
       <>
         <div>
@@ -43,4 +43,4 @@ export default defineComponent({
       </>
     );
   }
-})
+});

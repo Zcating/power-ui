@@ -1,6 +1,6 @@
 import { renderCondition } from '../cdk/utils';
-import { computed, CSSProperties, defineComponent, Prop } from 'vue';
-import { ElProgressType, ColorFunction, ElProgressStatus, FormatFunction, StringArray } from './types';
+import { CSSProperties, Prop, computed, defineComponent } from 'vue';
+import { ColorFunction, ElProgressStatus, ElProgressType, FormatFunction, StringArray } from './types';
 
 export const Progress = defineComponent({
   name: 'el-progress',
@@ -25,7 +25,7 @@ export const Progress = defineComponent({
       default: 6
     },
     strokeLinecap: {
-      type: String as () => "round" | "inherit" | "butt" | "square" | undefined,
+      type: String as () => 'round' | 'inherit' | 'butt' | 'square' | undefined,
       default: 'round'
     },
     textInside: {
@@ -171,7 +171,7 @@ export const Progress = defineComponent({
       trailPathStyle,
       circlePathStyle,
       trackPath
-    }
+    };
   },
 
   render() {
@@ -253,6 +253,6 @@ export const Progress = defineComponent({
           {renderCondition(!status, <>{content}</>, <i class={iconClass} />)}
         </div>
       )}
-    </div>
+    </div>;
   }
-})
+});

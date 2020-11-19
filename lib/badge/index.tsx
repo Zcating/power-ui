@@ -1,7 +1,7 @@
-import { computed, defineComponent, renderSlot, Transition } from "vue";
+import { Transition, computed, defineComponent, renderSlot } from 'vue';
 
 export default defineComponent({
-  name: "ele-badge",
+  name: 'ele-badge',
   props: {
     value: [String, Number],
     max: Number,
@@ -9,11 +9,11 @@ export default defineComponent({
     hidden: Boolean,
     type: {
       type: String as () =>
-        | "primary"
-        | "success"
-        | "warning"
-        | "info"
-        | "danger",
+        | 'primary'
+        | 'success'
+        | 'warning'
+        | 'info'
+        | 'danger',
     },
   },
   setup(props, ctx) {
@@ -21,14 +21,14 @@ export default defineComponent({
       if (props.isDot) return;
       const value = props.value;
       const max = props.max;
-      if (typeof value === "number" && typeof max === "number") {
+      if (typeof value === 'number' && typeof max === 'number') {
         return max < value ? `${max}+` : value;
       }
       return value;
     });
     return () => (
       <div class='el-badge'>
-        {renderSlot(ctx.slots, "default")}
+        {renderSlot(ctx.slots, 'default')}
         <Transition name='el-zoom-in-center'>
           <sup
             v-show={
@@ -36,11 +36,11 @@ export default defineComponent({
               (content.value || content.value === 0 || props.isDot)
             }
             class={[
-              "el-badge__content",
-              "el-badge__content--" + props.type,
+              'el-badge__content',
+              'el-badge__content--' + props.type,
               {
-                "is-fixed": ctx.slots["default"],
-                "is-dot": props.isDot,
+                'is-fixed': ctx.slots['default'],
+                'is-dot': props.isDot,
               },
             ]}
           >

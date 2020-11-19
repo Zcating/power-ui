@@ -1,5 +1,5 @@
 import { platformToken } from '../cdk/global';
-import { addEvent, Method, toFixedNumber } from '../cdk/utils';
+import { Method, addEvent, toFixedNumber } from '../cdk/utils';
 import { Tooltip } from '../tooltip';
 import { computed, customRef, defineComponent, inject, reactive, ref, watch } from 'vue';
 

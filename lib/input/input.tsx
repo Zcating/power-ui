@@ -1,6 +1,6 @@
 import { vmodelRef } from '../cdk/hook';
 import { Enum, renderCondition, toAttrComponent } from '../cdk/utils';
-import { computed, CSSProperties, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, Ref, ref, renderSlot, SetupContext, toRef, watch, resolveDynamicComponent, InputHTMLAttributes, TextareaHTMLAttributes } from "vue";
+import { CSSProperties, InputHTMLAttributes, Ref, SetupContext, TextareaHTMLAttributes, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, resolveDynamicComponent, toRef, watch } from 'vue';
 import { calcTextareaHeight } from './utils';
 import { AutosizeData } from '.';
 
@@ -41,7 +41,7 @@ function useText(
     inputExceed,
     upperLimit,
     isWordLimitVisible,
-  }
+  };
 }
 
 
@@ -113,7 +113,7 @@ function useInput(
 
     nextTick(() => {
       setNativeInputValue(inputValue.value);
-    })
+    });
   }
 
   function onCompositionstart() {
@@ -147,7 +147,7 @@ function useInput(
     onCompositionstart,
     onCompositionupdate,
     onCompositionend,
-  }
+  };
 }
 
 
@@ -178,7 +178,7 @@ function useClear(
   return {
     showClear,
     setHovering,
-  }
+  };
 }
 
 /**
@@ -206,7 +206,7 @@ function usePassword(
   const onPasswordVisible = () => {
     passwordVisible.value = !passwordVisible.value;
     inputFocus();
-  }
+  };
 
   const passwordType = computed(() => passwordVisible.value ? 'text' : 'password');
 
@@ -216,7 +216,7 @@ function usePassword(
     showPwdVisible,
     passwordType,
     onPasswordVisible
-  }
+  };
 }
 
 /**
@@ -446,7 +446,7 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
       ...pwdState,
 
       textareaStyle,
-    }
+    };
   },
 
   render() {
@@ -493,7 +493,7 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
         !!this.showPassword ||
         !!this.isWordLimitVisible ||
         (this.validateState && this.needStatusIcon);
-    }
+    };
 
     return (
       <div
@@ -548,7 +548,7 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
               $slots.prefix || prefixIcon,
               <span class="el-input__prefix">
                 {renderSlot(this.$slots, 'prefix')}
-                <i class={["el-input__icon", prefixIcon]} />
+                <i class={['el-input__icon', prefixIcon]} />
               </span>,
             ),
             // 后置内容

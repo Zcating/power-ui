@@ -1,5 +1,5 @@
 import { ElSize } from '../types';
-import { computed, defineComponent, Prop, Transition } from 'vue';
+import { Prop, Transition, computed, defineComponent } from 'vue';
 import { Enum, Method, renderCondition } from '../cdk/utils';
 
 export type TagEffect = 'dark' | 'light' | 'plain';
@@ -45,7 +45,7 @@ export const Tag = defineComponent({
       handleClose: handleClose,
       handleClick: handleClick,
       tagSize,
-    }
+    };
   },
   render() {
     const {

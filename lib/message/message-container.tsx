@@ -1,13 +1,13 @@
-import { computed, defineComponent, Ref, renderList } from "vue";
+import { Ref, computed, defineComponent, renderList } from 'vue';
 import { Message } from './message';
-import { MessageData } from "./types";
+import { MessageData } from './types';
 import { Overlay } from '../cdk';
 
 export const MessageContainerFactory = (datas: Ref<Required<MessageData>[]>, destroy: (id: string) => void) => defineComponent({
   setup() {
     const visible = computed(() => {
       return datas.value.length > 0;
-    })
+    });
 
     return () => {
       return (
@@ -24,11 +24,11 @@ export const MessageContainerFactory = (datas: Ref<Required<MessageData>[]>, des
                 iconClass={value.iconClass}
                 content={value.content}
                 onDestroy={destroy}
-              ></Message>
+              ></Message>;
             })}
           </div>
         </Overlay>
       );
-    }
+    };
   }
 });

@@ -1,6 +1,6 @@
 import { ElSize } from '@/types';
 import { HTMLAttributes } from 'vue';
-import { ElButtonType, ElButtonNativeType } from './types';
+import { ElButtonNativeType, ElButtonType } from './types';
 
 export * from './button';
 export * from './button-group';

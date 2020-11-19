@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, ref, renderSlot, Transition } from 'vue';
+import { Transition, computed, defineComponent, onMounted, ref, renderSlot } from 'vue';
 import { notificationProps } from './types';
 import { CdkTimer } from '../cdk/utils';
 
@@ -48,7 +48,7 @@ export const Notification = defineComponent({
       if (typeof onClose === 'function') {
         onClose();
       }
-    }
+    };
 
     const typeClass = computed(() => {
       return type ? `el-icon-${typeMap[type]}` : '';

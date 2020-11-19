@@ -1,4 +1,4 @@
-import { DefineComponent, InjectionKey, provide, Ref, ref } from "vue";
+import { DefineComponent, InjectionKey, Ref, provide, ref } from 'vue';
 import createContainter from './notification-container';
 import { NotificationConfig, NotificationConfigOptions, NotificationData } from './types';
 
@@ -88,7 +88,7 @@ export class NotificationServiceImpl extends NotificationService {
     this._config.value = {
       offset: options.offset || current.offset,
       duration: options.duration || current.duration
-    }
+    };
   }
 
   render(): DefineComponent {

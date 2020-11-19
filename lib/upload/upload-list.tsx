@@ -1,7 +1,7 @@
 import { DELETE } from '../cdk/keycodes';
 import { renderCondition } from '../cdk/utils';
-import { computed, defineComponent, renderSlot, TransitionGroup } from 'vue';
-import { EleUploadType, ElUploadFile } from './types';
+import { TransitionGroup, computed, defineComponent, renderSlot } from 'vue';
+import { ElUploadFile, EleUploadType } from './types';
 import { Progress } from '../progress';
 
 
@@ -31,7 +31,7 @@ export const UploadList = defineComponent({
     const isPicture = computed(() => ['picture-card', 'picture'].indexOf(props.listType) > -1);
     const isCard = computed(() => props.listType === 'picture-card');
 
-    const uploadListClass = computed(() => `el-upload-list el-upload-list--${props.listType} ${props.disabled ? 'is-disabled' : ''}`)
+    const uploadListClass = computed(() => `el-upload-list el-upload-list--${props.listType} ${props.disabled ? 'is-disabled' : ''}`);
 
     const uploadIconClass = computed(() => {
       const clazz = ['el-icon-upload-success'];
@@ -52,7 +52,7 @@ export const UploadList = defineComponent({
       isCard,
       uploadListClass,
       uploadIconClass
-    }
+    };
   },
 
   render() {
@@ -80,7 +80,7 @@ export const UploadList = defineComponent({
       >
         <i class="el-icon-zoom-in"></i>
       </span>;
-    }
+    };
 
     const fileNodes = files.map((file) => {
       const onRemove = onRemoveCreator(file);
@@ -130,7 +130,7 @@ export const UploadList = defineComponent({
             </span>
           )}
         </li>
-      )
+      );
     });
     return (
       <TransitionGroup

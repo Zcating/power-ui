@@ -1,4 +1,4 @@
-import { onMounted, provide, Ref, ref } from 'vue';
+import { Ref, onMounted, provide, ref } from 'vue';
 import { markDirty } from '../tools';
 import Scrollable from './scrollable';
 

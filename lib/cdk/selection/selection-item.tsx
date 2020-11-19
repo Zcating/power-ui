@@ -1,4 +1,4 @@
-import { defineComponent, reactive, renderSlot, watch } from "vue";
+import { defineComponent, reactive, renderSlot, watch } from 'vue';
 import { Method } from '../utils';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionItemState } from './types';

@@ -1,8 +1,8 @@
-import { defineComponent, inject } from "vue";
-import { bidirectionToken } from ".";
+import { defineComponent, inject } from 'vue';
+import { bidirectionToken } from '.';
 
 export default defineComponent({
-  name: "bidirection-spec",
+  name: 'bidirection-spec',
   setup() {
     const bidi = inject(bidirectionToken)!;
     return () => (
@@ -10,9 +10,9 @@ export default defineComponent({
         <button
           onClick={() => {
             bidi.direction.value =
-              bidi.direction.value === "ltr"
-                ? (bidi.direction.value = "rtl")
-                : (bidi.direction.value = "ltr");
+              bidi.direction.value === 'ltr'
+                ? (bidi.direction.value = 'rtl')
+                : (bidi.direction.value = 'ltr');
           }}
         >
           change direction

@@ -1,8 +1,8 @@
 import { ENTER, SPACE } from '../cdk/keycodes';
-import { renderCondition, thenable, isXHR, Method, Model } from '../cdk/utils';
-import { defineComponent, InputHTMLAttributes, reactive, ref, renderSlot } from 'vue';
+import { Method, Model, isXHR, renderCondition, thenable } from '../cdk/utils';
+import { InputHTMLAttributes, defineComponent, reactive, ref, renderSlot } from 'vue';
 import { upload as ajax } from './ajax';
-import { ElUploadFile, AjaxOptions, HttpRequest, RequestMethod, } from './types';
+import { AjaxOptions, ElUploadFile, HttpRequest, RequestMethod, } from './types';
 import { UploadDragger } from './upload-dragger';
 import { injectService } from './upload.service';
 
@@ -189,7 +189,7 @@ export const UploadInput = defineComponent({
       };
       const request = this.httpRequest(options);
       this.requests[uid] = request;
-      request
+      request;
       if (thenable(request)) {
         request.then(options.onSuccess, options.onError);
       }
@@ -218,7 +218,7 @@ export const UploadInput = defineComponent({
     return {
       input,
       requests
-    }
+    };
   },
 
   render() {
@@ -248,17 +248,17 @@ export const UploadInput = defineComponent({
       onFile: uploadFiles,
       disabled,
       'v-slots': { ...this.$slots }
-    }
+    };
 
     const inputAttrs: InputHTMLAttributes & { ref: string } = {
       class: 'el-upload__input',
-      type: "file",
+      type: 'file',
       ref: 'input',
       name,
       onChange: handleChange,
       multiple,
       accept
-    }
+    };
     return (
       <div {...divAttrs}>
         {renderCondition(

@@ -1,4 +1,4 @@
-import { provide, InjectionKey, inject } from 'vue';
+import { InjectionKey, inject, provide } from 'vue';
 
 export const uploadKey = Symbol('el-uploader') as InjectionKey<UploadService>;
 

@@ -28,7 +28,7 @@ export const Steps = defineComponent({
   },
 
   setup(props, ctx) {
-    const service = new StepService(props);
+    new StepService(props);
 
     watch(() => props.active, (value, oldValue) => {
       ctx.emit('change', value, oldValue);

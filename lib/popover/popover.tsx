@@ -1,4 +1,4 @@
-import { defineComponent, computed } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { Enum } from '../cdk/utils';
 import { Placement, Tooltip, TriggerType } from '../tooltip';
 

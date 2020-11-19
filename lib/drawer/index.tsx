@@ -1,4 +1,4 @@
-import { computed, defineComponent, Prop, renderSlot, toRef, Transition } from "vue";
+import { Prop, Transition, computed, defineComponent, renderSlot, toRef } from 'vue';
 import { Enum, renderCondition } from '../cdk/utils';
 import {vmodelRef} from '../cdk/hook';
 import { Overlay } from '../cdk/overlay';
@@ -80,13 +80,13 @@ export const Drawer = defineComponent({
 
     const closeDrawer = () => {
       elVisible.value = false;
-    }
+    };
 
     return {
       elVisible,
       isHorizontal,
       closeDrawer,
-    }
+    };
   },
 
   methods: {
@@ -142,6 +142,6 @@ export const Drawer = defineComponent({
           </section>
         </div>
       </Transition>
-    </Overlay>
+    </Overlay>;
   }
 });

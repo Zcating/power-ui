@@ -1,15 +1,15 @@
 import {
+  Ref,
+  Transition,
   defineComponent,
   inject,
   provide,
-  Ref,
   ref,
   renderSlot,
-  Transition,
   watch,
-} from "vue";
-import { platformToken, getFuncToken } from "..";
-import { runWhileScroll } from "../cdk/tools";
+} from 'vue';
+import { getFuncToken, platformToken } from '..';
+import { runWhileScroll } from '../cdk/tools';
 
 /**
  * visible while scroll to certain area
@@ -55,12 +55,12 @@ export function backtopController(target?: Ref<string>) {
     };
     rAF(frameFunc);
   };
-  provide("ele-backtop", { container, visible, scrollToTop });
+  provide('ele-backtop', { container, visible, scrollToTop });
   return { container, visible, scrollToTop };
 }
 
 export default defineComponent({
-  name: "ele-backtop",
+  name: 'ele-backtop',
   props: {
     visibilityHeight: {
       type: Number,
@@ -82,7 +82,7 @@ export default defineComponent({
   },
   setup(props, ctx) {
     const backtop = inject(
-      getFuncToken(backtopController, "ele-backtop"),
+      getFuncToken(backtopController, 'ele-backtop'),
       backtopController()
     );
     // for ssr
@@ -94,7 +94,7 @@ export default defineComponent({
       const scrollTop = container.value.scrollTop;
       visible.value = scrollTop >= props.visibilityHeight;
     });
-    const hasDefaultSlot = ctx.slots["default"] ? true : false;
+    const hasDefaultSlot = ctx.slots['default'] ? true : false;
     return () => (
       <Transition name='el-fade-in' appear mode='out-in'>
         {visible.value ? (
@@ -104,11 +104,11 @@ export default defineComponent({
               scrollToTop();
               props.onClick();
             }}
-            style={{ right: props.right + "px", bottom: props.bottom + "px" }}
+            style={{ right: props.right + 'px', bottom: props.bottom + 'px' }}
             class='el-backtop'
           >
             {hasDefaultSlot ? (
-              renderSlot(ctx.slots, "default")
+              renderSlot(ctx.slots, 'default')
             ) : (
               <i class='el-icon-caret-top'></i>
             )}

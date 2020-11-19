@@ -1,5 +1,5 @@
-import { Component, defineComponent, provide, Ref } from "vue";
-import { markDirty } from "../tools";
+import { Component, Ref, defineComponent, provide } from 'vue';
+import { markDirty } from '../tools';
 
 type TdRender<T> = (item: T, index: number) => JSX.Element;
 
@@ -38,7 +38,7 @@ export default class<T extends { [key: string]: any }> {
   dirty: Ref<null | undefined>;
 
   // change order
-  currentOrderKey: string = "id";
+  currentOrderKey = 'id';
   changeOrder = (key: string, desc = true) => {
     this.displayColumns.sort((pre: any, next: any) => {
       if (pre[key] > next[key]) {
@@ -59,8 +59,8 @@ export default class<T extends { [key: string]: any }> {
    *
    */
   toggleSomeContent = (dataIndexs: string[], show = true) => {
-    for (let item of this.columns) {
-      if (dataIndexs.includes(item.dataIndex || "")) {
+    for (const item of this.columns) {
+      if (dataIndexs.includes(item.dataIndex || '')) {
         item.hidden = show;
       }
     }
@@ -76,6 +76,6 @@ export default class<T extends { [key: string]: any }> {
     this.columns = columns;
     this.displayColumns = this.columns.filter((el) => !el.hidden);
     this.mark();
-    provide("cdk-table", this);
+    provide('cdk-table', this);
   }
 }

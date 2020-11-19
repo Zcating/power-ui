@@ -1,8 +1,8 @@
-import { defineComponent, inject } from "vue";
-import { breakpointToken } from ".";
+import { defineComponent, inject } from 'vue';
+import { breakpointToken } from '.';
 
 export default defineComponent({
-  name: "breakpoint-spec",
+  name: 'breakpoint-spec',
   setup() {
     const bp = inject(breakpointToken)!;
     return () => (

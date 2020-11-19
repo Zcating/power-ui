@@ -50,7 +50,7 @@ export const RadioGroup = defineComponent({
 
     return {
       group: groupRef,
-    }
+    };
   },
 
   methods: {
@@ -106,6 +106,6 @@ export const RadioGroup = defineComponent({
       onKeydown={handleKeydown}
     >
       {renderSlot($slots, 'default')}
-    </div>
+    </div>;
   }
 });

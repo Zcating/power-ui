@@ -1,9 +1,9 @@
-import { defineComponent, reactive, ref, toRaw } from "vue";
-import Scrollable, { ScrollToOptions } from "./scrollable";
-import "./scrollable.spec.css";
+import { defineComponent, reactive, ref, toRaw } from 'vue';
+import Scrollable, { ScrollToOptions } from './scrollable';
+import './scrollable.spec.css';
 
 export default defineComponent({
-  name: "scrollable-spec",
+  name: 'scrollable-spec',
   setup() {
     const scrollable = new Scrollable();
     const options: ScrollToOptions = reactive({
@@ -38,8 +38,8 @@ export default defineComponent({
         <button
           onClick={() => {
             const result = toRaw(options);
-            for (let key of Object.keys(result)) {
-              if (typeof (result as any)[key] === "string") {
+            for (const key of Object.keys(result)) {
+              if (typeof (result as any)[key] === 'string') {
                 (result as any)[key] = parseInt((result as any)[key]);
               }
             }
@@ -55,8 +55,8 @@ export default defineComponent({
         <button
           onClick={() => {
             const result = toRaw(otherOptions);
-            for (let key of Object.keys(result)) {
-              if (typeof (result as any)[key] === "string") {
+            for (const key of Object.keys(result)) {
+              if (typeof (result as any)[key] === 'string') {
                 (result as any)[key] = parseInt((result as any)[key]);
               }
             }

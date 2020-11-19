@@ -1,6 +1,6 @@
-import { CSSProperties, isRef, ref, Ref, ComponentPublicInstance, inject } from 'vue';
+import { CSSProperties, ComponentPublicInstance, Ref, inject, isRef, ref } from 'vue';
 import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './position-pair';
-import { PositionStrategy, OverlayProps } from './position-strategy';
+import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
 import { getElement } from '../../utils';
 import { platformToken } from '../../global';

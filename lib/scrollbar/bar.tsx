@@ -1,6 +1,6 @@
 import { addEvent } from '../cdk/utils';
-import { computed, defineComponent, inject, isRef, onUnmounted, reactive, Ref, ref, toRefs } from 'vue';
-import { renderThumbStyle, BAR_MAP, BarProps } from './utils';
+import { Ref, computed, defineComponent, inject, isRef, onUnmounted, reactive, ref, toRefs } from 'vue';
+import { BAR_MAP, BarProps, renderThumbStyle } from './utils';
 
 function parentWrap(): Ref<HTMLElement | undefined> {
   let wrap: any = inject('el-scrollbar-wrap');
@@ -81,7 +81,7 @@ export const Bar = defineComponent({
       });
 
       document.onselectstart = () => false;
-    }
+    };
 
     const clickTrackHandler = (event: MouseEvent) => {
       const { thumb, barEl, wrap, bar: { direction, client, offset, scroll, scrollSize } } = state;

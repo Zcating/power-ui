@@ -1,20 +1,20 @@
 import {
-  defineComponent,
   Teleport,
   Transition,
-  renderSlot,
-  watch,
-  onUnmounted,
-  inject,
-  provide,
-  nextTick,
-  ref,
-  toRef,
-  onMounted,
+  defineComponent,
   getCurrentInstance,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
   onUpdated,
+  provide,
+  ref,
+  renderSlot,
+  toRef,
+  watch,
 } from 'vue';
-import { PositionStrategy, GlobalPositionStrategy } from './position';
+import { GlobalPositionStrategy, PositionStrategy } from './position';
 import { vmodelRef, watchRef } from '../hook';
 import { platformToken } from '../global';
 import './overlay.scss';

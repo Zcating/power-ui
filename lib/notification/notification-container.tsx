@@ -1,5 +1,5 @@
 import { Overlay } from '../cdk';
-import { computed, defineComponent, InjectionKey, Ref } from 'vue';
+import { InjectionKey, Ref, computed, defineComponent } from 'vue';
 import { Notification } from './notification';
 import { NotificationConfig, NotificationData, NotificationPosition, positionClassTag } from './types';
 
@@ -41,7 +41,7 @@ export default (
           ))}
         </div>
       ) : undefined;
-    }
+    };
 
 
     return () => {
@@ -56,7 +56,7 @@ export default (
           {bls}
           {brs}
         </Overlay>
-      )
-    }
+      );
+    };
   }
 });

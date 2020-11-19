@@ -1,6 +1,6 @@
 import { vmodelRef } from '../cdk/hook';
-import { defineComponent, toRef, Transition } from 'vue';
-import { Overlay, GlobalPositionStrategy, provideStrategy } from '../cdk';
+import { Transition, defineComponent, toRef } from 'vue';
+import { GlobalPositionStrategy, Overlay, provideStrategy } from '../cdk';
 export const Dialog = defineComponent({
   props: {
     id: String,
