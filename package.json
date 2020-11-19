@@ -24,7 +24,7 @@
     "build": "vue-cli-service build --target lib --name element ./lib/index.ts",
     "test:unit": "vue-cli-service test:unit",
     "build-description": "vue-cli-service build",
-    "lint": "eslint -c .eslintrc.js --ext .ts ./src ./lib --fix",
+    "lint": "eslint -c .eslintrc.js",
     "pre-commit": ""
   },
   "dependencies": {
@@ -66,7 +66,7 @@
   },
   "lint-staged": {
     "*.{js, vue, scss, css, ts}": [
-      "eslint -c .eslintrc.js --ext .ts ./src ./lib --fix"
+      "eslint -c .eslintrc.js --fix"
     ]
   }
 }

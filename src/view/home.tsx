@@ -1,4 +1,4 @@
-import { defineComponent, inject, ref } from 'vue';
+import { defineComponent, inject, ref, shallowRef, watch } from 'vue';
 import {
   Alert,
   Avatar,
@@ -64,6 +64,10 @@ export default defineComponent({
     const input = ref('');
 
     const selectValue = ref('');
+
+    const dateRef = shallowRef(new Date());
+
+    watch(dateRef, (value) => console.log(value));
 
     return () => (
       <Layout>
@@ -132,7 +136,7 @@ export default defineComponent({
             </ButtonGroup>
           </p>
           <p>
-            <Calendar />
+            <Calendar v-model={dateRef.value} />
           </p>
 
           {/* dialog */}

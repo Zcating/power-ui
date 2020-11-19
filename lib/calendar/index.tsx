@@ -1,32 +1,41 @@
-import { computed, defineComponent, inject, ref } from "vue";
-import { langToken } from "../cdk/global";
-import zhCN from "../cdk/lang/zh-CN";
-import { chunk } from "lodash-es";
-import { month } from "../cdk";
+import { computed, defineComponent, inject, shallowRef } from 'vue';
+import { langToken } from '../cdk/global';
+import { zhCN } from '../cdk/lang';
+import { chunk } from 'lodash-es';
+import { month } from '../cdk';
+import { Method, Model } from '../cdk/utils';
+import { Renderable } from '../cdk/types';
+
 export default defineComponent({
-  name: "ele-calendar",
+  name: 'ele-calendar',
   props: {
-    time: {
-      type: [String, Date, Number],
-      default: () => {
-        return new Date();
-      },
+    modelValue: {
+      type: [String, Number, Model<Date>()],
+      default: () => new Date(),
     },
     renderCell: {
-      type: Function,
+      type: Method<(time: Date) => Renderable>(),
       default: (t: Date) => t.getDate(),
-    },
+    }
   },
   setup(props, ctx) {
-    const weekList = inject(langToken, ref(zhCN)).value.datepicker.weeks;
+    const weekList = inject(langToken, shallowRef(zhCN)).value.datepicker.weeks;
     const dayList = computed(() => {
-      let time = new Date();
-      if (typeof props.time === "string" || typeof props.time === "number") {
-        const newTime = new Date(props.time);
+      let time: Date;
+      if (props.modelValue instanceof Date) {
+        time = props.modelValue;
+      } else if (typeof props.modelValue === 'string' || typeof props.modelValue === 'number') {
+        const newTime = new Date(props.modelValue);
+        // 'isNaN' can check if time is vaild.
         if (newTime && !isNaN(newTime as any)) {
           time = newTime;
+        } else {
+          time = new Date();
         }
+      } else {
+        time = new Date();
       }
+
       return chunk(month(time), 7);
     });
     return () => (
@@ -43,8 +52,10 @@ export default defineComponent({
             <tr class='el-calendar-table__row' key={idx}>
               {row.map((col, idx2) => (
                 <td class={col.type} key={idx2}>
-                  <div class='el-calendar-day'>
-                    {props.renderCell(col.time)}
+                  <div class='el-calendar-day' onClick={() => {
+                    ctx.emit('update:modelValue', col.time);
+                  }}>
+                    {ctx.slots.cell ? ctx.slots.cell({ time: col.time }) : props.renderCell(col.time)}
                   </div>
                 </td>
               ))}
