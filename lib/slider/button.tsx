@@ -22,32 +22,32 @@ export const SliderButton = defineComponent({
       type: Number,
       default: 1
     },
-
     format: {
       type: Method<(value: number) => string>(),
       default: String
     },
-
     max: {
       type: Number,
       default: 100,
     },
-
     min: {
       type: Number,
       default: 0,
     },
-
     steps: {
       type: Number,
       default: 1,
     },
-
     precision: {
       tyep: Number,
       default: 0
     },
 
+    position: {
+      type: Number,
+      default: 0
+    },
+    onDrag: Method<(value: boolean) => void>(),
   },
 
   emits: {
@@ -66,7 +66,6 @@ export const SliderButton = defineComponent({
       showTooltip: false,
       hovering: false,
       dragging: false,
-      isClick: false,
     });
 
     watch(() => state.dragging, (value) => {
@@ -102,31 +101,31 @@ export const SliderButton = defineComponent({
       };
     });
 
+    watch(() => props.position, (value) => {
+      positionRef.value = value;
+    });
+
     const handleMouseEnter = () => {
-      state.showTooltip = true;
       state.hovering = true;
+      state.showTooltip = true;
     };
     const handleMouseLeave = () => {
       state.hovering = false;
-      if (state.isClick) {
-        state.showTooltip = false;
-      }
+      state.showTooltip = false;
     };
-
     const handleDrag = (event: Event) => {
       if (props.disabled) {
         return;
       }
       event.preventDefault();
       state.dragging = true;
-      state.isClick = true;
       let prevX = 0;
       let prevY = 0;
       if (event instanceof MouseEvent) {
         prevX = event.clientX;
         prevY = event.clientY;
       } else if (event instanceof TouchEvent) {
-        const touch = (event as TouchEvent).touches[0];
+        const touch = event.touches[0];
         prevX = touch.clientX;
         prevY = touch.clientY;
       }
@@ -138,7 +137,6 @@ export const SliderButton = defineComponent({
           if (!state.dragging) {
             return;
           }
-          state.isClick = false;
 
           let currentX = 0;
           let currentY = 0;
@@ -159,12 +157,11 @@ export const SliderButton = defineComponent({
           }
           positionRef.value = start + diff;
         }),
+
         addEvent(WINDOW, ['mouseup', 'touchend', 'contextmenu'], () => {
           state.dragging = false;
           state.showTooltip = false;
-          if (!state.isClick) {
-            disposes.forEach(fn => fn());
-          }
+          disposes.forEach(fn => fn());
         })
       ];
     };
@@ -172,24 +169,28 @@ export const SliderButton = defineComponent({
     const buttonRef = ref<HTMLDivElement | null>(null);
 
     const wrapperStyle = computed(() => {
-      const position = `${positionRef.value}%`;
-      return props.vertical ? { bottom: position } : { left: position };
+      const { min, max, modelValue, vertical } = props;
+      const position = `${(modelValue - min) / (max - min) * 100}%`;
+      return vertical ? { bottom: position } : { left: position };
     });
 
     return () => (
       <div
         class="el-slider__button-wrapper"
+        tabindex={0}
+        ref={buttonRef}
+        style={wrapperStyle.value}
         onMouseenter={handleMouseEnter}
         onMouseleave={handleMouseLeave}
         onMousedown={handleDrag}
         onTouchstart={handleDrag}
-        tabindex={0}
-        ref={buttonRef}
-        style={wrapperStyle.value}
+        onFocus={handleMouseEnter}
+        onBlur={handleMouseLeave}
       >
         <Tooltip
           v-model={state.showTooltip}
           trigger="custom"
+          placement={props.vertical ? 'right' : 'top'}
           v-slots={{
             default: () => (
               <div class={['el-slider__button', { 'hover': state.hovering, 'dragging': state.dragging }]} />

@@ -345,7 +345,11 @@ export default defineComponent({
             </Select>
           </p>
           <p>
-            <Slider style={{ paddingLeft: '20px', width: '100px' }}></Slider>
+            <Slider
+              style={{ marginLeft: '20px', width: '600px' }}
+              max={20}
+              min={10}
+            />
           </p>
           <div style='height:200px;overflow-y:auto'>
             <div ref={divRef} style='height:1000px'></div>

@@ -1,7 +1,6 @@
-import { List, renderCondition, toFixedNumber } from '../cdk/utils';
-import { computed, defineComponent, ref, watch } from 'vue';
+import { List, renderCondition } from '../cdk/utils';
+import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import { SliderButton } from './button';
-import { range } from 'lodash-es';
 
 
 export const Slider = defineComponent({
@@ -47,13 +46,16 @@ export const Slider = defineComponent({
     const firstValue = ref(0);
     const secondValue = ref(0);
     watch(
-      () => props.modelValue,
-      (value) => {
+      () => [props.modelValue, props.min, props.max],
+      (values) => {
+        const value = values[0];
+        const min = values[1] as number;
+        const max = values[2] as number;
         if (Array.isArray(value)) {
-          firstValue.value = value[0];
-          secondValue.value = value[1];
+          firstValue.value = Math.max(value[0], min);
+          secondValue.value = Math.min(value[1], max);
         } else {
-          firstValue.value = value;
+          firstValue.value = Math.max(value, min);
         }
       },
       { immediate: true }
@@ -80,13 +82,14 @@ export const Slider = defineComponent({
 
     const size = computed(() => {
       const slider = sliderRef.value;
+      console.log(slider?.clientWidth);
       if (!slider) {
         return 0;
       }
       if (props.vertical) {
-        return slider.clientHeight ?? 1;
+        return slider.clientHeight ?? 0;
       } else {
-        return slider.clientWidth ?? 1;
+        return slider.clientWidth ?? 0;
       }
     });
 
@@ -115,9 +118,16 @@ export const Slider = defineComponent({
       }));
     });
 
+    const positions = reactive({
+      first: 0,
+      second: 0
+    });
+
+    const dragging = ref(false);
+
     const onSliderClick = (event: MouseEvent) => {
       const slider = sliderRef.value;
-      if (!slider) {
+      if (!slider || dragging.value || props.disabled) {
         return;
       }
       const rect = slider.getBoundingClientRect();
@@ -128,11 +138,17 @@ export const Slider = defineComponent({
         offset = (event.clientX - rect.left) / size.value * 100;
       }
       if (props.range) {
-
+        // Caculate the relative distances between first & second.
+        const firstDist = Math.abs(offset - firstValue.value);
+        const secondDist = Math.abs(offset - secondValue.value);
+        if (firstDist < secondDist) {
+          positions.first = offset;
+        } else {
+          positions.second = offset;
+        }
       } else {
-        firstValue.value = toFixedNumber(offset, precision.value);
+        positions.first = offset;
       }
-
     };
 
     return () => (
@@ -153,24 +169,31 @@ export const Slider = defineComponent({
         >
           <div class="el-slider__bar" style={barStyle.value} />
           <SliderButton
+            ref="button1"
             v-model={firstValue.value}
             tooltipClass={props.tooltipClass}
             vertical={props.vertical}
             size={size.value}
             max={props.max}
             min={props.min}
+            position={positions.first}
+            precision={precision.value}
+            onDrag={(value) => dragging.value = value}
           />
           {renderCondition(
             props.range,
             <SliderButton
+              ref="button2"
               v-model={secondValue.value}
               tooltipClass={props.tooltipClass}
               vertical={props.vertical}
               size={size.value}
               max={props.max}
               min={props.min}
+              position={positions.second}
+              precision={precision.value}
+              onDrag={(value) => dragging.value = value}
             />)}
-          {/* {renderCondition(props.showStop, )} */}
         </div>
       </div>
     );
