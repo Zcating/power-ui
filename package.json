@@ -24,7 +24,7 @@
     "build": "vue-cli-service build --target lib --name element ./lib/index.ts",
     "test:unit": "vue-cli-service test:unit",
     "build-description": "vue-cli-service build",
-    "lint": "eslint -c .eslintrc.js --fix --fix-type suggestion .",
+    "lint": "eslint -c .eslintrc.js --fix ./src ./lib",
     "pre-commit": ""
   },
   "dependencies": {

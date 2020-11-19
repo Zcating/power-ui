@@ -23,14 +23,14 @@ export { Input } from './input';
 export { Card } from './card';
 export { Select, SelectOption, SelectOptionGroup } from './select';
 export { Slider } from './slider';
+export { Rate } from './rate';
 
 export {
-  default as globalInject,
+  globalInject,
   platformToken,
   breakpointToken,
   bidirectionToken,
   clipboardToken,
-  // viewportToken,
 } from './cdk/global';
 export * from './cdk/tools';
 export * from './cdk';

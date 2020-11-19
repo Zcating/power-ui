@@ -34,7 +34,7 @@ export const setLangToken: InjectionKey<Ref<string>> = 'cdk-lang-setter' as any;
  *
  * @export
  */
-export default function () {
+export function globalInject() {
   const platform = new Platform();
   provide(platformToken, new Platform());
   // ! order should be manage carefully

@@ -5,12 +5,12 @@ module.exports = {
     output: {
       libraryExport: 'default',
     },
-    plugins: [
-      new DeclarationBundlerPlugin({
-        moduleName: 'powerui',
-        out: './power-ui.d.ts',
-      }),
-    ],
+    // plugins: [
+    //   new DeclarationBundlerPlugin({
+    //     moduleName: 'powerui',
+    //     out: './power-ui.d.ts',
+    //   }),
+    // ],
   },
   chainWebpack: (config) => {
     config.module

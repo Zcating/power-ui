@@ -33,6 +33,7 @@ import {
   vPopconfirm,
   vPopover,
   vTooltip,
+  Rate
 } from '../../lib';
 import { Layout } from './layout';
 
@@ -355,6 +356,9 @@ export default defineComponent({
               max={20}
               min={10}
             />
+          </p>
+          <p>
+            <Rate></Rate>
           </p>
           <div style='height:200px;overflow-y:auto'>
             <div ref={divRef} style='height:1000px'></div>
