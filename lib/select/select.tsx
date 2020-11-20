@@ -1,9 +1,8 @@
 import { Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
 import { List, isEqual, renderCondition } from '../cdk/utils';
-import { CdkSelection } from '../cdk/selection';
+import { CdkSelection, OptionItemData } from '../cdk/selection';
 import { Tooltip } from '../tooltip';
 import { Input } from '../input';
-import { SelectSerivce } from './select.service';
 
 function useClear(
   ctx: SetupContext,
@@ -88,13 +87,8 @@ export const Select = defineComponent({
     const selectedLabel = ref('');
     const tooltipVisible = ref(false);
 
-    const service = new SelectSerivce(toRef(props, 'multiple'));
-    service.watchValue((data, multiple) => {
-      if (!data) {
-        return;
-      }
-
-      if (multiple) {
+    const handleSelected = (data: OptionItemData) => {
+      if (props.multiple) {
         const array = Array.isArray(data) ? data.map(value => value.value) : [data.value];
         ctx.emit('update:modelValue', array);
       } else {
@@ -104,7 +98,7 @@ export const Select = defineComponent({
         }
         tooltipVisible.value = false;
       }
-    });
+    };
 
     const handleClearClick = () => {
       selectedLabel.value = '';
@@ -157,6 +151,8 @@ export const Select = defineComponent({
           v-slots={{
             content: () => (
               <CdkSelection
+                initValue={0}
+                onSelected={handleSelected}
                 multiple={multiple}
                 v-slots={{
                   default: () => (

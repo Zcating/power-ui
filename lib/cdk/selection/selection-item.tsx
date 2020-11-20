@@ -1,5 +1,4 @@
-import { defineComponent, reactive, renderSlot, watch } from 'vue';
-import { Method } from '../utils';
+import { defineComponent, Fragment, reactive, renderSlot, watch } from 'vue';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionItemState } from './types';
 
@@ -13,24 +12,42 @@ import { SelectionItemState } from './types';
 export const CdkSelectionItem = defineComponent({
   name: 'cdk-selection-item',
   props: {
-    onSelectedChange: Method<(value: boolean) => void>(),
+    label: {
+      type: String,
+      default: ''
+    },
+    value: {
+      type: [String, Number],
+      required: true,
+    }
   },
   setup(props, ctx) {
-    const state = reactive<SelectionItemState>({selected: false});
+    const state = reactive<SelectionItemState>({ selected: false });
 
     const dispatcher = CdkSelectionDispatcher.instance();
     if (dispatcher) {
-      dispatcher.subscribe(state);
+      dispatcher.subscribe(props.value, state);
     }
 
     watch(() => state.selected, (value) => {
-      props.onSelectedChange?.(value);
+      if (!dispatcher) {
+        return;
+      }
+
+      if (value) {
+        dispatcher.updateValue({
+          label: props.label,
+          value: props.value
+        });
+      } else {
+        dispatcher.removeValue(props.value);
+      }
     });
-    
+
     return () => (
-      <>
+      <Fragment key={props.value}>
         {renderSlot(ctx.slots, 'default', state)}
-      </>
+      </Fragment>
     );
   }
 });

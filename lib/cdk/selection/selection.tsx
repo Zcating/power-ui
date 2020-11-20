@@ -1,6 +1,7 @@
-import { renderCondition } from '../utils';
-import { defineComponent, renderSlot, watch } from 'vue';
+import { List, Method, renderCondition } from '../utils';
+import { defineComponent, renderSlot, toRef, watch } from 'vue';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
+import { ItemData, OptionItemData, SelectionValue } from './types';
 
 /**
  * @description
@@ -21,11 +22,24 @@ export const CdkSelection = defineComponent({
       default: false
     },
     onSelected: {
-      type: Function,
-    }
+      type: Method<(value: OptionItemData) => void>(),
+    },
+    initValue: {
+      type: [String, Number, List<string | number>()],
+      default: '',
+    },
+  },
+  emits: {
+    'selected': (value: OptionItemData) => true
   },
   setup(props, ctx) {
-    const dispatcher = new CdkSelectionDispatcher();
+    const dispatcher = new CdkSelectionDispatcher(toRef(props, 'multiple'), toRef(props, 'initValue'));
+    dispatcher.watchValue((data) => {
+      if (!data) {
+        return;
+      }
+      ctx.emit('selected', data);
+    });
 
     watch(() => props.selected, (value) => {
       if (props.multiple) {
@@ -33,9 +47,6 @@ export const CdkSelection = defineComponent({
       }
     }, { immediate: true });
 
-    watch(() => props.multiple, (value) => {
-      dispatcher.multiple = value;
-    }, { immediate: true });
 
     return () => (
       <>

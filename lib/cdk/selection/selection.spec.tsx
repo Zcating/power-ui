@@ -38,7 +38,7 @@ export default defineComponent({
         </button>
 
         <CdkSelection multiple={state.multiple} selected={state.selected}>
-          {array.map((value) => <CdkSelectionItem v-slots={{ default: widgetBuilder(value) }} />)}
+          {array.map((value) => <CdkSelectionItem value={value} v-slots={{ default: widgetBuilder(value) }} />)}
         </CdkSelection>
       </>
     );

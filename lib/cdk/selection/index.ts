@@ -1,3 +1,4 @@
-export { CdkSelection  } from './selection';
+export { CdkSelection } from './selection';
 export { CdkSelectionItem } from './selection-item';
-export { default as CdkSelectionTest} from './selection.spec';
+export { OptionItemData, ItemData } from './types';
+export { default as CdkSelectionTest } from './selection.spec';

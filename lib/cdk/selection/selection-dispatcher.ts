@@ -1,6 +1,6 @@
-import { computed, inject, onUnmounted, provide, ref, watch } from 'vue';
+import { computed, inject, onUnmounted, provide, Ref, ref, watch } from 'vue';
 import { getClassToken } from '../tools';
-import { SelectionItemState } from './types';
+import { ItemData, OptionItemData, SelectionItemState, SelectionValue } from './types';
 
 
 
@@ -19,28 +19,31 @@ export class CdkSelectionDispatcher {
     return inject(this.key);
   }
 
-  readonly states: SelectionItemState[] = [];
+  readonly states = new Map<number | string, SelectionItemState>();
 
   readonly count = computed(() => this._count.value);
-  
+
   private readonly _count = ref(0);
 
-  multiple = false;
+  private readonly dataRef: Ref<OptionItemData> = ref([]);
 
-  initValue = false;
+  get multiple() {
+    return this.multipleRef.value;
+  }
 
 
-  constructor() {
+  constructor(
+    private readonly multipleRef: Ref<boolean>,
+    private readonly modelValue: Ref<SelectionValue>
+  ) {
     provide(CdkSelectionDispatcher.key, this);
   }
 
-  subscribe(state: SelectionItemState) {
-    if (this.multiple) {
-      state.selected = this.initValue;
-    }
-    this.states.push(state);
-    this._count.value = this.states.length;
+  subscribe(key: number | string, state: SelectionItemState) {
+    state.selected = this.isEqualModelValue(key);
 
+    this.states.set(key, state);
+    this._count.value = this.states.keys.length;
     watch(() => state.selected, (value) => {
       if (this.multiple || !value) {
         return;
@@ -53,19 +56,49 @@ export class CdkSelectionDispatcher {
     });
 
     onUnmounted(() => {
-      const index = this.states.findIndex(fn => fn === state);
-      if (index === -1) {
-        return;
-      }
-      this.states.splice(index, 1);
-      this._count.value = this.states.length;
+      this.states.delete(key);
+      this._count.value = this.states.keys.length;
     });
   }
 
   notify(value: boolean) {
     if (this.multiple) {
-      this.initValue = value;
       this.states.forEach(state => state.selected = value);
     }
+  }
+
+  updateValue(data: ItemData) {
+    if (this.multiple) {
+      const dataValues = this.dataRef.value;
+      if (Array.isArray(dataValues)) {
+        this.dataRef.value = [...dataValues, data];
+      } else {
+        this.dataRef.value = [data];
+      }
+    } else {
+      this.dataRef.value = data;
+    }
+  }
+
+  removeValue(value: string | number) {
+    if (this.multiple) {
+      const dataValues = this.dataRef.value;
+      if (Array.isArray(dataValues)) {
+        this.dataRef.value = dataValues.filter((data) => data.value !== value);
+      } else {
+        this.dataRef.value = [];
+      }
+    }
+  }
+
+  watchValue(hook: (data: OptionItemData, multiple: boolean) => void) {
+    watch([this.dataRef, this.multipleRef], (values) => {
+      hook(values[0] as OptionItemData, values[1] as boolean);
+    }, { immediate: true });
+  }
+
+  private isEqualModelValue(key: number | string) {
+    const data = this.modelValue.value;
+    return Array.isArray(data) ? data.indexOf(key) !== -1 : data === key;
   }
 }
