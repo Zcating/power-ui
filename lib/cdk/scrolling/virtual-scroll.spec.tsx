@@ -1,8 +1,8 @@
 import { VueWrapper, mount } from '@vue/test-utils';
 import { defineComponent } from 'vue';
 import { globalInject } from '../global';
-import VirtualScroll from './virtualScroll';
-import VirtualContainer from './VirtualContainer';
+import VirtualScroll from './virtual-scroll';
+import VirtualContainer from './virtual-container';
 
 const VirtualScrollTester = defineComponent({
   name: 'virtual-scroll-tester',

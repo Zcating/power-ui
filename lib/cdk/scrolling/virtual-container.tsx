@@ -1,5 +1,5 @@
 import { defineComponent, inject, renderSlot } from 'vue';
-import VirtualScroll from './virtualScroll';
+import VirtualScroll from './virtual-scroll';
 import { reactToService } from '../tools';
 
 export default defineComponent({
@@ -13,11 +13,7 @@ export default defineComponent({
         ref={virtualScroll.containerRef}
       >
         {reactor.value}
-        <div
-          style={{
-            height: virtualScroll.totalHeight + 'px',
-          }}
-        ></div>
+        <div style={{ height: virtualScroll.totalHeight + 'px' }} />
         <div
           style={{
             position: 'absolute',

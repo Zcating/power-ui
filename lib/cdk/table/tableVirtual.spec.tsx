@@ -1,7 +1,7 @@
-import VirtualScroll from '../scrolling/virtualScroll';
+import VirtualScroll from '../scrolling/virtual-scroll';
 import { defineComponent } from 'vue';
 import { clone } from 'lodash-es';
-import VirtualContainer from '../scrolling/VirtualContainer';
+import VirtualContainer from '../scrolling/virtual-container';
 
 export default defineComponent({
   name: 'cdk-table-virtual-spect',
