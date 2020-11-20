@@ -1,10 +1,12 @@
 import { vmodelRef } from '../cdk/hook';
-import { isObject, List, Model, renderCondition } from '../cdk/utils';
-import { computed, defineComponent, Prop, reactive, Ref, ref, renderList, toRef, VNode } from 'vue';
+import { isObject, List, renderCondition } from '../cdk/utils';
+import { computed, defineComponent, ExtractPropTypes, reactive, Ref, renderList, toRef, VNode } from 'vue';
 
 export type RateSection = {
   [k in number]: { value: string, excluded: boolean } | string
 }
+
+type Test = ExtractPropTypes<InstanceType<typeof Rate>['$props']>;
 
 
 export const Rate = defineComponent({
@@ -28,7 +30,7 @@ export const Rate = defineComponent({
     },
     colors: {
       type: [Array, Object],
-      default: ['#F7BA2A', '#F7BA2A', '#F7BA2A']
+      default: () => ['#99A9BF', '#F7BA2A', '#FF9900']
     },
     voidColor: {
       type: String,
@@ -39,7 +41,7 @@ export const Rate = defineComponent({
       default: '#EFF2F7'
     },
     iconClasses: {
-      type: [Array, Object],
+      type: [List<string>(), Object],
       default: () => ['el-icon-star-on', 'el-icon-star-on', 'el-icon-star-on']
     },
     voidIconClass: {
@@ -60,7 +62,7 @@ export const Rate = defineComponent({
     },
     showText: {
       type: Boolean,
-      default: false
+      default: true
     },
     showScore: {
       type: Boolean,
@@ -84,64 +86,62 @@ export const Rate = defineComponent({
     const currentValue = vmodelRef(toRef(props, 'modelValue'), value => {
       ctx.emit('update:modelValue', value);
     });
-    const rateDisabled = toRef(props, 'disabled');
-    const texts = ref([]);
-    const text = computed(() => {
-      let result = '';
-      const current = currentValue.value;
-      if (props.showScore) {
-        const value = rateDisabled.value ? props.modelValue : current;
-        result = props.scoreTemplate.replace(/\{\s*value\s*\}/, `${value}`);
-      } else if (props.showText) {
-        result = texts.value[Math.ceil(current) - 1];
-      }
-      return result;
-    });
-
-    const handleKey = () => {
-
-    };
 
     const state = reactive({
-      hoverIndex: 0,
-      currentValue: 0,
+      hoverIndex: -1,
+      movingValue: props.modelValue,
       pointerAtLeftHalf: false,
     });
 
+    const text = computed(() => {
+      if (props.showScore) {
+        return props.scoreTemplate.replace(/\{\s*value\s*\}/, `${state.movingValue}`);
+      } else if (props.showText) {
+        const current = state.movingValue;
+        return props.texts[Math.ceil(current) - 1];
+      }
+      return '';
+    });
+
     const setCurrentValue = (value: number, event: MouseEvent) => {
-      if (rateDisabled.value) {
+      if (props.disabled) {
         return;
       }
       if (props.allowHalf) {
         const target = (event.target as Element);
         let width = target.clientWidth;
         if (target.classList.contains('el-rate__item')) {
-          width = target.querySelector('.el-rate__icon')!.clientWidth;
+          width = target.querySelector('.el-rate__icon')?.clientWidth ?? 0;
         }
         if (target.classList.contains('el-rate__decimal')) {
-          width = (target.parentNode! as Element).clientWidth;
+          width = (target.parentNode as Element)?.clientWidth ?? 0;
         }
 
         state.pointerAtLeftHalf = event.offsetX * 2 <= width;
-        state.currentValue = state.pointerAtLeftHalf ? value - 0.5 : value;
+        state.movingValue = state.pointerAtLeftHalf ? value - 0.5 : value;
       } else {
-        state.currentValue = value;
+        state.movingValue = value;
       }
       state.hoverIndex = value;
     };
 
     const resetCurrentValue = () => {
+      state.hoverIndex = -1;
+      state.movingValue = currentValue.value;
     };
 
-    const selectValue = (item: number) => {
-      if (rateDisabled.value) {
+    const selectValue = (value: number) => {
+      if (props.disabled) {
         return;
       }
-      if (props.allowHalf) {
-
+      if (props.allowHalf && state.pointerAtLeftHalf) {
+        currentValue.value = state.movingValue;
+        ctx.emit('change', state.movingValue);
+      } else {
+        currentValue.value = value;
+        ctx.emit('change', value);
       }
     };
-
 
     const computeSection = (valueRef: Ref<string[] | RateSection>) => {
       return computed(() => {
@@ -151,14 +151,16 @@ export const Rate = defineComponent({
             [props.lowThreshold!]: target[0],
             [props.highThreshold!]: { value: target[1], excluded: true },
             [props.max!]: target[2]
-          } : target as RateSection;
+          } : target;
       });
     };
+
     const colorSection = computeSection(toRef(props, 'colors'));
     const iconsSection = computeSection(toRef(props, 'iconClasses'));
 
     const getValueFromSection = (value: number, section: RateSection) => {
-      const matchedKeys = (Object.keys(section) as unknown as number[])
+      const matchedKeys = Object.keys(section)
+        .map(Number)
         .filter(key => {
           const val = section[key];
           const excluded = isObject(val) ? val.excluded : false;
@@ -169,43 +171,31 @@ export const Rate = defineComponent({
       return isObject(matchedValue) ? matchedValue.value : (matchedValue || '');
     };
 
-    const activeColor = computed(() => {
-      return getValueFromSection(state.currentValue, colorSection.value);
-    });
-
-    const activeClass = computed(() => {
-      return getValueFromSection(state.currentValue, iconsSection.value);
-
-    });
-
-    const decimalIconClass = computed(() => {
-      return getValueFromSection(props.modelValue, iconsSection.value);
-    });
-
-    const voidClass = computed(() => {
-      return props.disabled ? props.disabledVoidIconClass : props.voidIconClass;
-    });
+    const activeColor = computed(() => getValueFromSection(state.movingValue, colorSection.value));
+    const activeClass = computed(() => getValueFromSection(state.movingValue, iconsSection.value));
+    const decimalIconClass = computed(() => getValueFromSection(currentValue.value, iconsSection.value));
+    const voidClass = computed(() => props.disabled ? props.disabledVoidIconClass : props.voidIconClass);
 
     const classes = computed(() => {
       const result = [];
-      let i = 0;
-      let threshold = state.currentValue;
+      let threshold = state.movingValue;
       if (props.allowHalf && threshold !== Math.floor(threshold)) {
         threshold--;
       }
-      for (; i < threshold; i++) {
+      for (let i = 0; i < threshold; i++) {
         result.push(activeClass.value);
       }
-      for (; i < props.max; i++) {
+      for (let i = 0; i < props.max - threshold; i++) {
         result.push(voidClass.value);
       }
       return result;
     });
 
     const valueDecimal = computed(() => {
-      const { modelValue } = props;
-      return modelValue * 100 - Math.floor(modelValue) * 100;
+      const current = state.movingValue;
+      return current * 100 - Math.floor(current) * 100;
     });
+
     const decimalStyle = computed(() => {
       return {
         color: activeColor.value,
@@ -213,21 +203,28 @@ export const Rate = defineComponent({
       };
     });
 
+
     const showDecimalIcon = (item: number) => {
-      const { modelValue, disabled, allowHalf } = props;
-      const showWhenDisabled = disabled && valueDecimal.value > 0 && item - 1 < modelValue && item > modelValue;
+      const { allowHalf } = props;
+      const disabled = props.disabled;
+      const current = currentValue.value;
+      const showWhenDisabled = disabled && valueDecimal.value > 0 && item - 1 < current && item > current;
       const showWhenAllowHalf = allowHalf &&
         state.pointerAtLeftHalf &&
-        item - 0.5 <= state.currentValue &&
-        item > state.currentValue;
+        item - 0.5 <= state.movingValue &&
+        item > state.movingValue;
       return showWhenDisabled || showWhenAllowHalf;
     };
 
     const getIconStyle = (item: number) => {
-      const voidColor = rateDisabled.value ? props.disabledVoidColor : props.voidColor;
+      const voidColor = props.disabled ? props.disabledVoidColor : props.voidColor;
       return {
-        color: item <= currentValue.value ? activeColor.value : voidColor
+        color: item <= state.movingValue ? activeColor.value : voidColor
       };
+    };
+
+    const handleKey = () => {
+      // TODO: handle Keyboard Event
     };
 
     return () => (
@@ -241,13 +238,13 @@ export const Rate = defineComponent({
         aria-valuemax={props.max}
         tabindex={0}
       >
-        {...renderList(props.max, (item, key) => (
-          <span
+        {...renderList(props.max, (item, key) => {
+          return <span
             class="el-rate__item"
             onMousemove={($event) => setCurrentValue(item, $event)}
             onMouseleave={resetCurrentValue}
             onClick={() => selectValue(item)}
-            style={{ cursor: rateDisabled.value ? 'auto' : 'pointer' }}
+            style={{ cursor: props.disabled ? 'auto' : 'pointer' }}
             key={key}
           >
             <i
@@ -261,9 +258,12 @@ export const Rate = defineComponent({
                 />
               )}
             </i>
-          </span> as VNode
-        ))}
-        {renderCondition(props.showText || props.showScore, <span class="el-rate__text" style={{ color: props.textColor }}>{text}</span>)}
+          </span> as VNode;
+        })}
+        {renderCondition(
+          props.showText || props.showScore,
+          <span class="el-rate__text" style={{ color: props.textColor }}>{text.value}</span>
+        )}
       </div>
     );
   },

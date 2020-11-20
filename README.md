@@ -37,6 +37,7 @@ An Vue3 UI Component Libary using design of Element-UI, inspired from Angular CD
 - [x] popover
 - [ ] progress
 - [x] radio
+- [x] rate
 - [ ] scrollbar
 - [ ] select
 - [x] slider
