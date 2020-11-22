@@ -1,4 +1,4 @@
-import { defineComponent, Fragment, reactive, renderSlot, watch } from 'vue';
+import { computed, defineComponent, Fragment, reactive, renderSlot, watch } from 'vue';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionItemState } from './types';
 
@@ -29,18 +29,21 @@ export const CdkSelectionItem = defineComponent({
       dispatcher.subscribe(props.value, state);
     }
 
+    const data = computed(() => {
+      return {
+        label: props.label,
+        value: props.value,
+      };
+    });
     watch(() => state.selected, (value) => {
       if (!dispatcher) {
         return;
       }
 
       if (value) {
-        dispatcher.updateValue({
-          label: props.label,
-          value: props.value
-        });
+        dispatcher.select(data.value);
       } else {
-        dispatcher.removeValue(props.value);
+        dispatcher.deselect(props.value);
       }
     });
 

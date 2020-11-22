@@ -1,6 +1,7 @@
 import { CdkSelection, CdkSelectionItem } from '../cdk/selection';
 import { List } from '../cdk/utils';
 import { defineComponent } from 'vue';
+import { Checkbox } from './checkbox';
 
 export const CheckboxGroup = defineComponent({
   props: {
@@ -26,6 +27,11 @@ export const CheckboxGroup = defineComponent({
           <CdkSelectionItem
             value={data.value}
             label={data.label}
+            v-slots={{
+              default: (state: { selected: boolean }) => (
+                <Checkbox v-model={state.selected}>{data.label}</Checkbox>
+              )
+            }}
           />
         ))}
       </CdkSelection>

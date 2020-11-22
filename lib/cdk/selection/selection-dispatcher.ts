@@ -67,20 +67,20 @@ export class CdkSelectionDispatcher {
     }
   }
 
-  updateValue(data: ItemData) {
+  select(...data: ItemData[]) {
     if (this.multiple) {
       const dataValues = this.dataRef.value;
       if (Array.isArray(dataValues)) {
-        this.dataRef.value = [...dataValues, data];
+        this.dataRef.value = [...dataValues, ...data];
       } else {
-        this.dataRef.value = [data];
+        this.dataRef.value = [...data];
       }
     } else {
       this.dataRef.value = data;
     }
   }
 
-  removeValue(value: string | number) {
+  deselect(value: string | number) {
     if (this.multiple) {
       const dataValues = this.dataRef.value;
       if (Array.isArray(dataValues)) {
