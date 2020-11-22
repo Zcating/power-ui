@@ -75,7 +75,6 @@ export const Checkbox = defineComponent({
             onBlur={handleBlur}
           />,
           <input
-            v-else
             class="el-checkbox-button__original"
             type="checkbox"
             name={props.name}
