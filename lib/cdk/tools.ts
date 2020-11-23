@@ -7,6 +7,7 @@ import {
   onMounted,
   ref,
   watch,
+  unref,
 } from 'vue';
 
 /**
@@ -40,7 +41,7 @@ export function getFuncToken<T>(
  * @returns {InjectionKey<T>}
  */
 export function getClassToken<T>(
-  constructor: { new (...args: any[]): T },
+  constructor: { new(...args: any[]): T },
   name?: string
 ): InjectionKey<T> {
   if (name) {
@@ -114,6 +115,7 @@ export function runWhileScroll(func: () => void) {
   if (!(typeof document === 'object' && !!document)) return;
   onMounted(() => {
     window.addEventListener('scroll', func, true);
+    window.addEventListener('mousewheel', func);
   });
   onBeforeUnmount(() => {
     window.removeEventListener('scroll', func, true);
@@ -138,9 +140,11 @@ export function getRefRect(elRef: Ref<Element | null | undefined>) {
   };
   const rect = ref(defaultValue as DOMRect);
   const getRect = () => {
-    if (!isRef(elRef) || !(elRef.value instanceof Element)) return;
-    rect.value =
-      elRef?.value?.getBoundingClientRect() || (defaultValue as DOMRect);
+    const el = unref(elRef);
+    if (!(el instanceof Element)) {
+      return;
+    }
+    rect.value = el.getBoundingClientRect();
   };
   runWhileResize(getRect);
   runWhileScroll(getRect);

@@ -16,6 +16,8 @@ export abstract class PositionStrategy {
 
   apply?(overlayElement: Element): void;
 
+  update?(overlayElement: Element): void;
+
   disapply?(): void;
 
   abstract dispose(): void;

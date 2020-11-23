@@ -35,7 +35,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
   private isVisible = false;
 
-  private readonly positionedStyle = ref<CSSProperties>({ position: 'static' });
+  private readonly positionedStyle = ref<CSSProperties>({ position: 'absolute' });
 
   private readonly window: Window;
 
@@ -65,19 +65,44 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
   apply(panel: HTMLElement): void {
     this.isVisible = true;
-    this._calculatePosition(panel);
+    this.subscribe = () => {
+      // TODO: add optimize for throttle
+      const point = this._calculatePosition(panel);
+      // set the current position style's value.
+      // the current position style is a 'ref'. 
+      const style = this.positionedStyle.value;
+      style.left = coerceCssPixelValue(point.x);
+      style.top = coerceCssPixelValue(point.y);
+    };
+    this.subscribe();
+
+    // at last, we need to caculate the position
+    // when scrolling.
+    const { window } = this;
+    window.addEventListener('scroll', this.subscribe, true);
+    window.addEventListener('resize', this.subscribe);
+    window.addEventListener('orientationchange', this.subscribe);
+  }
+
+  update(panel: HTMLElement): void {
+    this.subscribe?.();
   }
 
   disapply(): void {
-    this.isVisible = false;
-    if (this.subscribe) {
-      this.window.removeEventListener('scroll', this.subscribe);
-    }
+    this.unsubscribe();
   }
 
   dispose(): void {
+    this.unsubscribe();
+  }
+
+  unsubscribe() {
     if (this.subscribe) {
-      this.window.removeEventListener('scroll', this.subscribe);
+      const { window } = this;
+      window.removeEventListener('scroll', this.subscribe);
+      window.removeEventListener('resize', this.subscribe);
+      window.removeEventListener('orientationchange', this.subscribe);
+      this.subscribe = undefined;
     }
   }
 
@@ -125,7 +150,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     return this;
   }
 
-  private _calculatePosition(panel: HTMLElement): void {
+  private _calculatePosition(panel: HTMLElement): Point {
     // get overlay rect
     const originRect = this._getOriginRect();
 
@@ -134,17 +159,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
     const rect = panel.getBoundingClientRect();
     // calculate the overlay anchor point
-    const point = this._getOverlayPoint(originPoint, this._positionPair, rect);
-    // set the current position style's value.
-    // the current position style is a 'ref'.
-    const style = this.positionedStyle.value;
-    style.position = 'absolute';
-    style.left = coerceCssPixelValue(point.x);
-    style.top = coerceCssPixelValue(point.y);
-
-    // at last, we need to caculate the position
-    // when scrolling.
-    this._caculateScroll(this.positionedStyle, point);
+    return this._getOverlayPoint(originPoint, this._positionPair, rect);
   }
 
   private _getOverlayPoint(originPoint: Point, position: ConnectionPositionPair, rect: DOMRect): Point {
@@ -218,22 +233,5 @@ export class FlexiblePositionStrategy extends PositionStrategy {
       height,
       width
     };
-  }
-
-  private _caculateScroll(style: Ref<CSSProperties>, originPoint: Point) {
-    const { window } = this;
-    const offsetX = window.pageXOffset;
-    const offsetY = window.pageYOffset;
-    this.subscribe = () => {
-      if (this.isVisible) {
-        const nowTop = window.pageYOffset;
-        const nowLeft = window.pageXOffset;
-        style.value.left = coerceCssPixelValue(originPoint.x - nowLeft + offsetX);
-        style.value.top = coerceCssPixelValue(originPoint.y - nowTop + offsetY);
-        // trigger change
-        style.value = style.value;
-      }
-    };
-    window.addEventListener('scroll', this.subscribe);
   }
 }

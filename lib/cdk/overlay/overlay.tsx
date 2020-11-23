@@ -96,26 +96,18 @@ export const Overlay = defineComponent({
       if (!overlay) {
         return;
       }
-
-      nextTick(() => {
-        strategy.apply?.(overlay);
-      });
-
       watch(visible, (value) => {
-        if (value) {
+        if (!value) {
+          strategy.disapply?.();
+        } else {
           nextTick(() => {
             strategy.apply?.(overlay);
           });
-        } else {
-          strategy.disapply?.();
         }
-      }, { immediate: true });
+      });
 
       onUpdated(() => {
-        // TODO: maybe add update API
-        nextTick(() => {
-          strategy.apply?.(overlay);
-        });
+        strategy.update?.(overlay);
       });
 
       onUnmounted(() => {
@@ -135,16 +127,6 @@ export const Overlay = defineComponent({
         body.style.overflow = originOverflow;
       });
     }
-
-
-
-    onMounted(() => {
-      const instance = getCurrentInstance();
-      if (!instance) {
-        return;
-      }
-      // instance.appContext
-    });
 
     return () => (
       <Teleport to="#cdk-overlay-anchor">
