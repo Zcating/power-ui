@@ -1,5 +1,5 @@
 import { CSSProperties, ComponentPublicInstance, Ref, inject, isRef, ref } from 'vue';
-import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './position-pair';
+import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './types';
 import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
 import { getElement } from '../../utils';
@@ -84,7 +84,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     window.addEventListener('orientationchange', this.subscribe);
   }
 
-  update(panel: HTMLElement): void {
+  update(): void {
     this.subscribe?.();
   }
 

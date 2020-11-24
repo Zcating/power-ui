@@ -97,12 +97,12 @@ export const Overlay = defineComponent({
         return;
       }
       watch(visible, (value) => {
-        if (!value) {
-          strategy.disapply?.();
-        } else {
+        if (value) {
           nextTick(() => {
             strategy.apply?.(overlay);
           });
+        } else {
+          strategy.disapply?.();
         }
       });
 
