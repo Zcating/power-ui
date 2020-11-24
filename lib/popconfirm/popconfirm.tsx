@@ -2,7 +2,7 @@ import { Popover } from '../popover';
 import { defineComponent, toRef } from 'vue';
 import { Button, ElButtonType } from '../button';
 import '../theme-chalk/src/popconfirm.scss';
-import { Placement } from '@/tooltip';
+import { Placement } from '../tooltip';
 import { vmodelRef } from '../cdk/hook';
 
 export const Popconfirm = defineComponent({

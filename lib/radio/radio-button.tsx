@@ -1,17 +1,18 @@
-import { defineComponent, renderSlot } from 'vue';
-
-import { Enum, Method, renderCondition } from '../cdk/utils';
+import { computed, defineComponent, ref, toRef, watch } from 'vue';
+import { vmodelRef, watchRef } from '../cdk/hook';
+import { Enum, Method } from '../cdk/utils';
+import { CdkSelectionItem } from '../cdk/selection';
+import { useRadioGroupData } from './radio-group';
 import { ElSize } from '../types';
-import { useRadio } from './use-radio';
 
 export const RadioButton = defineComponent({
   name: 'el-radio-button',
   props: {
     modelValue: {
-      type: [String, Number, Boolean],
+      type: Boolean,
       default: ''
     },
-    label: {
+    value: {
       type: [String, Number, Boolean],
       default: ''
     },
@@ -25,66 +26,96 @@ export const RadioButton = defineComponent({
   },
 
   setup(props, ctx) {
-    return useRadio(props, ctx);
-  },
+    const checkedRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
+      ctx.emit('update:modelValue', value);
+    });
+    const disabledRef = watchRef(toRef(props, 'disabled'));
+    const sizeRef = watchRef(toRef(props, 'size'));
+    const fillRef = ref('#ffffff');
+    const textColorRef = ref('#409EFF');
+    const groupData = useRadioGroupData();
+    if (groupData) {
+      watch(groupData.disabled, (value) => {
+        disabledRef.value = value ?? false;
+      });
+      watch(groupData.size, (value) => {
+        sizeRef.value = value ?? '';
+      });
+      watch(groupData.fill, (value) => fillRef.value = value ?? fillRef.value);
+      watch(groupData.textColor, (value) => textColorRef.value = value ?? textColorRef.value);
+    }
 
-  render() {
-    const {
-      radioSize,
-      isDisabled,
-      label,
-      tabIndex,
-      focus,
-      checked,
-      activeStyle,
-      handleLabelKeydown
-    } = this;
+    const tabIndex = computed(() => {
+      return (disabledRef.value || (!!groupData && checkedRef.value)) ? -1 : 0;
+    });
 
-    const updateFocus = (val: boolean) => {
-      this.focus = val;
+    const focusRef = ref(false);
+    const updateFocus = (value: boolean) => {
+      focusRef.value = value;
     };
 
-    const handleChange = (e: Event) => { };
+    const activeStyle = computed(() => {
+      if (checkedRef.value) {
+        const fill = fillRef.value;
+        const textColor = textColorRef.value;
+        return {
+          backgroundColor: fill || undefined,
+          borderColor: fill || undefined,
+          boxShadow: fill ? `-1px 0 0 0 ${fill}` : undefined,
+          color: textColor || undefined
+        };
+      }
+    });
 
-    return <label
-      class={[
-        'el-radio-button',
-        radioSize ? 'el-radio-button--' + radioSize : '',
-        { 'is-disabled': isDisabled },
-        { 'is-focus': focus },
-        { 'is-checked': checked }
-      ]}
-      role="radio"
-      aria-checked={checked}
-      aria-disabled={isDisabled}
-      tabindex={tabIndex}
-      onKeydown={handleLabelKeydown}
-    >
-      <input
-        v-model={this.elValue}
-        ref="radio"
-        class="el-radio-button__orig-radio"
-        type="radio"
-        aria-hidden="true"
-        value={label as any}
-        onFocus={() => updateFocus(true)}
-        onBlur={() => updateFocus(false)}
-        onChange={handleChange}
-        name={name}
-        disabled={isDisabled}
-        tabindex={-1}
-        checked={checked}
-      />
-      <span
-        class="el-radio-button__inner"
-        onKeydown={(e) => e.stopPropagation()}
-        style={activeStyle}
-      >
-        {renderCondition(this.$slots.default,
-          renderSlot(this.$slots, 'default'),
-          label
-        )}
-      </span>
-    </label>;
+    return () => {
+      const { value, } = props;
+      const size = sizeRef.value;
+      const disabled = disabledRef.value;
+      const checked = checkedRef.value;
+      const focus = focusRef.value;
+      return (
+        <CdkSelectionItem
+          value={String(value)}
+          label={String(value)}
+          v-model={checkedRef.value}
+        >
+          <label
+            class={[
+              'el-radio-button',
+              size ? 'el-radio-button--' + size : '',
+              { 'is-disabled': disabled },
+              { 'is-focus': focus },
+              { 'is-checked': checked }
+            ]}
+            role="radio"
+            aria-checked={checked}
+            aria-disabled={disabled}
+            tabindex={tabIndex.value}
+          // onKeydown={handleLabelKeydown}
+          >
+            <input
+              ref="radio"
+              class="el-radio-button__orig-radio"
+              type="radio"
+              aria-hidden="true"
+              onFocus={() => updateFocus(true)}
+              onBlur={() => updateFocus(false)}
+              onChange={(e: any) => checkedRef.value = e.target?.checked ?? false}
+              name={name}
+              disabled={disabled}
+              tabindex={-1}
+              checked={checked}
+            />
+            <span
+              class="el-radio-button__inner"
+              onKeydown={(e) => e.stopPropagation()}
+              style={activeStyle.value}
+            >
+              {ctx.slots.default ? ctx.slots.default() : value}
+            </span>
+          </label>
+        </CdkSelectionItem>
+      );
+    };
   }
 });

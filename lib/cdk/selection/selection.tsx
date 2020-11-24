@@ -1,7 +1,7 @@
 import { List, Method, renderCondition } from '../utils';
-import { defineComponent, renderSlot, toRef, watch } from 'vue';
+import { defineComponent, toRef, watch } from 'vue';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
-import { ItemData, OptionItemData, SelectionValue } from './types';
+import { OptionItemData } from './types';
 
 /**
  * @description
@@ -50,10 +50,8 @@ export const CdkSelection = defineComponent({
 
     return () => (
       <>
-        {renderSlot(ctx.slots, 'default')}
-        {renderCondition(dispatcher.count.value === 0,
-          renderSlot(ctx.slots, 'empty')
-        )}
+        {ctx.slots.default?.()}
+        {renderCondition(dispatcher.count.value === 0, ctx.slots.empty?.())}
       </>
     );
   }

@@ -24,6 +24,7 @@ export { Card } from './card';
 export { Select, SelectOption, SelectOptionGroup } from './select';
 export { Slider } from './slider';
 export { Rate } from './rate';
+export { Checkbox, CheckboxGroup, CheckboxButton } from './checkbox';
 
 export {
   globalInject,

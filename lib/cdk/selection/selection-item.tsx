@@ -1,4 +1,4 @@
-import { computed, defineComponent, Fragment, reactive, renderSlot, watch } from 'vue';
+import { computed, defineComponent, Fragment, h, reactive, renderSlot, watch } from 'vue';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionItemState } from './types';
 
@@ -19,6 +19,10 @@ export const CdkSelectionItem = defineComponent({
     value: {
       type: [String, Number],
       required: true,
+    },
+    modelValue: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props, ctx) {
@@ -27,29 +31,30 @@ export const CdkSelectionItem = defineComponent({
     const dispatcher = CdkSelectionDispatcher.instance();
     if (dispatcher) {
       dispatcher.subscribe(props.value, state);
+      const data = computed(() => {
+        return {
+          label: props.label,
+          value: props.value,
+        };
+      });
+      watch(() => state.selected, (value) => {
+        if (value) {
+          dispatcher.select(data.value);
+        } else {
+          dispatcher.deselect(props.value);
+        }
+        ctx.emit('update:modelValue', value);
+      });
+
+      watch(() => props.modelValue, (value) => {
+        state.selected = value;
+      });
     }
 
-    const data = computed(() => {
-      return {
-        label: props.label,
-        value: props.value,
-      };
-    });
-    watch(() => state.selected, (value) => {
-      if (!dispatcher) {
-        return;
-      }
-
-      if (value) {
-        dispatcher.select(data.value);
-      } else {
-        dispatcher.deselect(props.value);
-      }
-    });
 
     return () => (
       <Fragment key={props.value}>
-        {renderSlot(ctx.slots, 'default', state)}
+        {renderSlot(ctx.slots, 'default')}
       </Fragment>
     );
   }

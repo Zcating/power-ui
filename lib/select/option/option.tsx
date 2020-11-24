@@ -28,28 +28,26 @@ export const Option = defineComponent({
     const elDisabled = watchRef(toRef(props, 'disabled'));
     const hover = ref(false);
     const limitReached = ref(false);
-
+    const selectedRef = ref(false);
     return () => (
       <CdkSelectionItem
         label={props.label}
         value={props.value}
-        v-slots={{
-          default: (state: { selected: boolean }) => (
-            <li
-              onMouseenter={() => hover.value = true}
-              onMouseleave={() => hover.value = false}
-              onClick={() => state.selected = true}
-              class={['el-select-dropdown__item', {
-                'selected': state.selected,
-                'is-disabled': elDisabled.value || limitReached.value,
-                'hover': hover.value
-              }]}
-            >
-              {ctx.slots.default ? ctx.slots.default?.() : props.label}
-            </li>
-          )
-        }}
-      />
+        v-model={selectedRef.value}
+      >
+        <li
+          onMouseenter={() => hover.value = true}
+          onMouseleave={() => hover.value = false}
+          onClick={() => selectedRef.value = true}
+          class={['el-select-dropdown__item', {
+            'selected': selectedRef.value,
+            'is-disabled': elDisabled.value || limitReached.value,
+            'hover': hover.value
+          }]}
+        >
+          {ctx.slots.default ? ctx.slots.default?.() : props.label}
+        </li>
+      </CdkSelectionItem>
     );
   }
 });

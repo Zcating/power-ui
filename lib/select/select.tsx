@@ -88,6 +88,9 @@ export const Select = defineComponent({
     const tooltipVisible = ref(false);
 
     const handleSelected = (data: OptionItemData) => {
+      if (!data) {
+        return;
+      }
       if (props.multiple) {
         const array = Array.isArray(data) ? data.map(value => value.value) : [data.value];
         ctx.emit('update:modelValue', array);
@@ -165,15 +168,9 @@ export const Select = defineComponent({
                       </ul>
                     </div>
                   ),
-                  placeholder: () => renderCondition(
+                  empty: () => renderCondition(
                     emptyText && (!allowCreate || loading),
-                    renderCondition(
-                      ctx.slots.empty,
-                      ctx.slots.empty?.(),
-                      <p class="el-select-dropdown__empty">
-                        {emptyText}
-                      </p>
-                    )
+                    ctx.slots.empty ? ctx.slots.empty() : <p class="el-select-dropdown__empty">{emptyText}</p>,
                   )
                 }}
               />

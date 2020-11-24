@@ -1,7 +1,8 @@
-import { vmodelRef } from '@/cdk/hook';
-import { Enum, renderCondition } from '@/cdk/utils';
-import { ElSize } from '@/types';
+import { vmodelRef } from '../cdk/hook';
+import { Enum, renderCondition } from '../cdk/utils';
+import { ElSize } from '../types';
 import { computed, defineComponent, ref, toRef } from 'vue';
+import { CdkSelectionItem } from '../cdk/selection';
 
 export const Checkbox = defineComponent({
   props: {
@@ -17,13 +18,14 @@ export const Checkbox = defineComponent({
       type: Boolean,
       default: false,
     },
-    name: String,
-    label: {
+    value: {
       type: String,
       default: ''
     },
+    name: String,
     trueLabel: [String, Number],
-    falseLabel: [String, Number]
+    falseLabel: [String, Number],
+    indeterminate: Boolean,
   },
   setup(props, ctx) {
     const modelRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
@@ -36,8 +38,8 @@ export const Checkbox = defineComponent({
 
 
     const focus = ref(false);
-    const handleChange = () => {
-
+    const handleChange = (event: any) => {
+      modelRef.value = event?.target?.checked ?? false;
     };
 
     const handleBlur = () => {
@@ -49,54 +51,74 @@ export const Checkbox = defineComponent({
     };
 
     return () => (
-      <label
-        class={['el-checkbox-button',
-          props.size ? 'el-checkbox-button--' + props.size : '',
-          { 'is-disabled': props.disabled },
-          { 'is-checked': props.modelValue },
-          { 'is-focus': focus },
-        ]}
-        role="checkbox"
-        aria-checked={props.modelValue}
-        aria-disabled={props.disabled}
+      <CdkSelectionItem
+        value={props.value}
+        v-model={modelRef.value}
       >
-        {renderCondition(
-          props.trueLabel || props.falseLabel,
-          <input
-            class="el-checkbox-button__original"
-            type="checkbox"
-            name={props.name}
-            disabled={props.disabled}
-            true-value={props.trueLabel}
-            false-value={props.falseLabel}
-            v-model={modelRef.value}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />,
-          <input
-            class="el-checkbox-button__original"
-            type="checkbox"
-            name={props.name}
-            disabled={props.disabled}
-            value={props.label}
-            v-model={modelRef.value}
-            onChange={handleChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-          />
-        )}
-        {renderCondition(
-          ctx.slots.default || props.label,
+        <label
+          class={['el-checkbox',
+            props.size ? 'el-checkbox--' + props.size : '',
+            { 'is-disabled': props.disabled },
+            { 'is-checked': modelRef.value },
+            { 'is-focus': focus.value },
+          ]}
+          role="checkbox"
+          aria-checked={modelRef.value}
+          aria-disabled={props.disabled}
+        >
           <span
-            class="el-checkbox-button__inner"
-            style={modelRef.value ? activeStyle.value : undefined}
+            class={[
+              'el-checkbox__input',
+              {
+                'is-disabled': props.disabled,
+                'is-checked': modelRef.value,
+                'is-indeterminate': props.indeterminate,
+                'is-focus': focus.value
+              }
+            ]}
+            tabindex={props.indeterminate ? 0 : undefined}
+            role={props.indeterminate ? 'checkbox' : undefined}
+            aria-checked={props.indeterminate ? 'mixed' : undefined}
           >
-            {ctx.slots.default?.()}
-            {props.label}
+            <span class="el-checkbox__inner" />
+            {renderCondition(
+              props.trueLabel || props.falseLabel,
+              <input
+                class="el-checkbox__original"
+                type="checkbox"
+                name={props.name}
+                disabled={props.disabled}
+                true-value={props.trueLabel}
+                false-value={props.falseLabel}
+                v-model={modelRef.value}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />,
+              <input
+                class="el-checkbox__original"
+                type="checkbox"
+                name={props.name}
+                disabled={props.disabled}
+                value={props.value}
+                v-model={modelRef.value}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+              />
+            )}
           </span>
-        )}
-      </label>
+          {renderCondition(
+            ctx.slots.default || props.value,
+            <span
+              class="el-checkbox__label"
+              style={modelRef.value ? activeStyle.value : undefined}
+            >
+              {ctx.slots.default ? ctx.slots.default() : props.value}
+            </span>
+          )}
+        </label>
+      </CdkSelectionItem>
     );
   }
 });

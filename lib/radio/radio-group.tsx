@@ -1,40 +1,50 @@
 import { DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, UP_ARROW } from '../cdk/keycodes';
-import { defineComponent, ref, renderSlot, watch } from 'vue';
-import { RadioService } from './radio.service';
+import { cloneVNode, defineComponent, inject, InjectionKey, provide, Ref, ref, toRef, watch } from 'vue';
 import { Enum } from '../cdk/utils';
-import { fastWatch } from '../cdk/hook';
 import { ElSize } from '../types';
+import { CdkSelection, CdkSelectionItem, ItemData, OptionItemData } from '../cdk/selection';
+
+export interface RadioGroupData {
+  textColor: Ref<string | undefined>;
+  fill: Ref<string | undefined>;
+  disabled: Ref<boolean | undefined>;
+  size: Ref<ElSize | undefined>;
+}
+
+const groupDataKey = Symbol('po-radio-group-data') as InjectionKey<RadioGroupData>;
+
+export const useRadioGroupData = () => {
+  return inject(groupDataKey, undefined) as RadioGroupData | undefined;
+};
 
 export const RadioGroup = defineComponent({
+  name: 'po-radio',
+
   props: {
     modelValue: {
-      type: [String, Number, Boolean],
+      type: [String, Number],
       default: ''
     },
-    size: Enum<ElSize>(),
-    fill: String,
-    textColor: String,
-    disabled: Boolean
+    size: {
+      type: Enum<ElSize>(),
+      default: ''
+    },
+    fill: {
+      type: String,
+      default: '#409EFF'
+    },
+    textColor: {
+      type: String,
+      default: '#ffffff'
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    dataSource: [],
   },
 
   setup(props, ctx) {
-
-    const service = new RadioService();
-    service.watchEventChange((value) => {
-      ctx.emit('change', value);
-    });
-    fastWatch(() => props.disabled, value => service.setDisabled(!!value));
-    fastWatch(() => props.size, value => service.setSize(value ?? ''));
-    fastWatch(() => props.modelValue, value => service.select(value));
-
-    service.watchSelect((value) => {
-      if (value === props.modelValue) {
-        return;
-      }
-      ctx.emit('update:modelValue', value);
-    });
-
-
     const groupRef = ref<HTMLDivElement>();
     watch(groupRef, (el) => {
       if (!el) {
@@ -48,15 +58,18 @@ export const RadioGroup = defineComponent({
       }
     });
 
-    return {
-      group: groupRef,
-    };
-  },
+    provide(groupDataKey, {
+      textColor: toRef(props, 'textColor'),
+      fill: toRef(props, 'fill'),
+      disabled: toRef(props, 'disabled'),
+      size: toRef(props, 'size')
+    });
 
-  methods: {
-    // 左右上下按键 可以在radio组内切换不同选项
-    handleKeydown(e: KeyboardEvent) {
-      const el = this.group!;
+    const handleKeydown = (e: KeyboardEvent) => {
+      const el = groupRef.value;
+      if (!el) {
+        return;
+      }
       const target = e.target! as HTMLElement;
       const className = target.nodeName === 'INPUT' ? '[type=radio]' : '[role=radio]';
       const radios = el.querySelectorAll<HTMLLabelElement>(className);
@@ -91,21 +104,21 @@ export const RadioGroup = defineComponent({
         default:
           break;
       }
-    }
-  },
+    };
 
-  render() {
-    const {
-      $slots,
-      handleKeydown
-    } = this;
-    return <div
-      ref="group"
-      class="el-radio-group"
-      role="radiogroup"
-      onKeydown={handleKeydown}
-    >
-      {renderSlot($slots, 'default')}
-    </div>;
+    return () => (
+      <div
+        ref={groupRef}
+        class="el-radio-group"
+        role="radiogroup"
+        onKeydown={handleKeydown}
+      >
+        <CdkSelection initValue={props.modelValue} onSelected={(value) => {
+          ctx.emit('update:modelValue', (value as ItemData).value);
+        }}>
+          {ctx.slots.default?.()}
+        </CdkSelection>
+      </div>
+    );
   }
 });

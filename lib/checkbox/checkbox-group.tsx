@@ -1,7 +1,6 @@
-import { CdkSelection, CdkSelectionItem } from '../cdk/selection';
+import { CdkSelection, ItemData, OptionItemData } from '../cdk/selection';
 import { List } from '../cdk/utils';
 import { defineComponent } from 'vue';
-import { Checkbox } from './checkbox';
 
 export const CheckboxGroup = defineComponent({
   props: {
@@ -14,26 +13,24 @@ export const CheckboxGroup = defineComponent({
       default: []
     }
   },
+  emits: {
+    'update:modelValue': (value: (string | number)[]) => true
+  },
   setup(props, ctx) {
+    // multiple will always return array.
+    const handleSelected = (items: OptionItemData) => {
+      ctx.emit('update:modelValue', (items as ItemData[]).map(item => item.value));
+    };
 
     // onselect
-
     return () => (
       <CdkSelection
         multiple={true}
         selected={false}
+        onSelected={handleSelected}
+        initValue={props.modelValue}
       >
-        {props.dataSource.map((data) => (
-          <CdkSelectionItem
-            value={data.value}
-            label={data.label}
-            v-slots={{
-              default: (state: { selected: boolean }) => (
-                <Checkbox v-model={state.selected}>{data.label}</Checkbox>
-              )
-            }}
-          />
-        ))}
+        {ctx.slots.default?.()}
       </CdkSelection>
     );
   }

@@ -1,4 +1,4 @@
-import { computed, inject, onUnmounted, provide, Ref, ref, watch } from 'vue';
+import { computed, inject, onUnmounted, provide, Ref, ref, shallowRef, watch } from 'vue';
 import { getClassToken } from '../tools';
 import { ItemData, OptionItemData, SelectionItemState, SelectionValue } from './types';
 
@@ -16,7 +16,7 @@ export class CdkSelectionDispatcher {
   static key = getClassToken(CdkSelectionDispatcher);
 
   static instance() {
-    return inject(this.key);
+    return inject(this.key, undefined);
   }
 
   readonly states = new Map<number | string, SelectionItemState>();
@@ -25,7 +25,7 @@ export class CdkSelectionDispatcher {
 
   private readonly _count = ref(0);
 
-  private readonly dataRef: Ref<OptionItemData> = ref([]);
+  private readonly dataRef: Ref<OptionItemData> = shallowRef([]);
 
   get multiple() {
     return this.multipleRef.value;
@@ -34,7 +34,7 @@ export class CdkSelectionDispatcher {
 
   constructor(
     private readonly multipleRef: Ref<boolean>,
-    private readonly modelValue: Ref<SelectionValue>
+    private readonly initValue: Ref<SelectionValue>
   ) {
     provide(CdkSelectionDispatcher.key, this);
   }
@@ -76,7 +76,7 @@ export class CdkSelectionDispatcher {
         this.dataRef.value = [...data];
       }
     } else {
-      this.dataRef.value = data;
+      this.dataRef.value = data[0];
     }
   }
 
@@ -88,6 +88,8 @@ export class CdkSelectionDispatcher {
       } else {
         this.dataRef.value = [];
       }
+    } else {
+      this.dataRef.value = null;
     }
   }
 
@@ -98,7 +100,7 @@ export class CdkSelectionDispatcher {
   }
 
   private isEqualModelValue(key: number | string) {
-    const data = this.modelValue.value;
+    const data = this.initValue.value;
     return Array.isArray(data) ? data.indexOf(key) !== -1 : data === key;
   }
 }

@@ -1,4 +1,5 @@
 import { defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
 import { elementIcon } from './image';
 import './layout.scss';
 
@@ -21,11 +22,14 @@ export const Layout = defineComponent({
             name: 'Basic',
             children: [
               {
-                name: 'Button 按钮'
+                name: 'Button 按钮',
+                route: 'component/button'
               }, {
-                name: 'Icon 图标'
+                name: 'Icon 图标',
+                route: 'component/icon'
               }, {
-                name: 'Link 文字链接'
+                name: 'Link 文字链接',
+                route: 'component/link'
               }
             ]
           }, {
@@ -198,6 +202,7 @@ export const Layout = defineComponent({
         ],
       }
     ];
+    const router = useRouter();
     return () => (
       <div class="el-doc-container">
         <div class="el-doc__header">
@@ -216,7 +221,7 @@ export const Layout = defineComponent({
                       <ul>
                         {child.children?.map(inner => (
                           <li class="nav-item">
-                            <a href={inner.route}>{inner.name}</a>
+                            <a onClick={() => inner.route && router.push(`/${inner.route}`)}>{inner.name}</a>
                           </li>
                         ))}
                       </ul>

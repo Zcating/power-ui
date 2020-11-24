@@ -1,4 +1,4 @@
-import { ElSize } from '@/types';
+import { ElSize } from '../types';
 import { HTMLAttributes } from 'vue';
 import { ElButtonNativeType, ElButtonType } from './types';
 

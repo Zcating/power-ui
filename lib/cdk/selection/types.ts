@@ -12,6 +12,6 @@ export interface ItemData {
   value: string | number;
 }
 
-export type OptionItemData = ItemData | ItemData[];
+export type OptionItemData = ItemData | ItemData[] | null;
 
 export type SelectionValue = number | string | (number | string)[]

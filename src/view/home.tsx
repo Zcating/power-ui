@@ -284,7 +284,7 @@ export default defineComponent({
             </Steps>
           </p>
           <p style="margin-top:20px">
-            <p style="margin-top:20px">
+            {/* <p style="margin-top:20px">
               <RadioGroup v-model={radioRef.value}>
                 <Radio label="上海"></Radio>
                 <Radio label="北京"></Radio>
@@ -307,7 +307,7 @@ export default defineComponent({
                 <RadioButton label="广州"></RadioButton>
                 <RadioButton label="深圳"></RadioButton>
               </RadioGroup>
-            </p>
+            </p> */}
           </p>
 
           <p>

@@ -1,5 +1,5 @@
 import { Enum } from '../cdk/utils';
-import { ElSize } from '@/types';
+import { ElSize } from '../types';
 import { computed, defineComponent, ref, renderSlot } from 'vue';
 
 export default defineComponent({
@@ -20,7 +20,7 @@ export default defineComponent({
     // when image load failed
     onError: {
       type: Function,
-      default: () => {},
+      default: () => { },
     },
     fit: {
       type: String as () =>
