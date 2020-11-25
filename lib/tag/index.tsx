@@ -1,5 +1,5 @@
 import { ElSize } from '../types';
-import { Prop, Transition, computed, defineComponent } from 'vue';
+import { Transition, computed, defineComponent } from 'vue';
 import { Enum, Method, renderCondition } from '../cdk/utils';
 
 export type TagEffect = 'dark' | 'light' | 'plain';
@@ -19,15 +19,17 @@ export const Tag = defineComponent({
     effect: {
       type: Enum<TagEffect>(),
       default: 'light',
-      validator(val: any) {
+      validator: (val: any) => {
         return ['dark', 'light', 'plain'].indexOf(val) !== -1;
       }
-    } as Prop<TagEffect>,
-
-    onClose: Method<(e: Event)=>void>(),
-    onClick: Method<(e: Event)=>void>(),
+    },
+    onClose: Method<(e: Event) => void>(),
+    onClick: Method<(e: Event) => void>(),
   },
-
+  // emits: {
+  //   'close': (event: Event) => true,
+  //   'click': (event: Event) => true
+  // },
   setup(props, ctx) {
     function handleClose(event: Event) {
       event.stopPropagation();
@@ -39,48 +41,41 @@ export const Tag = defineComponent({
       // ctx.emit('click', event);
     }
 
-    const tagSize = computed(() => props.size);
+    const tagSizeRef = computed(() => props.size);
 
-    return {
-      handleClose: handleClose,
-      handleClick: handleClick,
-      tagSize,
+    return () => {
+      const {
+        type,
+        effect,
+        hit,
+        color,
+        closable,
+        disableTransitions,
+        text
+      } = props;
+      const tagSize = tagSizeRef.value;
+
+      const tagEl = (
+        <span
+          class={[
+            'el-tag',
+            type ? `el-tag--${type}` : '',
+            tagSize ? `el-tag--${tagSize}` : '',
+            effect ? `el-tag--${effect}` : '',
+            hit ? 'is-hit' : ''
+          ]}
+          style={{ backgroundColor: color }}
+          onClick={handleClick}
+        >
+          {ctx.slots.default ? ctx.slots.default() : text}
+          {renderCondition(closable, <i class="el-tag__close el-icon-close" onClick={handleClose} />)}
+        </span>
+      );
+      return renderCondition(
+        disableTransitions,
+        tagEl,
+        <Transition name="el-zoom-in-center">{tagEl}</Transition>
+      );
     };
-  },
-  render() {
-    const {
-      $slots,
-      type,
-      tagSize,
-      hit,
-      effect,
-      disableTransitions,
-      color,
-      closable,
-      handleClose,
-      handleClick
-    } = this;
-    const classes = [
-      'el-tag',
-      type ? `el-tag--${type}` : '',
-      tagSize ? `el-tag--${tagSize}` : '',
-      effect ? `el-tag--${effect}` : '',
-      hit && 'is-hit'
-    ];
-    const tagEl = (
-      <span
-        class={classes}
-        style={{ backgroundColor: color }}
-        onClick={handleClick}
-      >
-        {$slots.default?.()}
-        {closable && <i class="el-tag__close el-icon-close" onClick={handleClose}></i>}
-      </span>
-    );
-    return renderCondition(
-      disableTransitions,
-      tagEl,
-      <Transition name="el-zoom-in-center">{tagEl}</Transition>
-    );
   }
 });
