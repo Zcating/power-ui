@@ -1,7 +1,5 @@
-import { defineComponent, inject, ref, shallowRef, watch } from 'vue';
+import { defineComponent, ref, shallowRef } from 'vue';
 import {
-  $message,
-  $notify,
   Alert,
   Avatar,
   Backtop,
@@ -11,16 +9,12 @@ import {
   Button,
   ButtonGroup,
   Calendar,
-  Card,
   Dialog,
   Drawer,
   Input,
   Popconfirm,
   Popover,
   Progress,
-  Radio,
-  RadioButton,
-  RadioGroup,
   Select,
   SelectOption,
   Slider,
@@ -33,8 +27,10 @@ import {
   vPopconfirm,
   vPopover,
   vTooltip,
-  Rate
-} from '../../lib';
+  Rate,
+  useMessage,
+  useNotification
+} from 'power-ui';
 import { Layout } from './layout';
 
 
@@ -47,8 +43,8 @@ export default defineComponent({
     'popconfirm': vPopconfirm,
   },
   setup() {
-    const message = inject($message)!;
-    const notification = inject($notify)!;
+    const message = useMessage();
+    const notification = useNotification();
     const divRef = ref<HTMLDivElement | null>(null);
     const showModal = ref(false);
     const stepActiveRef = ref(0);
@@ -61,15 +57,11 @@ export default defineComponent({
 
     const showDrawer = ref(false);
 
-    const radioRef = ref('上海');
-
     const input = ref('');
 
     const selectValue = ref('');
 
     const dateRef = shallowRef(new Date());
-
-    watch(dateRef, (value) => console.log(value));
 
     return () => (
       <Layout>

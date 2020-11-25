@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es6",
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
@@ -20,8 +20,20 @@
     ],
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ],
+      "power-ui/*": [
+        "./components/power/*"
+      ],
+      "power-ui": [
+        "./components/power/index"
+      ],
+      "vue-cdk/*": [
+        "./components/cdk/*"
+      ],
+      "vue-cdk": [
+        "./components/cdk/index"
+      ]
     },
     "lib": [
       "esnext",

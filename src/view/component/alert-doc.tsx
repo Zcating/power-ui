@@ -1,0 +1,21 @@
+import { defineComponent } from 'vue';
+import { Alert } from 'power-ui';
+
+export default defineComponent(() => {
+  return () => (
+    <div>
+      <p>
+        <Alert
+          v-slots={{ title: () => 'sdfsdfdsf' }}
+          showIcon={true}
+          type='error'
+          onClose={() => {
+            console.log('closed');
+          }}
+        >
+          this is test
+        </Alert>
+      </p>
+    </div>
+  );
+});

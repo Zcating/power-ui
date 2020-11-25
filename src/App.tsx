@@ -1,21 +1,16 @@
 import { defineComponent } from 'vue';
 import { RouterView } from 'vue-router';
-import { EleUIProvider } from '../lib';
+import { PowerViewProvider } from 'power-ui';
 
-const App = defineComponent({
-  name: 'el-app',
-  setup() {
-    return () => <RouterView />;
-  },
-});
+
 
 export default defineComponent({
-  name: 'element-app',
+  name: 'power-app',
   setup() {
     return () => (
-      <EleUIProvider>
-        <App />
-      </EleUIProvider>
+      <PowerViewProvider>
+        <RouterView />
+      </PowerViewProvider>
     );
   },
 });
