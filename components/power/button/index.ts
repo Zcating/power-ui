@@ -1,5 +1,5 @@
 import { ElSize } from '../types';
-import { HTMLAttributes } from 'vue';
+import { CSSProperties } from 'vue';
 import { ElButtonNativeType, ElButtonType } from './types';
 
 export * from './button';
@@ -18,5 +18,9 @@ export declare class Button {
     autofocus?: boolean,
     round?: boolean,
     circle?: boolean;
-  } & HTMLAttributes;
+    class?: any,
+    style?: string | CSSProperties,
+    placeholder?: string,
+    onClick?: (e: MouseEvent) => void;
+  };
 }

@@ -1,8 +1,9 @@
+import { computed, defineComponent, ref, toRef } from 'vue';
+
 import { vmodelRef } from 'vue-cdk/hook';
 import { Enum, renderCondition } from 'vue-cdk/utils';
-import { ElSize } from '../types';
-import { computed, defineComponent, ref, toRef } from 'vue';
 import { CdkSelectionItem } from 'vue-cdk/selection';
+import { ElSize } from '../types';
 
 export const CheckboxButton = defineComponent({
   props: {
@@ -34,7 +35,6 @@ export const CheckboxButton = defineComponent({
     const activeStyle = computed(() => {
       return {};
     });
-
 
     const focus = ref(false);
     const handleChange = () => {

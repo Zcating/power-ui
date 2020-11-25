@@ -32,11 +32,6 @@ export const Checkbox = defineComponent({
       ctx.emit('update:modelValue', value);
     });
 
-    const activeStyle = computed(() => {
-      return {};
-    });
-
-
     const focus = ref(false);
     const handleChange = (event: any) => {
       modelRef.value = event?.target?.checked ?? false;
@@ -114,7 +109,6 @@ export const Checkbox = defineComponent({
             ctx.slots.default || props.value,
             <span
               class="el-checkbox__label"
-              style={modelRef.value ? activeStyle.value : undefined}
             >
               {ctx.slots.default ? ctx.slots.default() : props.value}
             </span>

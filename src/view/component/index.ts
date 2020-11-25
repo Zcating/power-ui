@@ -5,3 +5,4 @@ export * from './button-doc';
 export * from './radio-doc';
 export * from './switch-doc';
 export { default as AlertDoc } from './alert-doc';
+export { default as DialogDoc } from './dialog-doc';

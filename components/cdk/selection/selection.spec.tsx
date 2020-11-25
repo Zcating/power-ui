@@ -1,5 +1,5 @@
-import { defineComponent, reactive } from 'vue';
-import { CdkSelection } from './selection';
+import { defineComponent, reactive, ref } from 'vue';
+import { CdkSelection, CdkSelectionRef } from './selection';
 import { CdkSelectionItem } from './selection-item';
 import { SelectionItemState } from './types';
 
@@ -20,6 +20,7 @@ export default defineComponent({
   setup() {
     const array = reactive([1, 2, 3, 4, 5]);
     const state = reactive({ multiple: false, selected: false });
+    const selectionRef = ref<CdkSelectionRef | null>(null);
     return () => (
       <>
         <div>
@@ -32,12 +33,17 @@ export default defineComponent({
           click me
         </button>
         <button
-          onClick={() => state.selected = !state.selected}
+          onClick={() => selectionRef.value?.selectAll(true)}
         >
-          {state.selected ? 'close' : 'open'}
+          open
+        </button>
+        <button
+          onClick={() => selectionRef.value?.selectAll(false)}
+        >
+          close
         </button>
 
-        <CdkSelection multiple={state.multiple} selected={state.selected}>
+        <CdkSelection ref={selectionRef} multiple={state.multiple}>
           {array.map((value) => <CdkSelectionItem value={value} v-slots={{ default: widgetBuilder(value) }} />)}
         </CdkSelection>
       </>

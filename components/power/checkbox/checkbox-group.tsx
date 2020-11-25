@@ -1,6 +1,16 @@
-import { CdkSelection, ItemData, OptionItemData } from 'vue-cdk/selection';
-import { List } from 'vue-cdk/utils';
-import { defineComponent, watch } from 'vue';
+import { CdkSelection, ItemData, OptionItemData, CdkSelectionRef } from 'vue-cdk/selection';
+import { Enum, List, Method } from 'vue-cdk/utils';
+import { defineComponent, InjectionKey, provide, Ref, toRef } from 'vue';
+import { ElSize } from 'power-ui/types';
+
+export interface CheckboxGroupData {
+  textColor: Ref<string | undefined>;
+  fill: Ref<string | undefined>;
+  disabled: Ref<boolean | undefined>;
+  size: Ref<ElSize | undefined>;
+}
+
+export const groupDataKey = Symbol() as InjectionKey<CheckboxGroupData>;
 
 export const CheckboxGroup = defineComponent({
   props: {
@@ -12,30 +22,63 @@ export const CheckboxGroup = defineComponent({
       type: List<string | number>(),
       default: []
     },
-    selectAll: {
+    onChange: {
+      type: Method<(value: (string | number)[]) => void>(),
+    },
+    size: {
+      type: Enum<ElSize>(),
+      default: ''
+    },
+    fill: {
+      type: String,
+      default: '#409EFF'
+    },
+    textColor: {
+      type: String,
+      default: '#ffffff'
+    },
+    disabled: {
       type: Boolean,
       default: false
-    }
+    },
   },
   emits: {
-    'update:modelValue': (value: (string | number)[]) => true
+    'update:modelValue': (value: (string | number)[]) => true,
+    'change': (value: (string | number)[]) => true
   },
   setup(props, ctx) {
     // multiple will always return array.
     const handleSelected = (items: OptionItemData) => {
-      ctx.emit('update:modelValue', (items as ItemData[]).map(item => item.value));
+      const value = (items as ItemData[]).map(item => item.value);
+      ctx.emit('update:modelValue', value);
+      ctx.emit('change', value);
     };
 
-    // onselect
+    provide(groupDataKey, {
+      textColor: toRef(props, 'textColor'),
+      fill: toRef(props, 'fill'),
+      disabled: toRef(props, 'disabled'),
+      size: toRef(props, 'size')
+    });
+
     return () => (
       <CdkSelection
+        ref="selection"
         multiple={true}
-        selected={props.selectAll}
         onSelected={handleSelected}
         initValue={props.modelValue}
       >
         {ctx.slots.default?.()}
       </CdkSelection>
     );
+  },
+  methods: {
+    selectAll(value: boolean) {
+      const selectionRef = this.$refs.selection as CdkSelectionRef;
+      if (!selectionRef) {
+        return;
+      }
+      selectionRef.selectAll(value);
+    }
   }
 });

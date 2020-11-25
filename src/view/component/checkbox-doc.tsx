@@ -1,9 +1,19 @@
 import { Checkbox, CheckboxGroup } from 'power-ui/index';
 
-import { defineComponent, shallowRef } from 'vue';
+import { computed, defineComponent, ref, shallowRef } from 'vue';
 
 export const CheckboxDoc = defineComponent((_, ctx) => {
+  const cities = ['广州', '上海', '北京', '深圳'];
   const city = shallowRef(['广州']);
+
+
+  const city2 = shallowRef(['广州']);
+  const selectAll = ref(false);
+  const indeterminateRef = computed(() => {
+    const length = city2.value.length;
+    return 0 < length && length < 4;
+  });
+
   return () => (
     <div>
       <p>
@@ -11,10 +21,19 @@ export const CheckboxDoc = defineComponent((_, ctx) => {
       </p>
       <p>
         <CheckboxGroup v-model={city.value}>
-          <Checkbox value="广州">广州</Checkbox>
-          <Checkbox value="上海">上海</Checkbox>
-          <Checkbox value="北京">北京</Checkbox>
-          <Checkbox value="深圳">深圳</Checkbox>
+          {cities.map((value) => (
+            <Checkbox value={value}>{value}</Checkbox>
+          ))}
+        </CheckboxGroup>
+      </p>
+      <p>
+        <Checkbox indeterminate={indeterminateRef.value} v-model={selectAll.value}>全选</Checkbox>
+        <CheckboxGroup v-model={city.value} onChange={() => {
+
+        }}>
+          {cities.map((value) => (
+            <Checkbox value={value}>{value}</Checkbox>
+          ))}
         </CheckboxGroup>
       </p>
     </div>

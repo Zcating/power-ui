@@ -1,5 +1,5 @@
 import { List, Method, renderCondition } from '../utils';
-import { defineComponent, toRef, watch } from 'vue';
+import { defineComponent, toRef } from 'vue';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { OptionItemData } from './types';
 
@@ -17,17 +17,11 @@ export const CdkSelection = defineComponent({
       type: Boolean,
       default: false,
     },
-    selected: {
-      type: Boolean,
-      default: false
-    },
-    onSelected: {
-      type: Method<(value: OptionItemData) => void>(),
-    },
     initValue: {
       type: [String, Number, List<string | number>()],
       default: '',
     },
+    onSelected: Method<(value: OptionItemData) => void>(),
   },
   emits: {
     'selected': (value: OptionItemData) => true
@@ -41,18 +35,23 @@ export const CdkSelection = defineComponent({
       ctx.emit('selected', data);
     });
 
-    watch(() => props.selected, (value) => {
-      if (props.multiple) {
-        dispatcher.notify(value);
-      }
-    }, { immediate: true });
-
-
     return () => (
       <>
         {ctx.slots.default?.()}
         {renderCondition(dispatcher.count.value === 0, ctx.slots.empty?.())}
       </>
     );
+  },
+  methods: {
+    selectAll(value: boolean) {
+      if (this.multiple) {
+        const instance = CdkSelectionDispatcher.instance();
+        if (instance) {
+          instance.notify(value);
+        }
+      }
+    }
   }
 });
+
+export type CdkSelectionRef = InstanceType<typeof CdkSelection>;

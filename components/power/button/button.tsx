@@ -1,12 +1,12 @@
 import { Enum } from 'vue-cdk/utils';
 import { computed, defineComponent, inject, renderSlot } from 'vue';
-import { ElButtonNativeType } from './types';
+import { ElButtonNativeType, ElButtonType } from './types';
 
 export const Button = defineComponent({
-  name: 'ele-button',
+  name: 'po-button',
   props: {
     type: {
-      type: String,
+      type: Enum<ElButtonType>(),
       default: 'default',
     },
     size: {

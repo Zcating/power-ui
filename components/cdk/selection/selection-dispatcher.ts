@@ -102,4 +102,9 @@ export class CdkSelectionDispatcher {
     const data = this.initValue.value;
     return Array.isArray(data) ? data.indexOf(key) !== -1 : data === key;
   }
+
+  private isFull() {
+    const values = this.dataRef.value;
+    return Array.isArray(values) ? values.length === this.count.value : false;
+  }
 }
