@@ -44,7 +44,7 @@ export const CdkSelectionItem = defineComponent({
           dispatcher.deselect(props.value);
         }
         ctx.emit('update:modelValue', value);
-      });
+      }, { immediate: true });
 
       watch(() => props.modelValue, (value) => {
         state.selected = value;

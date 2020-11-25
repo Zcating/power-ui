@@ -5,7 +5,7 @@ import { ElStepData, ElStepProps, ElStepsData } from './types';
 
 const stepServiceKey = Symbol() as InjectionKey<StepService>;
 
-export const injectService = () => inject(stepServiceKey);
+export const useStepService = () => inject(stepServiceKey, undefined);
 
 export class StepService {
 
@@ -86,7 +86,7 @@ export class StepService {
   testLast(data: ElStepData) {
     return computed(() => this.isLast(data));
   }
-  
+
 
   private isLast(data: ElStepData) {
     const steps = this.state.steps;

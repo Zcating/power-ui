@@ -8,15 +8,15 @@ export class CdkTimer {
 
   start() {
     if (this.timerId) {
-      clearTimeout(this.timerId);
+      window.clearTimeout(this.timerId);
     }
-    this.timerId = setTimeout(this.fn, this.duration);
+    this.timerId = window.setTimeout(this.fn, this.duration);
 
     return this;
   }
 
   end() {
-    clearTimeout(this.timerId);
+    window.clearTimeout(this.timerId);
     return this;
   }
 }

@@ -16,7 +16,7 @@ import {
 } from 'vue';
 import { GlobalPositionStrategy, PositionStrategy } from './position';
 import { vmodelRef, watchRef } from '../hook';
-import { platformToken } from '../global';
+import { usePlatform } from '../global';
 import './overlay.scss';
 
 /**
@@ -115,7 +115,7 @@ export const Overlay = defineComponent({
       });
     });
 
-    const body = inject(platformToken)?.BODY;
+    const body = usePlatform().BODY;
     if (body) {
       const originOverflow = body.style.overflow;
       watch(visible, (value) => {

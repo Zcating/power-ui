@@ -1,7 +1,7 @@
 import { vmodelRef } from '../cdk/hook';
 import { Enum, renderCondition } from '../cdk/utils';
 import { ElSize } from '../types';
-import { computed, defineComponent, ref, toRef } from 'vue';
+import { computed, defineComponent, ref, toRef, watch } from 'vue';
 import { CdkSelectionItem } from '../cdk/selection';
 
 export const Checkbox = defineComponent({
@@ -31,6 +31,7 @@ export const Checkbox = defineComponent({
     const modelRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
       ctx.emit('update:modelValue', value);
     });
+    watch(modelRef, () => console.log(modelRef.value), { immediate: true });
 
     const activeStyle = computed(() => {
       return {};
@@ -90,21 +91,23 @@ export const Checkbox = defineComponent({
                 disabled={props.disabled}
                 true-value={props.trueLabel}
                 false-value={props.falseLabel}
-                v-model={modelRef.value}
+                // v-model={modelRef.value}
                 onChange={handleChange}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
+                checked={modelRef.value}
               />,
               <input
                 class="el-checkbox__original"
                 type="checkbox"
                 name={props.name}
                 disabled={props.disabled}
-                value={props.value}
-                v-model={modelRef.value}
+                // value={props.value}
+                // v-model={modelRef.value}
                 onChange={handleChange}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
+                checked={modelRef.value}
               />
             )}
           </span>

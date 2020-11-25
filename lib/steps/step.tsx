@@ -1,6 +1,6 @@
 import { Enum, renderCondition } from '../cdk/utils';
 import { defineComponent, reactive, renderSlot } from 'vue';
-import { injectService } from './step.service';
+import { useStepService } from './step.service';
 import { ElStepData, ElStepStatus } from './types';
 
 
@@ -12,8 +12,6 @@ export const Step = defineComponent({
     status: Enum<ElStepStatus>()
   },
   setup(props) {
-    const service = injectService();
-
     const data = reactive<ElStepData>({
       index: 0,
       currentStatus: props.status || 'process',
@@ -21,6 +19,7 @@ export const Step = defineComponent({
       lineStyle: {},
     });
 
+    const service = useStepService();
     if (!service) {
       return { data };
     }
@@ -119,6 +118,3 @@ export const Step = defineComponent({
     </div>;
   }
 });
-
-
-export type StepComponent = InstanceType<typeof Step>;

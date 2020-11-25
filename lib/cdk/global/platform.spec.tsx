@@ -1,5 +1,5 @@
 import { defineComponent, inject } from 'vue';
-import { platformToken } from '.';
+import { usePlatform } from '.';
 
 const Widget = (props: { title: string; content: any }) => (
   <>
@@ -12,7 +12,7 @@ const Widget = (props: { title: string; content: any }) => (
 export default defineComponent({
   name: 'platform-test',
   setup() {
-    const platform = inject(platformToken)!;
+    const platform = usePlatform();
     return () => (
       <>
         <Widget title={'This is WebKit: '} content={platform.WEBKIT}></Widget>

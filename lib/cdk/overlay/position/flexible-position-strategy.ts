@@ -3,7 +3,7 @@ import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, Ve
 import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
 import { getElement } from '../../utils';
-import { platformToken } from '../../global';
+import { usePlatform } from '../../global';
 interface Point {
   x: number;
   y: number;
@@ -33,8 +33,6 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
   private subscribe?: () => void;
 
-  private isVisible = false;
-
   private readonly positionedStyle = ref<CSSProperties>({ position: 'absolute' });
 
   private readonly window: Window;
@@ -43,7 +41,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     private _origin: FlexiblePositionOrigin,
   ) {
     super();
-    const window = inject(platformToken)?.TOP;
+    const window = usePlatform().TOP;
     if (!window) {
       throw Error('window is null');
     }
@@ -64,7 +62,6 @@ export class FlexiblePositionStrategy extends PositionStrategy {
   }
 
   apply(panel: HTMLElement): void {
-    this.isVisible = true;
     this.subscribe = () => {
       // TODO: add optimize for throttle
       const point = this._calculatePosition(panel);

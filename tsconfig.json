@@ -12,7 +12,8 @@
     "declaration": true,
     "declarationDir": "./dist",
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
+    "rootDir": ".",
     "types": [
       "webpack-env",
       "jest"
@@ -21,12 +22,6 @@
       "@/*": [
         "src/*"
       ],
-      "package/*": [
-        "lib/*"
-      ],
-      "@cdk/*": [
-        "lib/cdk/*"
-      ]
     },
     "lib": [
       "esnext",
@@ -36,11 +31,12 @@
     ]
   },
   "include": [
-    "./**/*.ts",
+    "/**/*.ts",
     "./**/*.tsx",
     "./**/*.vue",
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist"
   ]
 }

@@ -2,7 +2,7 @@ import { MessageService, MessageServiceImpl } from './message/message.service';
 import { NotificationService, NotificationServiceImpl } from './notification/notification.service';
 import { defineComponent, renderSlot } from 'vue';
 import { getClassToken } from './cdk/tools';
-import { globalInject } from '.';
+import { globalInject } from './cdk/global';
 
 
 export const $message = getClassToken<MessageService>(MessageServiceImpl);

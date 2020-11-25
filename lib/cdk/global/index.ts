@@ -6,6 +6,7 @@ import {
   provide,
   ref,
   watch,
+  inject,
 } from 'vue';
 import { Days, Months, setGlobalDateI18n } from 'fecha';
 import { getClassToken } from '../tools';
@@ -16,11 +17,18 @@ import Clipboard from './clipboard';
 import ViewPort from './viewport';
 import * as lang from '../lang';
 // provide token
-export const platformToken = getClassToken(Platform);
-export const breakpointToken = getClassToken(Breakpoint);
-export const bidirectionToken = getClassToken(Bidirection);
-export const clipboardToken = getClassToken(Clipboard);
-export const viewportToken = getClassToken(ViewPort);
+const platformToken = getClassToken(Platform);
+const breakpointToken = getClassToken(Breakpoint);
+const bidirectionToken = getClassToken(Bidirection);
+const clipboardToken = getClassToken(Clipboard);
+const viewportToken = getClassToken(ViewPort);
+
+export const usePlatform = () => inject(platformToken)!;
+export const useBreakpoint = () => inject(breakpointToken)!;
+export const useBidirection = () => inject(bidirectionToken)!;
+export const useClipboard = () => inject(clipboardToken)!;
+export const useViewport = () => inject(viewportToken)!;
+
 export const langToken: InjectionKey<ComputedRef<
   lang.LangConfig
 >> = 'cdk-lang' as any;

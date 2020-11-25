@@ -1,7 +1,7 @@
-import { platformToken } from '../cdk/global';
+import { computed, customRef, defineComponent, reactive, ref, watch } from 'vue';
+import { usePlatform } from '../cdk/global';
 import { Method, addEvent, toFixedNumber } from '../cdk/utils';
 import { Tooltip } from '../tooltip';
-import { computed, customRef, defineComponent, inject, reactive, ref, watch } from 'vue';
 
 export const SliderButton = defineComponent({
   props: {
@@ -60,7 +60,7 @@ export const SliderButton = defineComponent({
       return props.format(props.modelValue);
     });
 
-    const WINDOW = inject(platformToken)!.TOP!;
+    const WINDOW = usePlatform().TOP!;
 
     const state = reactive({
       showTooltip: false,

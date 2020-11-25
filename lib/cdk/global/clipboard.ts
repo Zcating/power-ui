@@ -1,5 +1,4 @@
-import { inject, ref } from 'vue';
-import { platformToken } from '.';
+import { ref } from 'vue';
 import Platform from './platform';
 
 class Copy {

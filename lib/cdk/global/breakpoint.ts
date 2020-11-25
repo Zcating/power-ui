@@ -1,5 +1,4 @@
-import { inject, onBeforeUnmount, ref } from 'vue';
-import { platformToken } from '.';
+import { onBeforeUnmount, ref } from 'vue';
 import Platform from './platform';
 
 const breakPoints = {

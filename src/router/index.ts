@@ -1,6 +1,6 @@
-import { ComponentDoc, CheckboxDoc, ButtonDoc, RadioDoc } from '@/view/component';
+import { ComponentDoc, CheckboxDoc, ButtonDoc, RadioDoc, SwitchDoc, Pending } from '@/view/component';
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from '@/view/home';
+import Home from '@/src/view';
 export default createRouter({
   history: createWebHashHistory(''),
   routes: [
@@ -24,6 +24,13 @@ export default createRouter({
           path: 'radio',
           name: 'radio',
           component: RadioDoc
+        }, {
+          path: 'switch',
+          name: 'switch',
+          component: SwitchDoc
+        }, {
+          path: ':name(.*)*',
+          component: Pending
         }
       ]
     }

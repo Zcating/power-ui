@@ -41,7 +41,7 @@ export class CdkSelectionDispatcher {
 
   subscribe(key: number | string, state: SelectionItemState) {
     state.selected = this.isEqualModelValue(key);
-
+    console.log('state', state.selected);
     this.states.set(key, state);
     this._count.value = this.states.keys.length;
     watch(() => state.selected, (value) => {

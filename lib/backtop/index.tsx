@@ -8,8 +8,8 @@ import {
   renderSlot,
   watch,
 } from 'vue';
-import { getFuncToken, platformToken } from '..';
-import { runWhileScroll } from '../cdk/tools';
+import { usePlatform } from '../cdk/global';
+import { runWhileScroll, getFuncToken } from '../cdk/tools';
 
 /**
  * visible while scroll to certain area
@@ -22,7 +22,7 @@ import { runWhileScroll } from '../cdk/tools';
  * @returns
  */
 export function backtopController(target?: Ref<string>) {
-  const { BODY } = inject(platformToken)!;
+  const { BODY } = usePlatform();
   // for ssr
   // not body element , no val
   if (!BODY) return null;
@@ -77,7 +77,7 @@ export default defineComponent({
     },
     onClick: {
       type: Function,
-      default: () => {},
+      default: () => { },
     },
   },
   setup(props, ctx) {
@@ -110,8 +110,8 @@ export default defineComponent({
             {hasDefaultSlot ? (
               renderSlot(ctx.slots, 'default')
             ) : (
-              <i class='el-icon-caret-top'></i>
-            )}
+                <i class='el-icon-caret-top'></i>
+              )}
           </div>
         ) : null}
       </Transition>

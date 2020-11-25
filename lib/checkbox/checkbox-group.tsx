@@ -1,6 +1,6 @@
 import { CdkSelection, ItemData, OptionItemData } from '../cdk/selection';
 import { List } from '../cdk/utils';
-import { defineComponent } from 'vue';
+import { defineComponent, watch } from 'vue';
 
 export const CheckboxGroup = defineComponent({
   props: {
@@ -11,6 +11,10 @@ export const CheckboxGroup = defineComponent({
     modelValue: {
       type: List<string | number>(),
       default: []
+    },
+    selectAll: {
+      type: Boolean,
+      default: false
     }
   },
   emits: {
@@ -22,11 +26,13 @@ export const CheckboxGroup = defineComponent({
       ctx.emit('update:modelValue', (items as ItemData[]).map(item => item.value));
     };
 
+    watch(() => props.modelValue, () => console.log(props.modelValue));
+
     // onselect
     return () => (
       <CdkSelection
         multiple={true}
-        selected={false}
+        selected={props.selectAll}
         onSelected={handleSelected}
         initValue={props.modelValue}
       >

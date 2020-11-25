@@ -1,10 +1,10 @@
-import { defineComponent, inject } from 'vue';
-import { bidirectionToken } from '.';
+import { defineComponent } from 'vue';
+import { useBidirection } from '.';
 
 export default defineComponent({
   name: 'bidirection-spec',
   setup() {
-    const bidi = inject(bidirectionToken)!;
+    const bidi = useBidirection();
     return () => (
       <div>
         <button

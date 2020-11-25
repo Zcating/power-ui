@@ -1,7 +1,7 @@
+import { CSSProperties, Transition, VNode, cloneVNode, computed, defineComponent, onUnmounted, ref, toRef, watch } from 'vue';
 import { vmodelRef } from '../cdk/hook';
 import { ESCAPE } from '../cdk/keycodes';
-import { CSSProperties, Transition, VNode, cloneVNode, computed, defineComponent, inject, onUnmounted, ref, toRef, watch } from 'vue';
-import { platformToken } from '..';
+import { usePlatform } from '../cdk/global';
 import { FlexiblePositionStrategy, Overlay, provideStrategy } from '../cdk';
 import { Enum, List, Model, addEvent, getElement, isValidElement, renderCondition } from '../cdk/utils';
 import { ArrowPlacement, OVERLAY_POSITION_MAP, Placement, TriggerType } from './types';
@@ -112,7 +112,7 @@ export const Tooltip = defineComponent({
 
     const triggerRef = toRef(props, 'trigger');
 
-    const doc = inject(platformToken)?.TOP?.document;
+    const doc = usePlatform().TOP?.document;
 
     watch(() => [referenceRef.value, popperRef.value, triggerRef.value], (values) => {
       const reference = values[0] as HTMLElement;

@@ -1,5 +1,5 @@
-import { Ref, inject, onBeforeMount, onMounted, ref } from 'vue';
-import { platformToken } from '../global';
+import { Ref, onBeforeMount, onMounted, ref } from 'vue';
+import { usePlatform } from '../global';
 import { noop } from '../types';
 
 /**
@@ -47,7 +47,7 @@ export interface ScrollToOptions {
 export default class {
   nodeRef = ref<HTMLElement | null>(null);
   scrollCb: (e: Event) => void = noop;
-  private body = inject(platformToken)!.BODY;
+  private body = usePlatform().BODY;
   private scrollAxisType?: ScrollAxisType;
   private handleScroll = (e: Event) => {
     this.scrollCb(e);

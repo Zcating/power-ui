@@ -1,10 +1,10 @@
-import { defineComponent, inject } from 'vue';
-import { breakpointToken } from '.';
+import { defineComponent } from 'vue';
+import { useBreakpoint } from '.';
 
 export default defineComponent({
   name: 'breakpoint-spec',
   setup() {
-    const bp = inject(breakpointToken)!;
+    const bp = useBreakpoint();
     return () => (
       <div>
         <p>span: {bp.span.value}</p>

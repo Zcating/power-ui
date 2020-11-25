@@ -1,11 +1,11 @@
-import { defineComponent, inject, ref } from 'vue';
-import { clipboardToken } from '.';
+import { defineComponent, ref } from 'vue';
+import { useClipboard } from '.';
 
 export default defineComponent({
   name: 'clipboard-spec',
   setup() {
     const test = ref('test copy');
-    const clipboard = inject(clipboardToken)!;
+    const clipboard = useClipboard();
     const clip = () => {
       clipboard.copy(test.value);
     };
