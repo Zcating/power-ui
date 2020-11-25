@@ -16,6 +16,14 @@ export default defineComponent(() => {
           this is test
         </Alert>
       </p>
+      <p>
+        <Alert
+          title="kkkkkkk"
+          showIcon={true}
+          type='error'
+          description="this is test"
+        />
+      </p>
     </div>
   );
 });

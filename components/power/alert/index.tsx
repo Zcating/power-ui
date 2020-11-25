@@ -1,4 +1,6 @@
-import { Transition, computed, defineComponent, ref, renderSlot } from 'vue';
+import { ElEffect } from 'power-ui/types';
+import { Transition, computed, defineComponent, ref } from 'vue';
+import { Enum, renderCondition } from 'vue-cdk/utils';
 
 export default defineComponent({
   name: 'ele-alert',
@@ -12,7 +14,7 @@ export default defineComponent({
       default: '',
     },
     type: {
-      type: String as () => 'info' | 'success' | 'warning' | 'error',
+      type: Enum<'info' | 'success' | 'warning' | 'error'>(),
       default: 'info',
     },
     closable: {
@@ -26,12 +28,12 @@ export default defineComponent({
     showIcon: Boolean,
     center: Boolean,
     effect: {
-      type: String as () => 'light' | 'dark',
+      type: Enum<ElEffect>(),
       default: 'light',
     },
     onClose: {
       type: Function,
-      default: () => {},
+      default: () => { },
     },
   },
   setup(props, ctx) {
@@ -40,12 +42,8 @@ export default defineComponent({
       visible.value = false;
       props.onClose();
     };
-    const isBigIcon = computed(() =>
-      props.description || ctx.slots['default']?.() ? 'is-big' : ''
-    );
-    const isBoldTitle = computed(() =>
-      props.description || ctx.slots['default']?.() ? 'is-bold' : ''
-    );
+    const isBigIcon = computed(() => (props.description || ctx.slots.default) ? 'is-big' : '');
+    const isBoldTitle = computed(() => (props.description || ctx.slots.default) ? 'is-bold' : '');
 
     return () => (
       <Transition name='el-alert-fade' appear={true}>
@@ -59,27 +57,34 @@ export default defineComponent({
           v-show={visible.value}
           role='alert'
         >
-          {props.showIcon ? (
+          {renderCondition(
+            props.showIcon,
             <i
               class={[
                 'el-alert__icon',
                 'el-icon-' + props.type,
                 isBigIcon.value,
               ]}
-            ></i>
-          ) : null}
+            />
+          )}
 
           <div class='el-alert__content'>
-            {props.title || ctx.slots['title']?.() ? (
-              <span class={['el-alert__title', isBoldTitle.value]}>
-                {renderSlot(ctx.slots, 'title', { title: props.title })}
-              </span>
-            ) : null}
-            {ctx.slots['default']?.() && !props.description ? (
-              <p class='el-alert__description'>
-                {renderSlot(ctx.slots, 'default')}
-              </p>
-            ) : null}
+            {renderCondition(
+              ctx.slots.title || props.title,
+              (value) => (
+                <span class={['el-alert__title', isBoldTitle.value]}>
+                  {typeof value === 'function' ? value() : value}
+                </span>
+              )
+            )}
+            {renderCondition(
+              ctx.slots.default || props.description,
+              (value) => (
+                <p class='el-alert__description'>
+                  {typeof value === 'function' ? value() : value}
+                </p>
+              )
+            )}
             <i
               class={{
                 'el-alert__closebtn': true,
