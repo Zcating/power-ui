@@ -1,4 +1,4 @@
-import { Enum } from 'vue-cdk/utils';
+import { Enum, Method } from 'vue-cdk/utils';
 import { computed, defineComponent, inject, renderSlot } from 'vue';
 import { ElButtonNativeType, ElButtonType } from './types';
 
@@ -28,6 +28,7 @@ export const Button = defineComponent({
     autofocus: Boolean,
     round: Boolean,
     circle: Boolean,
+    onClick: Method<(e: Event) => void>(),
   },
 
   emits: ['click'],

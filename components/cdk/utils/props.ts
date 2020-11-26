@@ -1,4 +1,4 @@
-import { Prop } from 'vue';
+import { ComponentPropsOptions, Prop, PropType } from 'vue';
 
 export function Method<T>(): () => T {
   return Function as unknown as () => T;
@@ -16,42 +16,64 @@ export function Enum<T extends string>(): () => T {
   return String as unknown as () => T;
 }
 
+type DefaultProp<T> = T | (() => T);
 
-export function defineList<T>(d?: T[], validator?: (val: any) => boolean): Prop<T[]> {
-  return {
-    type: List<T>(),
-    default: d
-  };
+interface PropOptions<T = any> {
+  type?: PropType<T>;
+  required?: boolean;
+  default?: DefaultProp<T>;
+  validator?(value: unknown): boolean;
 }
 
-export function defineNumber(d?: number, validator?: (val: any) => boolean): Prop<number> {
-  return {
-    type: Number,
-    default: d,
-    validator
+const linkedProp = <T>(define: PropOptions<T>) => {
+  const that = {
+    required() {
+      define.required = true;
+      return that;
+    },
+    validate(fn: (value: unknown) => boolean) {
+      define.validator = fn;
+      return that;
+    },
+    gen() {
+      return define;
+    }
   };
-}
+  return that;
+};
 
-export function defineString(d?: string, validator?: (val: any) => boolean) {
-  return {
-    type: String,
-    default: d,
-    validator
-  };
-}
 
-export function defineEnum<T extends string>(d?: T, validator?: (val: any) => boolean): Prop<T> {
-  return {
-    type: Enum<T>(),
-    default: d,
-    validator
-  };
-}
+export const defineProp = {
+  string(d?: DefaultProp<String>) {
+    const define = {
+      type: String,
+      default: d,
+    };
+    return linkedProp(define);
+  },
 
-export function defineMethod<T extends Function>(d?: T, validator?: (val: any) => boolean): Prop<T> {
-  return {
-    type: Model<T>(),
-    default: d,
-    validator
-  };
-} 
+  enum<T extends string>(d?: DefaultProp<T>) {
+    const define = {
+      type: Enum<T>(),
+      default: d
+    };
+    return linkedProp(define);
+
+  },
+
+  method<T extends Function>(d?: DefaultProp<T>) {
+    const define = {
+      type: Method<T>(),
+      default: d
+    };
+    return linkedProp(define);
+  },
+
+  model<T extends Object>(d?: T) {
+    const define = {
+      type: Model<T>(),
+      default: d
+    };
+    return linkedProp(define);
+  }
+};
