@@ -1,4 +1,4 @@
-import { Enum } from 'vue-cdk/utils';
+import { Enum, Method } from 'vue-cdk/utils';
 import { ElSize } from '../types';
 import { computed, defineComponent, ref, renderSlot } from 'vue';
 
@@ -19,16 +19,11 @@ export default defineComponent({
     srcSet: String,
     // when image load failed
     onError: {
-      type: Function,
+      type: Method<(e: Event) => boolean>(),
       default: () => { },
     },
     fit: {
-      type: String as () =>
-        | 'fill'
-        | 'contain'
-        | 'cover'
-        | 'none'
-        | 'scale-down',
+      type: Enum<'fill' | 'contain' | 'cover' | 'none' | 'scale-down'>(),
       default: 'cover',
     },
   },
@@ -61,8 +56,8 @@ export default defineComponent({
     );
 
     // load error handler
-    const handleError = () => {
-      const result = props.onError();
+    const handleError = (e: Event) => {
+      const result = props.onError?.(e);
       if (result !== false) {
         isImageExist.value = false;
       }

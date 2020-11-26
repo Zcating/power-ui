@@ -18,9 +18,11 @@ export declare class Button {
     autofocus?: boolean,
     round?: boolean,
     circle?: boolean;
-    class?: any,
-    style?: string | CSSProperties,
     placeholder?: string,
     onClick?: (e: MouseEvent) => void;
+
+    id?: string,
+    class?: any,
+    style?: string | CSSProperties,
   };
 }

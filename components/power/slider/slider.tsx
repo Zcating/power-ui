@@ -3,6 +3,7 @@ import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import { SliderButton } from './button';
 
 
+
 export const Slider = defineComponent({
   props: {
     min: {
@@ -82,7 +83,6 @@ export const Slider = defineComponent({
 
     const size = computed(() => {
       const slider = sliderRef.value;
-      console.log(slider?.clientWidth);
       if (!slider) {
         return 0;
       }

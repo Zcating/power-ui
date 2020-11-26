@@ -5,5 +5,5 @@ export const Pending = defineComponent({
     return () => (
       <div>敬请期待（Please Waiting）</div>
     );
-  }
+  },
 });

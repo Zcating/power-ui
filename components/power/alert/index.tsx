@@ -3,7 +3,7 @@ import { Transition, computed, defineComponent, ref } from 'vue';
 import { Enum, renderCondition } from 'vue-cdk/utils';
 
 export default defineComponent({
-  name: 'ele-alert',
+  name: 'po-alert',
   props: {
     title: {
       type: String,
