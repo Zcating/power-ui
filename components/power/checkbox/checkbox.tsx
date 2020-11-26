@@ -1,12 +1,12 @@
-import { computed, defineComponent, ref, toRef } from 'vue';
+import { defineComponent, ref, toRef } from 'vue';
 import { vmodelRef } from 'vue-cdk/hook';
-import { Enum, renderCondition } from 'vue-cdk/utils';
+import { Enum, Method, renderCondition } from 'vue-cdk/utils';
 import { CdkSelectionItem } from 'vue-cdk/selection';
 import { ElSize } from '../types';
 
 export const Checkbox = defineComponent({
   props: {
-    modelValue: {
+    checked: {
       type: Boolean,
       default: false
     },
@@ -26,21 +26,24 @@ export const Checkbox = defineComponent({
     trueLabel: [String, Number],
     falseLabel: [String, Number],
     indeterminate: Boolean,
+    onChange: Method<(value: boolean) => void>(),
   },
   setup(props, ctx) {
-    const modelRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
-      ctx.emit('update:modelValue', value);
+    const modelRef = vmodelRef(toRef(props, 'checked'), (value) => {
+      ctx.emit('update:checked', value);
     });
 
-    const focus = ref(false);
+
     const handleChange = (event: any) => {
-      modelRef.value = event?.target?.checked ?? false;
+      const value = event?.target?.checked ?? false;
+      modelRef.value = value;
+      props.onChange?.(value);
     };
 
+    const focus = ref(false);
     const handleBlur = () => {
       focus.value = false;
     };
-
     const handleFocus = () => {
       focus.value = true;
     };
@@ -116,5 +119,5 @@ export const Checkbox = defineComponent({
         </label>
       </CdkSelectionItem>
     );
-  }
+  },
 });

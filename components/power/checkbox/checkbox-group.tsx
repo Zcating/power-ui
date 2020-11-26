@@ -82,3 +82,5 @@ export const CheckboxGroup = defineComponent({
     }
   }
 });
+
+export type CheckboxGroupRef = InstanceType<typeof CheckboxGroup>;

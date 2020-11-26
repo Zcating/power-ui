@@ -1,13 +1,13 @@
 import { computed, defineComponent, ref, toRef } from 'vue';
 
 import { vmodelRef } from 'vue-cdk/hook';
-import { Enum, renderCondition } from 'vue-cdk/utils';
+import { Enum, Method, renderCondition } from 'vue-cdk/utils';
 import { CdkSelectionItem } from 'vue-cdk/selection';
 import { ElSize } from '../types';
 
 export const CheckboxButton = defineComponent({
   props: {
-    modelValue: {
+    checked: {
       type: Boolean,
       default: false
     },
@@ -25,11 +25,12 @@ export const CheckboxButton = defineComponent({
       default: ''
     },
     trueLabel: [String, Number],
-    falseLabel: [String, Number]
+    falseLabel: [String, Number],
+    onChange: Method<(value: boolean) => void>()
   },
   setup(props, ctx) {
-    const modelRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
-      ctx.emit('update:modelValue', value);
+    const modelRef = vmodelRef(toRef(props, 'checked'), (value) => {
+      ctx.emit('update:checked', value);
     });
 
     const activeStyle = computed(() => {
@@ -37,8 +38,10 @@ export const CheckboxButton = defineComponent({
     });
 
     const focus = ref(false);
-    const handleChange = () => {
-
+    const handleChange = (event: any) => {
+      const checked = event.target?.checked ?? false;
+      modelRef.value = checked;
+      props.onChange?.(checked);
     };
 
     const handleBlur = () => {
@@ -58,11 +61,11 @@ export const CheckboxButton = defineComponent({
           class={['el-checkbox-button',
             props.size ? 'el-checkbox-button--' + props.size : '',
             { 'is-disabled': props.disabled },
-            { 'is-checked': props.modelValue },
+            { 'is-checked': modelRef.value },
             { 'is-focus': focus },
           ]}
           role="checkbox"
-          aria-checked={props.modelValue}
+          aria-checked={modelRef.value}
           aria-disabled={props.disabled}
         >
           {renderCondition(
@@ -97,8 +100,7 @@ export const CheckboxButton = defineComponent({
               class="el-checkbox-button__inner"
               style={modelRef.value ? activeStyle.value : undefined}
             >
-              {ctx.slots.default?.()}
-              {props.value}
+              {ctx.slots.default ? ctx.slots.default() : props.value}
             </span>
           )}
         </label>

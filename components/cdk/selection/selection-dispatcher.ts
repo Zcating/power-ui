@@ -1,8 +1,9 @@
-import { computed, inject, onUnmounted, provide, Ref, ref, shallowRef, watch } from 'vue';
-import { getClassToken } from '../tools';
+import { computed, inject, InjectionKey, onUnmounted, provide, Ref, ref, shallowRef, watch } from 'vue';
 import { ItemData, OptionItemData, SelectionItemState, SelectionValue } from './types';
 
+const token = Symbol() as InjectionKey<CdkSelectionDispatcher>;
 
+export const useDispatcher = () => inject(token, undefined);
 
 /**
  * @description
@@ -12,12 +13,6 @@ import { ItemData, OptionItemData, SelectionItemState, SelectionValue } from './
  * @class SelectionDispatcher
  */
 export class CdkSelectionDispatcher {
-
-  static key = getClassToken(CdkSelectionDispatcher);
-
-  static instance() {
-    return inject(this.key, undefined);
-  }
 
   readonly states = new Map<number | string, SelectionItemState>();
 
@@ -36,7 +31,7 @@ export class CdkSelectionDispatcher {
     private readonly multipleRef: Ref<boolean>,
     private readonly initValue: Ref<SelectionValue>
   ) {
-    provide(CdkSelectionDispatcher.key, this);
+    provide(token, this);
   }
 
   subscribe(key: number | string, state: SelectionItemState) {
@@ -101,10 +96,5 @@ export class CdkSelectionDispatcher {
   private isEqualModelValue(key: number | string) {
     const data = this.initValue.value;
     return Array.isArray(data) ? data.indexOf(key) !== -1 : data === key;
-  }
-
-  private isFull() {
-    const values = this.dataRef.value;
-    return Array.isArray(values) ? values.length === this.count.value : false;
   }
 }

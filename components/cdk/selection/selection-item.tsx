@@ -1,5 +1,5 @@
 import { computed, defineComponent, Fragment, h, reactive, renderSlot, watch } from 'vue';
-import { CdkSelectionDispatcher } from './selection-dispatcher';
+import { CdkSelectionDispatcher, useDispatcher } from './selection-dispatcher';
 import { SelectionItemState } from './types';
 
 /**
@@ -28,7 +28,7 @@ export const CdkSelectionItem = defineComponent({
   setup(props, ctx) {
     const state = reactive<SelectionItemState>({ selected: false });
 
-    const dispatcher = CdkSelectionDispatcher.instance();
+    const dispatcher = useDispatcher();
     if (dispatcher) {
       dispatcher.subscribe(props.value, state);
       const data = computed(() => {
