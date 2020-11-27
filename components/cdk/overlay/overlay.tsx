@@ -2,7 +2,6 @@ import {
   Teleport,
   Transition,
   defineComponent,
-  getCurrentInstance,
   inject,
   nextTick,
   onMounted,
@@ -73,7 +72,7 @@ export const Overlay = defineComponent({
   setup(props, ctx) {
     const strategy = inject('cdk-overlay-strategy', new GlobalPositionStrategy());
     const overlayProps = strategy.setup();
-    const positionedStyle = watchRef(overlayProps.positionedStyle);
+    const positionedStyle = vmodelRef(overlayProps.positionedStyle);
     const containerStyle = ref(overlayProps.containerStyle);
 
 
