@@ -47,6 +47,7 @@ An Vue3 UI Component Libary using design of Element-UI, inspired from Angular CD
 - [ ] table
 - [ ] tabs
 - [x] tag
+- [x] transfer
 - [ ] time-picker
 - [ ] time-select
 - [ ] timeline

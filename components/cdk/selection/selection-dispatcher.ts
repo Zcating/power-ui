@@ -14,7 +14,7 @@ export const useDispatcher = () => inject(token, undefined);
  */
 export class CdkSelectionDispatcher {
 
-  readonly states = new Map<number | string, SelectionItemState | undefined>();
+  readonly states = new Map<number | string, SelectionItemState>();
 
   readonly count = computed(() => this._count.value);
 
@@ -31,7 +31,9 @@ export class CdkSelectionDispatcher {
   ) {
     provide(token, this);
     watch(dataRef, (value) => {
-
+      this.states.forEach((state, key) => {
+        state.selected = this.testEquals(value, key);
+      });
     });
   }
 
@@ -39,7 +41,7 @@ export class CdkSelectionDispatcher {
     state.selected = this.testEquals(this.dataRef.value, key);
     this.states.set(key, state);
     this._count.value = this.states.size;
-    const stop = watch(() => state.selected, (selected, oldValue) => {
+    watch(() => state.selected, (selected, oldValue) => {
       if (selected === oldValue) {
         return;
       }
@@ -62,9 +64,7 @@ export class CdkSelectionDispatcher {
     });
 
     onUnmounted(() => {
-      stop();
-      this.states.set(key, undefined);
-      console.log(key, this.states);
+      this.states.delete(key);
       this._count.value = this.states.size;
     });
   }
