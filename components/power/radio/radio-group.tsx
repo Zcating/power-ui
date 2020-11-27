@@ -1,8 +1,8 @@
+import { defineComponent, inject, InjectionKey, provide, Ref, ref, toRef, watch } from 'vue';
 import { DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, UP_ARROW } from 'vue-cdk/keycodes';
-import { cloneVNode, defineComponent, inject, InjectionKey, provide, Ref, ref, toRef, watch } from 'vue';
 import { Enum } from 'vue-cdk/utils';
+import { CdkSelection } from 'vue-cdk/selection';
 import { ElSize } from '../types';
-import { CdkSelection, CdkSelectionItem, ItemData, OptionItemData } from 'vue-cdk/selection';
 
 export interface RadioGroupData {
   textColor: Ref<string | undefined>;
@@ -113,9 +113,10 @@ export const RadioGroup = defineComponent({
         role="radiogroup"
         onKeydown={handleKeydown}
       >
-        <CdkSelection initValue={props.modelValue} onSelected={(value) => {
-          ctx.emit('update:modelValue', (value as ItemData).value);
-        }}>
+        <CdkSelection
+          modelValue={props.modelValue}
+          onSelected={(value) => ctx.emit('update:modelValue', value)}
+        >
           {ctx.slots.default?.()}
         </CdkSelection>
       </div>

@@ -1,8 +1,11 @@
 import { Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
 import { List, isEqual, renderCondition } from 'vue-cdk/utils';
-import { CdkSelection, OptionItemData } from 'vue-cdk/selection';
+import { CdkSelection } from 'vue-cdk/selection';
 import { Tooltip } from '../tooltip';
 import { Input } from '../input';
+import { provideDescMap } from './utils';
+import { SelectionValue } from 'vue-cdk/selection/types';
+import { vmodelRef } from 'vue-cdk/hook';
 
 function useClear(
   ctx: SetupContext,
@@ -33,14 +36,12 @@ function useClear(
   };
 }
 
-
 export const Select = defineComponent({
   props: {
     id: String,
     name: String,
     modelValue: {
       type: [String, Number, List<string | number>()],
-      default: ''
     },
     autocomplete: {
       type: String,
@@ -83,29 +84,29 @@ export const Select = defineComponent({
   },
 
   setup(props, ctx) {
-    const emptyText = computed(() => '');
     const selectedLabel = ref('');
     const tooltipVisible = ref(false);
+    const modelRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
+      ctx.emit('update:modelValue', value);
+    });
 
-    const handleSelected = (data: OptionItemData) => {
-      if (!data) {
+    // provide a map to get description from selection.
+    const map = provideDescMap();
+    const handleSelected = (value: SelectionValue) => {
+      if (!value) {
         return;
       }
-      if (props.multiple) {
-        const array = Array.isArray(data) ? data.map(value => value.value) : [data.value];
-        ctx.emit('update:modelValue', array);
+      if (Array.isArray(value)) {
+        // TODO: Provide mutitple selection
       } else {
-        if (!Array.isArray(data)) {
-          ctx.emit('update:modelValue', data.value);
-          selectedLabel.value = data.label;
-        }
+        selectedLabel.value = map.get(value);
         tooltipVisible.value = false;
       }
     };
 
     const handleClearClick = () => {
       selectedLabel.value = '';
-      ctx.emit('update:modelValue', undefined);
+      modelRef.value = undefined;
     };
 
     const iconClass = computed(() => {
@@ -127,6 +128,8 @@ export const Select = defineComponent({
       });
     });
 
+    const emptyText = computed(() => '');
+
     return () => {
       const {
         id,
@@ -140,7 +143,29 @@ export const Select = defineComponent({
         disabled,
         size
       } = props;
-
+      const content = () => (
+        <CdkSelection
+          v-model={modelRef}
+          onSelected={handleSelected}
+          multiple={multiple}
+          v-slots={{
+            default: () => (
+              <div class={['el-select-dropdown__wrap',]}>
+                <ul
+                  v-show={!loading}
+                  class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
+                >
+                  {ctx.slots.default?.()}
+                </ul>
+              </div>
+            ),
+            empty: () => renderCondition(
+              emptyText && (!allowCreate || loading),
+              ctx.slots.empty ? ctx.slots.empty() : <p class="el-select-dropdown__empty">{emptyText}</p>,
+            )
+          }}
+        />
+      );
       return (
         <Tooltip
           v-model={tooltipVisible.value}
@@ -152,29 +177,7 @@ export const Select = defineComponent({
           popperClass={'el-select-dropdown'}
           popperStyle={{ minWidth: `${inputWidth.value}px` }}
           v-slots={{
-            content: () => (
-              <CdkSelection
-                initValue={0}
-                onSelected={handleSelected}
-                multiple={multiple}
-                v-slots={{
-                  default: () => (
-                    <div class={['el-select-dropdown__wrap',]}>
-                      <ul
-                        v-show={!loading}
-                        class={['el-select-dropdown__list', { 'is-empty': !allowCreate }]}
-                      >
-                        {ctx.slots.default?.()}
-                      </ul>
-                    </div>
-                  ),
-                  empty: () => renderCondition(
-                    emptyText && (!allowCreate || loading),
-                    ctx.slots.empty ? ctx.slots.empty() : <p class="el-select-dropdown__empty">{emptyText}</p>,
-                  )
-                }}
-              />
-            )
+            content
           }}
         >
           <div class={['el-select', size ? 'el-select--' + size : '']}>

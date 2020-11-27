@@ -5,6 +5,8 @@ import { CdkSelectionItem } from 'vue-cdk/selection';
 import { ElSize } from '../types';
 
 export const Checkbox = defineComponent({
+  name: 'po-checkbox',
+  inheritAttrs: false,
   props: {
     checked: {
       type: Boolean,
@@ -54,6 +56,7 @@ export const Checkbox = defineComponent({
         v-model={modelRef.value}
       >
         <label
+          key={props.value}
           class={['el-checkbox',
             props.size ? 'el-checkbox--' + props.size : '',
             { 'is-disabled': props.disabled },
@@ -63,6 +66,7 @@ export const Checkbox = defineComponent({
           role="checkbox"
           aria-checked={modelRef.value}
           aria-disabled={props.disabled}
+          {...ctx.attrs}
         >
           <span
             class={[
@@ -79,42 +83,25 @@ export const Checkbox = defineComponent({
             aria-checked={props.indeterminate ? 'mixed' : undefined}
           >
             <span class="el-checkbox__inner" />
-            {renderCondition(
-              props.trueLabel || props.falseLabel,
-              <input
-                class="el-checkbox__original"
-                type="checkbox"
-                name={props.name}
-                disabled={props.disabled}
-                true-value={props.trueLabel}
-                false-value={props.falseLabel}
-                // v-model={modelRef.value}
-                onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                checked={modelRef.value}
-              />,
-              <input
-                class="el-checkbox__original"
-                type="checkbox"
-                name={props.name}
-                disabled={props.disabled}
-                // value={props.value}
-                // v-model={modelRef.value}
-                onChange={handleChange}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                checked={modelRef.value}
-              />
-            )}
+            <input
+              class="el-checkbox__original"
+              type="checkbox"
+              name={props.name}
+              disabled={props.disabled}
+              checked={modelRef.value}
+              onChange={handleChange}
+              onClick={handleChange}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />
           </span>
           {renderCondition(
             ctx.slots.default || props.value,
-            <span
-              class="el-checkbox__label"
-            >
-              {ctx.slots.default ? ctx.slots.default() : props.value}
-            </span>
+            () => (
+              <span class="el-checkbox__label">
+                {ctx.slots.default ? ctx.slots.default() : props.value}
+              </span>
+            )
           )}
         </label>
       </CdkSelectionItem>

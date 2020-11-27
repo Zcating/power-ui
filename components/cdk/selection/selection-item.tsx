@@ -1,6 +1,5 @@
-import { computed, defineComponent, Fragment, h, reactive, renderSlot, watch } from 'vue';
-import { CdkSelectionDispatcher, useDispatcher } from './selection-dispatcher';
-import { SelectionItemState } from './types';
+import { defineComponent, Fragment, onUnmounted, reactive, watch } from 'vue';
+import { useDispatcher } from './selection-dispatcher';
 
 /**
  * @description
@@ -12,50 +11,40 @@ import { SelectionItemState } from './types';
 export const CdkSelectionItem = defineComponent({
   name: 'cdk-selection-item',
   props: {
-    label: {
-      type: String,
-      default: ''
-    },
     value: {
       type: [String, Number],
       required: true,
     },
+
     modelValue: {
       type: Boolean,
       default: false
     }
   },
+  emits: ['update:modelValue'],
   setup(props, ctx) {
-    const state = reactive<SelectionItemState>({ selected: false });
+    const state = reactive({ selected: props.modelValue });
 
     const dispatcher = useDispatcher();
     if (dispatcher) {
       dispatcher.subscribe(props.value, state);
-      const data = computed(() => {
-        return {
-          label: props.label,
-          value: props.value,
-        };
-      });
-      watch(() => state.selected, (value) => {
-        if (value) {
-          dispatcher.select(data.value);
-        } else {
-          dispatcher.deselect(props.value);
-        }
-        ctx.emit('update:modelValue', value);
-      }, { immediate: true });
-
       watch(() => props.modelValue, (value) => {
+        if (value === state.selected) {
+          return;
+        }
         state.selected = value;
       });
+      watch(() => state.selected, (value) => {
+        if (value === props.modelValue) {
+          return;
+        }
+        ctx.emit('update:modelValue', value);
+      });
     }
+    onUnmounted(() => {
+      console.log(props.value);
+    });
 
-
-    return () => (
-      <Fragment key={props.value}>
-        {renderSlot(ctx.slots, 'default')}
-      </Fragment>
-    );
+    return () => ctx.slots.default?.();
   }
 });

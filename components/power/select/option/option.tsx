@@ -1,6 +1,7 @@
-import { defineComponent, ref, toRef } from 'vue';
+import { defineComponent, ref, toRef, watch } from 'vue';
 import { CdkSelectionItem } from 'vue-cdk/selection';
 import { watchRef } from 'vue-cdk/hook';
+import { useDescMap } from '../utils';
 
 export const Option = defineComponent({
   name: 'el-option',
@@ -29,9 +30,16 @@ export const Option = defineComponent({
     const hover = ref(false);
     const limitReached = ref(false);
     const selectedRef = ref(false);
+    const map = useDescMap();
+    if (map) {
+      watch([() => props.label, () => props.value], ([label, value]) => {
+        map.set(value, label as string);
+      }, {
+        immediate: true
+      });
+    }
     return () => (
       <CdkSelectionItem
-        label={props.label}
         value={props.value}
         v-model={selectedRef.value}
       >

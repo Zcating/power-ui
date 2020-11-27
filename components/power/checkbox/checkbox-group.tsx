@@ -1,7 +1,8 @@
-import { CdkSelection, ItemData, OptionItemData, CdkSelectionRef } from 'vue-cdk/selection';
+import { CdkSelection, CdkSelectionRef } from 'vue-cdk/selection';
 import { Enum, List, Method } from 'vue-cdk/utils';
 import { defineComponent, InjectionKey, provide, Ref, toRef } from 'vue';
 import { ElSize } from 'power-ui/types';
+import { SelectionValue } from 'vue-cdk/selection/types';
 
 export interface CheckboxGroupData {
   textColor: Ref<string | undefined>;
@@ -13,6 +14,8 @@ export interface CheckboxGroupData {
 export const groupDataKey = Symbol() as InjectionKey<CheckboxGroupData>;
 
 export const CheckboxGroup = defineComponent({
+  name: 'po-checkbox-group',
+  inheritAttrs: false,
   props: {
     dataSource: {
       type: List<{ label: string, value: string | number }>(),
@@ -48,10 +51,9 @@ export const CheckboxGroup = defineComponent({
   },
   setup(props, ctx) {
     // multiple will always return array.
-    const handleSelected = (items: OptionItemData) => {
-      const value = (items as ItemData[]).map(item => item.value);
-      ctx.emit('update:modelValue', value);
-      ctx.emit('change', value);
+    const handleSelected = (items: SelectionValue) => {
+      ctx.emit('update:modelValue', items as (string | number)[]);
+      ctx.emit('change', items as (string | number)[]);
     };
 
     provide(groupDataKey, {
@@ -62,14 +64,16 @@ export const CheckboxGroup = defineComponent({
     });
 
     return () => (
-      <CdkSelection
-        ref="selection"
-        multiple={true}
-        onSelected={handleSelected}
-        initValue={props.modelValue}
-      >
-        {ctx.slots.default?.()}
-      </CdkSelection>
+      <div class="el-checkbox-group" role="group" aria-label="checkbox-group" {...ctx.attrs}>
+        <CdkSelection
+          ref="selection"
+          multiple={true}
+          modelValue={props.modelValue}
+          onSelected={handleSelected}
+        >
+          {ctx.slots.default?.()}
+        </CdkSelection>
+      </div>
     );
   },
   methods: {

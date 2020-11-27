@@ -63,7 +63,6 @@ export const Radio = defineComponent({
       return (
         <CdkSelectionItem
           value={String(value)}
-          label={String(value)}
           v-model={checkedRef.value}
         >
           <label

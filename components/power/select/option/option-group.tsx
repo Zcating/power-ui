@@ -1,5 +1,4 @@
-import { defineComponent, ref, renderSlot, toRef, watch } from 'vue';
-import { OptionService } from './option.service';
+import { defineComponent, ref, renderSlot } from 'vue';
 
 export const OptionGroup = defineComponent({
   props: {
@@ -10,16 +9,7 @@ export const OptionGroup = defineComponent({
     }
   },
   setup(props, ctx) {
-    const service = new OptionService();
-
     const visible = ref(false);
-
-    watch(toRef(props, 'disabled'), (value) => service.setDisabled(value));
-
-    service.watchInputValue((value) => {
-      
-    });
-
 
     return { visible };
   },

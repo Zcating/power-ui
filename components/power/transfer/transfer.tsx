@@ -1,18 +1,10 @@
-import { Button } from 'power-ui/button/button';
-import { computed, defineComponent, ref, shallowRef, toRef, watch } from 'vue';
+import { computed, defineComponent, shallowRef, toRef } from 'vue';
+import { Button } from 'power-ui';
 import { vmodelRef } from 'vue-cdk/hook';
 import { List, renderCondition } from 'vue-cdk/utils';
 import { TransferPanel } from './transfer-panel';
+import { TransferData } from './types';
 
-export interface TransferRenderProps {
-  disabled: boolean;
-}
-
-export interface TransferData {
-  key: string;
-  label: string;
-  disabled: boolean;
-}
 
 export const Transfer = defineComponent({
   name: 'po-transfer',
@@ -35,32 +27,35 @@ export const Transfer = defineComponent({
     },
   },
   setup(props, ctx) {
+    const onSelected = () => { };
+
+    const targetKeyRef = vmodelRef(toRef(props, 'targetKey'), (value) => ctx.emit('update:targetKey', value));
+
     const leftValuesRef = shallowRef<string[]>([]);
     const rightValuesRef = shallowRef<string[]>([]);
 
-    const onSelected = () => { };
+    const leftItemsRef = computed(() => {
+      return props.dataSource.filter((data) => {
+        return targetKeyRef.value.indexOf(data.key) === -1;
+      });
+    });
 
-    const add = (direction: 'left' | 'right') => {
+    const rightItemsRef = computed(() => {
+      return props.dataSource.filter((data) => {
+        return targetKeyRef.value.indexOf(data.key) !== -1;
+      });
+    });
+
+    const addTo = (direction: 'left' | 'right') => {
       if (direction === 'left') {
-
+        targetKeyRef.value = rightValuesRef.value;
+        rightValuesRef.value = [];
       } else {
-
+        targetKeyRef.value = leftValuesRef.value;
+        leftValuesRef.value = [];
       }
     };
 
-    const modelRef = vmodelRef(toRef(props, 'targetKey'), (value) => ctx.emit('update:targetKey', value));
-
-    const leftItems = computed(() => {
-      return props.dataSource.filter((data) => {
-        return modelRef.value.indexOf(data.key) === -1;
-      });
-    });
-
-    const rightItems = computed(() => {
-      return props.dataSource.filter((data) => {
-        return modelRef.value.indexOf(data.key) !== -1;
-      });
-    });
 
     // const 
     return () => {
@@ -72,15 +67,17 @@ export const Transfer = defineComponent({
       const leftValues = leftValuesRef.value;
       const rightValues = rightValuesRef.value;
       const hasButtonTexts = buttonTexts.length === 2;
+      const leftItems = leftItemsRef.value;
+      const rightItems = rightItemsRef.value;
       return (
         <div class="el-transfer">
-          {/* <TransferPanel dataSource={leftItems} /> */}
+          <TransferPanel dataSource={leftItems} v-model={leftValuesRef.value} />
           <div class="el-transfer__buttons">
             <Button
               type="primary"
               class={['el-transfer__button', hasButtonTexts ? 'is-with-texts' : '']}
-              onClick={() => add('left')}
-              disabled={leftValues.length === 0}
+              onClick={() => addTo('left')}
+              disabled={rightValues.length === 0}
             >
               <i class="el-icon-arrow-left" />
               {renderCondition(
@@ -91,8 +88,8 @@ export const Transfer = defineComponent({
             <Button
               type="primary"
               class={['el-transfer__button', hasButtonTexts ? 'is-with-texts' : '']}
-              onClick={() => add('right')}
-              disabled={rightValues.length === 0}
+              onClick={() => addTo('right')}
+              disabled={leftValues.length === 0}
             >
               {renderCondition(
                 typeof buttonTexts[1] === 'string',
@@ -101,7 +98,7 @@ export const Transfer = defineComponent({
               <i class="el-icon-arrow-right" />
             </Button>
           </div>
-          {/* <TransferPanel dataSource={rightItems} /> */}
+          <TransferPanel dataSource={rightItems} v-model={rightValuesRef.value} />
           {/* {ctx.slots.left ? ctx.slots.left(renderProps) : <TransferPanel v-model={leftValues.value}></TransferPanel>}
           {ctx.slots.right ? ctx.slots.right(renderProps) : <TransferPanel v-model={rightValues.value}></TransferPanel>} */}
         </div>

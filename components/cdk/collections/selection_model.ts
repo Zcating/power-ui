@@ -1,4 +1,4 @@
-import {Ref, ref, watch} from 'vue';
+import { Ref, ref, watch } from 'vue';
 
 export interface SelectionChange<T> {
   source: SelectionModel<T>;
@@ -12,7 +12,7 @@ export class SelectionModel<T> {
   private selection = new Set<T>();
 
   private deselectedToEmit: T[] = [];
-  
+
   private selectedToEmit: T[] = [];
 
   private selected: T[] | null = null;
@@ -26,7 +26,7 @@ export class SelectionModel<T> {
   get isNotEmpty(): boolean {
     return !this.isEmpty;
   }
-  
+
   get isMultipleSelection() {
     return this.multiple;
   }
@@ -119,7 +119,7 @@ export class SelectionModel<T> {
     }
   }
 
-  private unmarkSelected(value: T, 
+  private unmarkSelected(value: T,
     emitChanges: boolean = this.emitChanges
   ) {
     if (!this.isSelected(value)) {
