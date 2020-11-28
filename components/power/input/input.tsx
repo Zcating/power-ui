@@ -1,6 +1,6 @@
 import { vmodelRef } from 'vue-cdk/hook';
 import { Enum, renderCondition, toAttrComponent } from 'vue-cdk/utils';
-import { CSSProperties, InputHTMLAttributes, Ref, SetupContext, TextareaHTMLAttributes, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, resolveDynamicComponent, toRef, watch } from 'vue';
+import { CSSProperties, InputHTMLAttributes, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, resolveDynamicComponent, toRef, watch } from 'vue';
 import { calcTextareaHeight } from './utils';
 import { AutosizeData } from '.';
 

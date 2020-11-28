@@ -14,7 +14,7 @@ import {
   watch,
 } from 'vue';
 import { GlobalPositionStrategy, PositionStrategy } from './position';
-import { vmodelRef, watchRef } from '../hook';
+import { vmodelRef } from '../hook';
 import { usePlatform } from '../global';
 import './overlay.scss';
 

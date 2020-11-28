@@ -46,7 +46,6 @@
     "/**/*.ts",
     "./**/*.tsx",
     "./**/*.vue",
-    "components/power/transfer/types.ts",
   ],
   "exclude": [
     "node_modules",
