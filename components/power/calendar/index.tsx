@@ -1,10 +1,10 @@
-import { computed, defineComponent, inject, shallowRef } from 'vue';
-import { langToken } from 'vue-cdk/global';
-import { zhCN } from 'vue-cdk/lang';
+import { computed, defineComponent } from 'vue';
 import { chunk } from 'lodash-es';
 import { month } from 'vue-cdk';
 import { Method, Model } from 'vue-cdk/utils';
 import { Renderable } from 'vue-cdk/types';
+import { zhCN } from 'power-ui/lang';
+
 
 export default defineComponent({
   name: 'ele-calendar',
@@ -19,7 +19,7 @@ export default defineComponent({
     }
   },
   setup(props, ctx) {
-    const weekList = inject(langToken, shallowRef(zhCN)).value.datepicker.weeks;
+    const weekList = zhCN.datepicker.weeks;
     const dayList = computed(() => {
       let time: Date;
       if (props.modelValue instanceof Date) {

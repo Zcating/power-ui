@@ -5,6 +5,9 @@ export const Form = defineComponent({
   props: {
     labelPosition: {
       type: Enum<string>(),
+    },
+    model: {
+
     }
   },
   setup(props, ctx) {

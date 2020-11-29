@@ -18,28 +18,17 @@ const breakPoints = {
  * @class
  */
 export default class {
-  span = ref<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
-  direction = ref<'portrait' | 'landscape'>('landscape');
-  queryMedia = (top: any, query: string, cb: (val: boolean) => void) => {
-    // get media list
-    let mql: MediaQueryList | null = null;
-    const handler = (e: any) => {
-      cb(e.matches);
-    };
-    mql = top?.matchMedia?.(query);
-    if (!mql) return;
-    cb(mql.matches);
-    mql.addEventListener('change', handler);
-    onBeforeUnmount(() => {
-      if (mql) {
-        mql.removeEventListener('change', handler);
-      }
-    });
-  };
+  private span = ref<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
+  private direction = ref<'portrait' | 'landscape'>('landscape');
 
-  constructor(platform: Platform) {
-    if (!platform.BROWSER) return;
-    const { TOP } = platform;
+  constructor(private platform: Platform) {
+  }
+
+  calculate() {
+    const { TOP, BROWSER } = this.platform;
+    if (!BROWSER) {
+      return;
+    }
     for (const key in breakPoints) {
       this.queryMedia(TOP, (breakPoints as any)[key], (e) => {
         if (e) {
@@ -59,5 +48,22 @@ export default class {
         }
       });
     }
+  }
+
+  private queryMedia(top: any, query: string, cb: (val: boolean) => void) {
+    // get media list
+    let mql: MediaQueryList | null = null;
+    const handler = (e: any) => {
+      cb(e.matches);
+    };
+    mql = top?.matchMedia?.(query);
+    if (!mql) return;
+    cb(mql.matches);
+    mql.addEventListener('change', handler);
+    onBeforeUnmount(() => {
+      if (mql) {
+        mql.removeEventListener('change', handler);
+      }
+    });
   }
 }

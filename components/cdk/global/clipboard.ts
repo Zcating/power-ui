@@ -75,7 +75,6 @@ export default class Clipboard {
     // no doc no functionaility
     if (!this.doc) return '';
     const copyEl = new Copy(text);
-    console.log(copyEl);
     const result = copyEl.copy();
     copyEl.destroy();
     return result;

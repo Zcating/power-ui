@@ -24,8 +24,11 @@ export default class ViewPort {
       : { width: 0, height: 0 };
   };
 
-  constructor(platform: Platform) {
+  constructor(private platform: Platform) {
     this.isBrowser = platform.BROWSER;
+  }
+
+  observe() {
     if (!this.isBrowser) return;
     runWhileResize(this.updateSize);
     const body = document.documentElement || document.body;
