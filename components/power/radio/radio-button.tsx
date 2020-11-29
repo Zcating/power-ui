@@ -69,7 +69,7 @@ export const RadioButton = defineComponent({
     });
 
     return () => {
-      const { value, } = props;
+      const { value } = props;
       const size = sizeRef.value;
       const disabled = disabledRef.value;
       const checked = checkedRef.value;
