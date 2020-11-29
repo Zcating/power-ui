@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from '../view/home';
-import { ComponentDoc, CheckboxDoc, ButtonDoc, RadioDoc, SwitchDoc, Pending, AlertDoc, DialogDoc, TransferDoc } from '../view/component';
+import { ComponentDoc, CheckboxDoc, ButtonDoc, RadioDoc, SwitchDoc, Pending, AlertDoc, DialogDoc, TransferDoc, FormDoc } from '../view/component';
 export default createRouter({
   history: createWebHashHistory(''),
   routes: [
@@ -40,6 +40,10 @@ export default createRouter({
           path: 'transfer',
           name: 'transfter',
           component: TransferDoc,
+        }, {
+          path: 'form',
+          name: 'form',
+          component: FormDoc,
         }, {
           path: ':name(.*)*',
           component: Pending
