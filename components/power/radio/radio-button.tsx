@@ -1,5 +1,5 @@
 import { computed, defineComponent, ref, toRef, watch } from 'vue';
-import { vmodelRef, watchRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { Enum, Method } from 'vue-cdk/utils';
 import { CdkSelectionItem } from 'vue-cdk/selection';
 import { useRadioGroupData } from './radio-group';
@@ -26,11 +26,12 @@ export const RadioButton = defineComponent({
   },
 
   setup(props, ctx) {
-    const checkedRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
+    const checkedRef = watchRef(toRef(props, 'modelValue'), (value) => {
       ctx.emit('update:modelValue', value);
     });
     const disabledRef = watchRef(toRef(props, 'disabled'));
     const sizeRef = watchRef(toRef(props, 'size'));
+
     const fillRef = ref('#ffffff');
     const textColorRef = ref('#409EFF');
     const groupData = useRadioGroupData();

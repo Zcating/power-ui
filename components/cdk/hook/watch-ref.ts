@@ -1,49 +1,25 @@
-import { Ref, UnwrapRef, WatchSource, customRef, isRef, watch, ref, shallowRef } from 'vue';
+import { Ref, shallowRef, watch } from 'vue';
 
 
-
-// type MapSources<T> = {
-//   [K in keyof T]: T[K] extends WatchSource<infer V> ? V : T[K] extends object ? T[K] : never;
-// };
-
-// export type ArraySource = Readonly<Array<WatchSource<unknown> | object>>;
-
-// export function watchRef<T extends ArraySource, V>(arg: T, mapper: (arg: MapSources<T>) => V): Ref<V>;
-
-// export function watchRef<T extends Ref<any>, V = UnwrapRef<T>>(arg: T, mapper?: (arg: UnwrapRef<T>) => V): Ref<V>;
-
-// export function watchRef<T extends any, V>(arg: T, mapper: (arg: any) => V = (args) => args): Ref<V> {
-//   let watchSource: any;
-//   if (Array.isArray(arg)) {
-//     watchSource = () => arg;
-//   } else if (isRef(arg)) {
-//     watchSource = arg;
-//   } else {
-//     throw Error('');
-//   }
-//   return customRef((track, trigger) => {
-//     let value: V;
-//     watch(watchSource, (source) => {
-//       value = mapper(source);
-//     }, { immediate: true });
-
-//     return {
-//       get() {
-//         track();
-//         return value;
-//       },
-//       set(newValue: V) {
-//         value = newValue;
-//         trigger();
-//       }
-//     };
-//   });
-// }
-
-export function watchRef<T>(arg: Ref<T>): Ref<T> {
-  const aRef = shallowRef(arg.value);
-  watch(arg, (value) => {
-    aRef.value = value;
+/**
+ * @description
+ * This function provides a easier way to watch a ref.
+ * 
+ * @function watchRef
+ */
+export function watchRef<T>(propValue: Ref<T>, setter?: (value: T, oldValue: T) => void, modelChange?: (value: T, oldValue: T) => void) {
+  const vmodel = shallowRef(propValue.value);
+  watch(propValue, (value, oldValue) => {
+    vmodel.value = value;
+    modelChange?.(value, oldValue);
   });
-  return aRef;
+  if (typeof setter === 'function') {
+    watch(vmodel, (value, oldValue) => {
+      setter(value, oldValue);
+    });
+  }
+
+  return vmodel;
 }
+
+

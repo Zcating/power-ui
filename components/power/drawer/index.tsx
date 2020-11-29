@@ -1,6 +1,6 @@
 import { Prop, Transition, computed, defineComponent, renderSlot, toRef } from 'vue';
 import { Enum, renderCondition } from 'vue-cdk/utils';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { Overlay } from 'vue-cdk/overlay';
 
 export type DrawerDirection = 'ltr' | 'rtl' | 'ttb' | 'btt';
@@ -74,7 +74,7 @@ export const Drawer = defineComponent({
       return direction === 'rtl' || direction === 'ltr';
     });
 
-    const elVisible = vmodelRef(toRef(props, 'visible'), (value) => {
+    const elVisible = watchRef(toRef(props, 'visible'), (value) => {
       ctx.emit('update:visible', value);
     });
 

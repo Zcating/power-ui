@@ -1,4 +1,4 @@
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { Transition, defineComponent, toRef } from 'vue';
 import { GlobalPositionStrategy, Overlay, provideStrategy } from 'vue-cdk';
 export const Dialog = defineComponent({
@@ -34,7 +34,7 @@ export const Dialog = defineComponent({
     width: String,
   },
   setup(props, ctx) {
-    const visible = vmodelRef(toRef(props, 'visible'), (value) => {
+    const visible = watchRef(toRef(props, 'visible'), (value) => {
       ctx.emit('update:visible', value);
     });
 

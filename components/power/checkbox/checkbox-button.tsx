@@ -1,6 +1,6 @@
 import { computed, defineComponent, ref, toRef } from 'vue';
 
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { Enum, Method, renderCondition } from 'vue-cdk/utils';
 import { CdkSelectionItem } from 'vue-cdk/selection';
 import { ElSize } from '../types';
@@ -29,7 +29,7 @@ export const CheckboxButton = defineComponent({
     onChange: Method<(value: boolean) => void>()
   },
   setup(props, ctx) {
-    const modelRef = vmodelRef(toRef(props, 'checked'), (value) => {
+    const modelRef = watchRef(toRef(props, 'checked'), (value) => {
       ctx.emit('update:checked', value);
     });
 

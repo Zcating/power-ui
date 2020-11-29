@@ -1,4 +1,4 @@
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { isObject, List, renderCondition } from 'vue-cdk/utils';
 import { computed, defineComponent, ExtractPropTypes, reactive, Ref, renderList, toRef, VNode } from 'vue';
 
@@ -83,7 +83,7 @@ export const Rate = defineComponent({
   },
 
   setup(props, ctx) {
-    const currentValue = vmodelRef(toRef(props, 'modelValue'), value => {
+    const currentValue = watchRef(toRef(props, 'modelValue'), value => {
       ctx.emit('update:modelValue', value);
     });
 

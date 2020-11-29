@@ -1,5 +1,5 @@
 import { CSSProperties, Transition, VNode, cloneVNode, computed, defineComponent, onUnmounted, ref, toRef, watch } from 'vue';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { ESCAPE } from 'vue-cdk/keycodes';
 import { usePlatform } from 'vue-cdk/global';
 import { FlexiblePositionStrategy, Overlay, provideStrategy } from 'vue-cdk';
@@ -60,7 +60,7 @@ export const Tooltip = defineComponent({
     },
   },
   setup(props, ctx) {
-    const visible = vmodelRef(toRef(props, 'modelValue'), (value) => ctx.emit('update:modelValue', value));
+    const visible = watchRef(toRef(props, 'modelValue'), (value) => ctx.emit('update:modelValue', value));
     const referenceRef = ref<HTMLElement | null>(null);
     const popperRef = ref<HTMLElement | null>(null);
     const strategy = new FlexiblePositionStrategy(referenceRef);

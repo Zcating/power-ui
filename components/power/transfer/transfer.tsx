@@ -1,6 +1,6 @@
 import { computed, defineComponent, shallowRef, toRef } from 'vue';
 import { Button } from 'power-ui';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { List, renderCondition } from 'vue-cdk/utils';
 import { TransferPanel } from './transfer-panel';
 import { TransferData } from './types';
@@ -38,10 +38,10 @@ export const Transfer = defineComponent({
     },
   },
   setup(props, ctx) {
-    const targetKeyRef = vmodelRef(toRef(props, 'targetKey'), (value) => ctx.emit('update:targetKey', value));
+    const targetKeyRef = watchRef(toRef(props, 'targetKey'), (value) => ctx.emit('update:targetKey', value));
 
-    const leftValuesRef = vmodelRef(toRef(props, 'leftDefaultKeys'));
-    const rightValuesRef = vmodelRef(toRef(props, 'rightDefaultKeys'));
+    const leftValuesRef = watchRef(toRef(props, 'leftDefaultKeys'));
+    const rightValuesRef = watchRef(toRef(props, 'rightDefaultKeys'));
 
     const leftItemsRef = computed(() => {
       return props.dataSource.filter((data) => {

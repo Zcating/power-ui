@@ -1,5 +1,5 @@
 import { defineComponent, Prop, toRef } from 'vue';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { List, Method, renderCondition } from '../utils';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionValue } from './types';
@@ -29,7 +29,7 @@ export const CdkSelection = defineComponent({
     'update:modelValue': (value: SelectionValue) => true,
   },
   setup(props, ctx) {
-    const modelRef = vmodelRef(toRef(props, 'modelValue'));
+    const modelRef = watchRef(toRef(props, 'modelValue'));
 
     const dispatcher = new CdkSelectionDispatcher(
       toRef(props, 'multiple'),

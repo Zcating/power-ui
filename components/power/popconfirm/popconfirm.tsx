@@ -3,7 +3,7 @@ import { defineComponent, toRef } from 'vue';
 import { Button, ElButtonType } from '../button';
 import '../theme-chalk/src/popconfirm.scss';
 import { Placement } from '../tooltip';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 
 export const Popconfirm = defineComponent({
   props: {
@@ -42,7 +42,7 @@ export const Popconfirm = defineComponent({
     cancel: Function,
   },
   setup(props, ctx) {
-    const visible = vmodelRef(
+    const visible = watchRef(
       toRef(props, 'modelValue'),
       (value) => {
         ctx.emit('update:modelValue', value);

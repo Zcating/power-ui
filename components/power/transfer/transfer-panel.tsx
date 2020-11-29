@@ -1,6 +1,6 @@
 import { Checkbox, CheckboxGroup } from 'power-ui/checkbox';
 import { computed, defineComponent, ref, shallowReactive, toRef, VNode, watch } from 'vue';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { List, Method } from 'vue-cdk/utils';
 import { TransferData } from './types';
 
@@ -35,7 +35,7 @@ export const TransferPanel = defineComponent({
     }
   },
   setup(props, ctx) {
-    const keysRef = vmodelRef(
+    const keysRef = watchRef(
       toRef(props, 'modelValue'),
       (value) => {
         ctx.emit('update:modelValue', value);

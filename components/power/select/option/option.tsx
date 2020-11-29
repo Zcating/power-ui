@@ -26,7 +26,7 @@ export const Option = defineComponent({
   },
 
   setup(props, ctx) {
-    const elDisabled = watchRef(toRef(props, 'disabled'));
+    const disabledRef = watchRef(toRef(props, 'disabled'));
     const hover = ref(false);
     const limitReached = ref(false);
     const selectedRef = ref(false);
@@ -49,7 +49,7 @@ export const Option = defineComponent({
           onClick={() => selectedRef.value = true}
           class={['el-select-dropdown__item', {
             'selected': selectedRef.value,
-            'is-disabled': elDisabled.value || limitReached.value,
+            'is-disabled': disabledRef.value || limitReached.value,
             'hover': hover.value
           }]}
         >

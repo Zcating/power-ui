@@ -14,7 +14,7 @@ import {
   watch,
 } from 'vue';
 import { GlobalPositionStrategy, PositionStrategy } from './position';
-import { vmodelRef } from '../hook';
+import { watchRef } from '../hook';
 import { usePlatform } from '../global';
 import './overlay.scss';
 
@@ -72,11 +72,11 @@ export const Overlay = defineComponent({
   setup(props, ctx) {
     const strategy = inject('cdk-overlay-strategy', new GlobalPositionStrategy());
     const overlayProps = strategy.setup();
-    const positionedStyle = vmodelRef(overlayProps.positionedStyle);
+    const positionedStyle = watchRef(overlayProps.positionedStyle);
     const containerStyle = ref(overlayProps.containerStyle);
 
 
-    const visible = vmodelRef(toRef(props, 'visible'), (value) => {
+    const visible = watchRef(toRef(props, 'visible'), (value) => {
       ctx.emit('update:visible', value);
     });
 

@@ -1,7 +1,7 @@
 
-import { computed, defineComponent, Ref, ref, toRef, watch } from 'vue';
+import { computed, defineComponent, ref, toRef, watch } from 'vue';
 import { useRadioGroupData } from './radio-group';
-import { vmodelRef, watchRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { Enum, Method } from 'vue-cdk/utils';
 import { CdkSelectionItem } from 'vue-cdk/selection';
 import { ElSize } from '../types';
@@ -30,7 +30,7 @@ export const Radio = defineComponent({
     'update:modelValue': (value: boolean) => true,
   },
   setup(props, ctx) {
-    const checkedRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
+    const checkedRef = watchRef(toRef(props, 'modelValue'), (value) => {
       ctx.emit('update:modelValue', value);
     });
     const disabledRef = watchRef(toRef(props, 'disabled'));

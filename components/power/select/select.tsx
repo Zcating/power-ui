@@ -5,7 +5,7 @@ import { Tooltip } from '../tooltip';
 import { Input } from '../input';
 import { provideDescMap } from './utils';
 import { SelectionValue } from 'vue-cdk/selection/types';
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 
 function useClear(
   ctx: SetupContext,
@@ -86,7 +86,7 @@ export const Select = defineComponent({
   setup(props, ctx) {
     const selectedLabel = ref('');
     const tooltipVisible = ref(false);
-    const modelRef = vmodelRef(toRef(props, 'modelValue'), (value) => {
+    const modelRef = watchRef(toRef(props, 'modelValue'), (value) => {
       ctx.emit('update:modelValue', value);
     });
 

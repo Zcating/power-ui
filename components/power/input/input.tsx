@@ -1,6 +1,6 @@
-import { vmodelRef } from 'vue-cdk/hook';
+import { watchRef } from 'vue-cdk/hook';
 import { Enum, renderCondition, toAttrComponent } from 'vue-cdk/utils';
-import { CSSProperties, InputHTMLAttributes, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, resolveDynamicComponent, toRef, watch } from 'vue';
+import { CSSProperties, InputHTMLAttributes, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, toRef, watch } from 'vue';
 import { calcTextareaHeight } from './utils';
 import { AutosizeData } from '.';
 
@@ -58,7 +58,7 @@ function useInput(
   const focusedRef = ref(false);
   const isComposing = ref(false);
 
-  const inputValue = vmodelRef(
+  const inputValue = watchRef(
     textValueRef,
     (value) => ctx.emit('update:modelValue', value),
     (value) => setNativeInputValue(value),
