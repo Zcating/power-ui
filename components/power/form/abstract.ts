@@ -11,10 +11,9 @@
 //   markRaw,
 // } from 'vue';
 // import { get as _get, set as _set } from 'lodash';
-// import Schema, { ErrorList, FieldErrorList, Rules } from 'async-validator';
 
-import { Rules } from 'async-validator';
-import { inject, InjectionKey, provide, Ref, toRaw } from 'vue';
+import { inject, InjectionKey, provide, ref, Ref, shallowRef, toRaw, watch } from 'vue';
+import Schema, { ErrorList, FieldErrorList, Rules } from 'async-validator';
 
 
 // type FormControls = { [key in string]: FormControl | FormGroup };
@@ -162,20 +161,46 @@ import { inject, InjectionKey, provide, Ref, toRaw } from 'vue';
 
 const token = Symbol() as InjectionKey<FormSerivce>;
 
-const useFormService = () => inject(token);
+export const useFormService = () => inject(token);
 
 export class FormSerivce {
   private readonly pendingState: { [key in string]: any } = {};
   constructor(
     private state: Ref<Record<string, any>>,
-    private rules: Rules
+    rulesRef: Ref<Rules>,
   ) {
     this.pendingState = toRaw(state.value);
+
+    this.schema = new Schema(rulesRef.value);
+    watch(rulesRef, (value) => {
+      this.schema = new Schema(value);
+    });
+
+
+    // watch
+
     provide(token, this);
   }
 
-  reset() {
-    this.state.value = this.pendingState;
+  private schema: Schema;
+  errors: Ref<ErrorList> = shallowRef([]);
+  fieldErrors: Ref<FieldErrorList> = shallowRef({});
+
+  focusedKeys: Ref<{ [key: string]: boolean }> = ref({});
+
+  async validate() {
+    return await this.schema.validate(
+      this.state,
+      {},
+      (errors, res) => {
+        this.errors.value = errors;
+        this.fieldErrors.value = res;
+      }
+    );
+  }
+
+  bind(name: string, hook: () => void) {
+
   }
 }
 
