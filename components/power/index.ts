@@ -27,7 +27,8 @@ export { Checkbox, CheckboxGroup, CheckboxButton, CheckboxGroupRef } from './che
 export { useMessage } from './message';
 export { useNotification } from './notification';
 export { Transfer } from './transfer';
-export { Form } from './form';
+export { Form, FormItem } from './form';
+
 
 
 

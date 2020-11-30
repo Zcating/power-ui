@@ -1,4 +1,4 @@
-import { defineComponent, Fragment, onUnmounted, reactive, watch } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
 import { useDispatcher } from './selection-dispatcher';
 
 /**
@@ -41,9 +41,6 @@ export const CdkSelectionItem = defineComponent({
         ctx.emit('update:modelValue', value);
       });
     }
-    onUnmounted(() => {
-      console.log(props.value);
-    });
 
     return () => ctx.slots.default?.();
   }

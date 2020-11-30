@@ -12,7 +12,8 @@ export function watchRef<T>(propValue: Ref<T>, setter?: (value: T, oldValue: T) 
   watch(propValue, (value, oldValue) => {
     vmodel.value = value;
     modelChange?.(value, oldValue);
-  });
+  }, { deep: true });
+
   if (typeof setter === 'function') {
     watch(vmodel, (value, oldValue) => {
       setter(value, oldValue);
