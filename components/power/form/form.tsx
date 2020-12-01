@@ -1,19 +1,23 @@
+import { defineComponent, toRef } from 'vue';
+import { Enum, Model } from 'vue-cdk/utils';
 import { ElSize } from 'power-ui/types';
-import { defineComponent } from 'vue';
-import { Enum } from 'vue-cdk/utils';
-// import { FormGroup } from './abstract';
+import { FormSerivce } from './form.service';
+import { LabelPosition, FormRules } from './types';
 
-type LabelPosition = 'left' | 'right' | 'top';
 
 export const Form = defineComponent({
   props: {
     model: {
       type: Object,
+      default: {}
     },
     rules: {
-      type: Object,
+      type: Model<FormRules>(),
+      default: {}
     },
-    labelPosition: Enum<LabelPosition>(),
+    labelPosition: {
+      type: Enum<LabelPosition>(),
+    },
     labelWidth: {
       type: String,
       default: ''
@@ -33,7 +37,10 @@ export const Form = defineComponent({
       type: Enum<ElSize>(),
       default: 'medium'
     },
-    disabled: Boolean,
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     validateOnRuleChange: {
       type: Boolean,
       default: true
@@ -43,16 +50,28 @@ export const Form = defineComponent({
       default: false
     }
   },
-  setup(props, ctx) {
-    return () => (
+  setup(props) {
+
+    const formService = new FormSerivce(toRef(props, 'model'), toRef(props, 'rules'));
+
+    return {
+      validate: () => formService.validate(),
+      reset: (names: string[]) => formService.reset(names),
+    };
+  },
+  render() {
+    const { labelPosition, $slots: slots } = this;
+    return (
       <form
         class={[
           'el-form',
-          props.labelPosition ? 'el-form--label-' + props.labelPosition : ''
+          labelPosition ? 'el-form--label-' + labelPosition : ''
         ]}
       >
-        {ctx.slots.default?.()}
+        {slots.default?.()}
       </form>
     );
   }
 });
+
+export type FormRef = InstanceType<typeof Form>;

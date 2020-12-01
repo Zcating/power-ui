@@ -1,5 +1,5 @@
-import { inject, ref, watch } from 'vue';
-import { platformToken } from '../global';
+import { ref, watch } from 'vue';
+import { usePlatform } from '../global';
 
 /**
  * get reactive value and controller in localstorage
@@ -9,10 +9,16 @@ import { platformToken } from '../global';
  * @param {string} key
  * @returns
  */
-export function localstorageRef(init: any, key: string) {
+export function localStorageRef<T>(init: T, key: string) {
   const value = ref(init);
-  const isBrowser = inject(platformToken)?.BROWSER;
-  if (!isBrowser) return value;
+
+
+  const WINDOW = usePlatform()?.TOP;
+  if (!WINDOW) {
+    return value;
+  }
+  const localStorage = WINDOW.localStorage;
+
   const initFromLocal = localStorage.getItem(key);
   if (initFromLocal) {
     try {
@@ -24,5 +30,37 @@ export function localstorageRef(init: any, key: string) {
   watch(value, (val) => {
     localStorage.setItem(key, JSON.stringify(val));
   });
+  return value;
+}
+
+/**
+ * get reactive value and controller in sessionstorage
+ *
+ * @export
+ * @param {*} init
+ * @param {string} key
+ * @returns
+ */
+export function sessionStorageRef<T>(init: T, key: string) {
+  const value = ref(init);
+
+  const WINDOW = usePlatform()?.TOP;
+  if (!WINDOW) {
+    return value;
+  }
+  const sessionStorage = WINDOW.sessionStorage;
+
+  const initFromSession = sessionStorage.getItem(key);
+  if (initFromSession) {
+    try {
+      value.value = JSON.parse(initFromSession);
+    } catch (err) {
+      console.warn(`cannot red ${key} from localStorage`);
+    }
+  }
+  watch(value, (val) => {
+    sessionStorage.setItem(key, JSON.stringify(val));
+  });
+
   return value;
 }

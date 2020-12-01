@@ -11,5 +11,5 @@ export function fastWatch<T extends Readonly<Array<WatchSource<unknown> | Record
 export function fastWatch<T>(source: WatchSource<T>, cb: WatchCallback<T, T | undefined>): WatchStopHandle;
 
 export function fastWatch<T extends Record<string, unknown>>(value: T, fn: WatchCallback<T, T | undefined>): WatchStopHandle {
-  return watch(value, fn, {immediate: true});
+  return watch(value, fn, { immediate: true });
 }

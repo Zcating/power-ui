@@ -42,6 +42,7 @@ export const Select = defineComponent({
     name: String,
     modelValue: {
       type: [String, Number, List<string | number>()],
+      default: ''
     },
     autocomplete: {
       type: String,
@@ -106,7 +107,7 @@ export const Select = defineComponent({
 
     const handleClearClick = () => {
       selectedLabel.value = '';
-      modelRef.value = undefined;
+      modelRef.value = '';
     };
 
     const iconClass = computed(() => {
@@ -145,7 +146,7 @@ export const Select = defineComponent({
       } = props;
       const content = () => (
         <CdkSelection
-          v-model={modelRef}
+          v-model={modelRef.value}
           onSelected={handleSelected}
           multiple={multiple}
           v-slots={{
@@ -161,7 +162,7 @@ export const Select = defineComponent({
             ),
             empty: () => renderCondition(
               emptyText && (!allowCreate || loading),
-              ctx.slots.empty ? ctx.slots.empty() : <p class="el-select-dropdown__empty">{emptyText}</p>,
+              ctx.slots.empty ? ctx.slots.empty() : <p class="el-select-dropdown__empty">{emptyText.value}</p>,
             )
           }}
         />

@@ -1,4 +1,4 @@
-import { ComponentPropsOptions, Prop, PropType } from 'vue';
+import { PropType } from 'vue';
 
 export function Method<T>(): () => T {
   return Function as unknown as () => T;
@@ -25,55 +25,31 @@ interface PropOptions<T = any> {
   validator?(value: unknown): boolean;
 }
 
-const linkedProp = <T>(define: PropOptions<T>) => {
-  const that = {
-    required() {
-      define.required = true;
-      return that;
-    },
-    validate(fn: (value: unknown) => boolean) {
-      define.validator = fn;
-      return that;
-    },
-    gen() {
-      return define;
-    }
+
+
+export const linkedProp = <T>(type: PropType<T>) => {
+  const define: PropOptions = { type };
+  const ret = (d?: DefaultProp<T>) => {
+    define.default = d;
+    return define;
   };
-  return that;
+
+  ret.required = () => {
+    define.required = true;
+    return ret;
+  };
+
+  ret.validate = (fn: (value: unknown) => boolean) => {
+    define.validator = fn;
+    return ret;
+  };
+
+  return ret;
 };
 
 
-export const defineProp = {
-  string(d?: DefaultProp<String>) {
-    const define = {
-      type: String,
-      default: d,
-    };
-    return linkedProp(define);
-  },
 
-  enum<T extends string>(d?: DefaultProp<T>) {
-    const define = {
-      type: Enum<T>(),
-      default: d
-    };
-    return linkedProp(define);
+// const enum1 = <T extends string>() => linkedProp<T>(Enum<T>());
 
-  },
+// enum1().validate(() => true)();
 
-  method<T extends Function>(d?: DefaultProp<T>) {
-    const define = {
-      type: Method<T>(),
-      default: d
-    };
-    return linkedProp(define);
-  },
-
-  model<T extends Object>(d?: T) {
-    const define = {
-      type: Model<T>(),
-      default: d
-    };
-    return linkedProp(define);
-  }
-};

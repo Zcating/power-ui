@@ -60,7 +60,7 @@ export const CdkSelection = defineComponent({
     const { $slots: slots, count } = this;
     return [
       slots.default?.(),
-      renderCondition(count === 0, slots.empty?.())
+      renderCondition(count === 0, () => slots.empty ? slots.empty() : '')
     ];
   }
 });
