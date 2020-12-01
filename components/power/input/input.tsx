@@ -1,6 +1,6 @@
+import { CSSProperties, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
-import { Enum, renderCondition, toAttrComponent } from 'vue-cdk/utils';
-import { CSSProperties, InputHTMLAttributes, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, toRef, watch } from 'vue';
+import { Enum, renderCondition } from 'vue-cdk/utils';
 import { calcTextareaHeight } from './utils';
 import { AutosizeData } from '.';
 
@@ -317,7 +317,7 @@ function positionIcon(
   });
 }
 
-export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
+export const Input = defineComponent({
   name: 'el-input',
   // prevent the $attrs applys to <div>
   inheritAttrs: false,
@@ -385,7 +385,6 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
     const readonlyRef = toRef(props, 'readonly');
     const inputSize = toRef(props, 'size');
     const showPassword = toRef(props, 'showPassword');
-    const inputDisabled = diabledRef;
 
     const textState = useText(
       ctx,
@@ -437,7 +436,7 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
       statusIcon: false,
 
       inputSize,
-      inputDisabled,
+      inputDisabled: diabledRef,
 
       //
       ...textState,
@@ -536,7 +535,7 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
                 onCompositionend={onCompositionend}
                 onInput={onInput}
                 onFocus={onFocus}
-                onBlur={onBlur}
+                onBlur={onBlur}            
                 onChange={onChange}
                 aria-label={label}
                 tabindex={tabindex}
@@ -546,10 +545,12 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
             // 前置内容
             renderCondition(
               $slots.prefix || prefixIcon,
-              <span class="el-input__prefix">
-                {renderSlot(this.$slots, 'prefix')}
-                <i class={['el-input__icon', prefixIcon]} />
-              </span>,
+              () => (
+                <span class="el-input__prefix">
+                  {renderSlot(this.$slots, 'prefix')}
+                  <i class={['el-input__icon', prefixIcon]} />
+                </span>
+              )
             ),
             // 后置内容
             renderCondition(
@@ -559,14 +560,14 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
                   {[
                     renderCondition(
                       !showClear || !showPwdVisible || !isWordLimitVisible,
-                      [
+                      () => [
                         renderSlot(this.$slots, 'suffix'),
                         renderCondition(suffixIcon, <i class={`el-input__icon ${suffixIcon}`} />)
                       ]
                     ),
                     renderCondition(
                       showClear,
-                      <i
+                      () => <i
                         class="el-input__icon el-icon-circle-close el-input__clear"
                         onMousedown={e => e.preventDefault()}
                         onClick={clear}
@@ -574,24 +575,26 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
                     ),
                     renderCondition(
                       showPwdVisible,
-                      <i
+                      () => <i
                         class="el-input__icon el-icon-view el-input__clear"
                         onClick={onPasswordVisible}
                       />
                     ),
                     renderCondition(
                       isWordLimitVisible,
-                      <span class="el-input__count">
-                        <span class="el-input__count-inner">
-                          {textLength}/{upperLimit}
+                      () => (
+                        <span class="el-input__count">
+                          <span class="el-input__count-inner">
+                            {textLength}/{upperLimit}
+                          </span>
                         </span>
-                      </span>
+                      )
                     ),
                   ]}
                 </span>
                 {renderCondition(
                   validateState,
-                  <i class={['el-input__icon', 'el-input__validateIcon', validateIcon]} />
+                  () => <i class={['el-input__icon', 'el-input__validateIcon', validateIcon]} />
                 )}
               </span>
             ),
@@ -599,9 +602,11 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
             // <!-- 后置元素 -->
             renderCondition(
               this.$slots.append,
-              <div class="el-input-group__append">
-                {renderSlot(this.$slots, 'append')}
-              </div>
+              () => (
+                <div class="el-input-group__append">
+                  {renderSlot(this.$slots, 'append')}
+                </div>
+              )
             ),
           ],
           <textarea
@@ -625,9 +630,9 @@ export const Input = toAttrComponent<InputHTMLAttributes>()(defineComponent({
         )}
         {renderCondition(
           isWordLimitVisible && type === 'textarea',
-          <span class="el-input__count">{{ textLength }}/{{ upperLimit }}</span>
+          () => <span class="el-input__count">{{ textLength }}/{{ upperLimit }}</span>
         )}
       </div>
     );
   }
-}));
+});

@@ -1,10 +1,11 @@
-import { defineComponent, reactive, shallowRef } from 'vue';
-import { Form, FormItem, FormRules, Input, Select, SelectOption } from 'power-ui';
+import { defineComponent, reactive, shallowRef, watch } from 'vue';
+import { Form, FormItem, FormRules, Input, RadioGroup, Radio, Select, SelectOption } from 'power-ui';
 
 export default defineComponent(() => {
   const data = reactive({
     name: '',
-    age: ''
+    age: '',
+    city: ''
   });
   const rules = shallowRef<FormRules>({
     name: [
@@ -14,6 +15,10 @@ export default defineComponent(() => {
       { type: 'string', required: true, message: 'please input age', trigger: 'blur' },
     ]
   });
+
+  watch(() => data, (value) => {
+    console.log(value);
+  }, {deep: true});
   return () => {
     return (
       <div>
@@ -22,13 +27,22 @@ export default defineComponent(() => {
             <Input v-model={data.name} />
           </FormItem>
           <FormItem width="100px" label="年龄" name="age">
-            <Select v-model={data.age}>
+            <Select v-model={data.age} clearable={true}>
               <SelectOption value="1" label="test1" />
               <SelectOption value="2" label="test2" />
               <SelectOption value="3" label="test3" />
               <SelectOption value="4" label="test4" />
               <SelectOption value="5" label="test5" />
             </Select>
+          </FormItem>
+          <FormItem width="100px" label="城市" name="city">
+            <RadioGroup v-model={data.city} >
+              <Radio value="北京" />
+              <Radio value="上海" />
+              <Radio value="广州" />
+              <Radio value="深圳" />
+              <Radio value="珠海" />
+            </RadioGroup>
           </FormItem>
         </Form>
       </div>

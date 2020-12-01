@@ -114,10 +114,6 @@ export const Select = defineComponent({
       return tooltipVisible.value ? 'arrow-up is-reverse' : 'arrow-up';
     });
 
-    const showClose = computed(() => {
-      return props.clearable;
-    });
-
     const inputWidth = ref(0);
     onMounted(() => {
       const instance = getCurrentInstance();
@@ -142,7 +138,8 @@ export const Select = defineComponent({
         allowCreate,
         autocomplete,
         disabled,
-        size
+        size,
+        clearable
       } = props;
       const content = () => (
         <CdkSelection
@@ -197,16 +194,16 @@ export const Select = defineComponent({
               class={{ 'is-focus': tooltipVisible.value }}
               tabindex={(multiple && filterable) ? -1 : undefined}
               // onFocus={handleFocus}
-              // onBlur={handleBlur}
+              onBlur={(e: Event) => e.stopImmediatePropagation()}
               v-slots={{
                 prefix: renderCondition(ctx.slots.prefix, ctx.slots.prefix),
                 suffix: () => [
                   <i
-                    v-show={!showClose.value}
+                    v-show={!clearable}
                     class={['el-select__caret', 'el-input__icon', 'el-icon-' + iconClass.value]}
                   />,
                   renderCondition(
-                    showClose.value,
+                    clearable,
                     <i
                       class="el-select__caret el-input__icon el-icon-circle-close"
                       onClick={handleClearClick}

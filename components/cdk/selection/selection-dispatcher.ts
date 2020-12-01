@@ -30,7 +30,12 @@ export class CdkSelectionDispatcher {
     private readonly dataRef: Ref<SelectionValue>
   ) {
     provide(token, this);
+
+    // 
     watch(dataRef, (value) => {
+      if (!this.multiple) {
+        return;
+      }
       this.states.forEach((state, key) => {
         state.selected = this.testEquals(value, key);
       });
@@ -52,15 +57,13 @@ export class CdkSelectionDispatcher {
         this.deselect(this.multiple, key);
       }
 
-      if (this.multiple || !selected) {
-        return;
+      if (!this.multiple && selected) {
+        this.states.forEach((curState) => {
+          if (curState && curState !== state) {
+            curState.selected = false;
+          }
+        });
       }
-
-      this.states.forEach((curState) => {
-        if (curState && curState !== state) {
-          curState.selected = false;
-        }
-      });
     });
 
     onUnmounted(() => {

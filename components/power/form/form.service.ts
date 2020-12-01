@@ -1,4 +1,4 @@
-import { inject, InjectionKey, nextTick, onUnmounted, provide, Ref, toRaw, watch } from 'vue';
+import { inject, InjectionKey, onUnmounted, provide, Ref, toRaw } from 'vue';
 import Schema, { RuleItem, ValidateError } from 'async-validator';
 import { FormRules } from './types';
 
@@ -77,12 +77,10 @@ export class FormSerivce {
       return;
     }
     const listener = (event: any) => {
-      setTimeout(() => {
-        const schema = new Schema({ [name]: rules });
-        schema.validate(this.state.value, { firstFields: true }, (_, res) => {
-          this.hookErrors[name]?.(res?.[name]);
-        });
-      }, 100);
+      const schema = new Schema({ [name]: rules });
+      schema.validate(this.state.value, { firstFields: true }, (_, res) => {
+        this.hookErrors[name]?.(res?.[name]);
+      });
     };
     el.addEventListener(trigger, listener, true);
 
