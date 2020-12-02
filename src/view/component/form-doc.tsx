@@ -9,7 +9,7 @@ export default defineComponent(() => {
   });
   const rules = shallowRef<FormRules>({
     name: [
-      { type: 'string', required: true, message: 'please input name', trigger: 'blur' },
+      { type: 'string', required: true, message: 'please input name', trigger: 'change' },
     ],
     age: [
       { type: 'string', required: true, message: 'please input age', trigger: 'blur' },
@@ -18,7 +18,7 @@ export default defineComponent(() => {
 
   watch(() => data, (value) => {
     console.log(value);
-  }, {deep: true});
+  }, { deep: true });
   return () => {
     return (
       <div>

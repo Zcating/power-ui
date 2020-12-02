@@ -1,5 +1,5 @@
 import { Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
-import { List, isEqual, renderCondition } from 'vue-cdk/utils';
+import { List, isEqual, renderCondition, Method } from 'vue-cdk/utils';
 import { CdkSelection } from 'vue-cdk/selection';
 import { Tooltip } from '../tooltip';
 import { Input } from '../input';
@@ -37,6 +37,7 @@ function useClear(
 }
 
 export const Select = defineComponent({
+  inheritAttrs: false,
   props: {
     id: String,
     name: String,
@@ -82,6 +83,9 @@ export const Select = defineComponent({
       type: String,
       default: 'value'
     },
+    onBlur: Method<(event: FocusEvent) => void>(),
+    onFocus: Method<(event: FocusEvent) => void>(),
+    onChange: Method<(event: Event) => void>()
   },
 
   setup(props, ctx) {
@@ -124,6 +128,18 @@ export const Select = defineComponent({
         inputWidth.value = (instance.refs.reference as any).$el.getBoundingClientRect().width;
       });
     });
+
+    const handleBlur = (event: FocusEvent) => {
+      ctx.emit('blur', event);
+    };
+
+    const handleFocus = (event: FocusEvent) => {
+      ctx.emit('focus', event);
+    };
+
+    const handleChange = (event: any) => {
+      ctx.emit('change', event);
+    };
 
     const emptyText = computed(() => '');
 
@@ -174,9 +190,7 @@ export const Select = defineComponent({
           visibleArrow={false}
           popperClass={'el-select-dropdown'}
           popperStyle={{ minWidth: `${inputWidth.value}px` }}
-          v-slots={{
-            content
-          }}
+          v-slots={{ content }}
         >
           <div class={['el-select', size ? 'el-select--' + size : '']}>
             <Input
@@ -193,8 +207,6 @@ export const Select = defineComponent({
               validate-event="false"
               class={{ 'is-focus': tooltipVisible.value }}
               tabindex={(multiple && filterable) ? -1 : undefined}
-              // onFocus={handleFocus}
-              onBlur={(e: Event) => e.stopImmediatePropagation()}
               v-slots={{
                 prefix: renderCondition(ctx.slots.prefix, ctx.slots.prefix),
                 suffix: () => [
@@ -211,6 +223,9 @@ export const Select = defineComponent({
                   )
                 ],
               }}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+              onChange={handleChange}
             />
           </div>
         </Tooltip>

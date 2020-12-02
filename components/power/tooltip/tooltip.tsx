@@ -32,7 +32,6 @@ export const Tooltip = defineComponent({
     },
     tabindex: {
       type: Number,
-      default: 0
     },
     effect: {
       type: Enum<'dark' | 'light'>(),
@@ -129,9 +128,13 @@ export const Tooltip = defineComponent({
       const close = () => { visible.value = false; };
 
       reference.setAttribute('aria-describedby', tooltipId);
-      reference.setAttribute('tabindex', `${props.tabindex}`);
 
-      popper.setAttribute('tabindex', '0');
+      const { tabindex } = props;
+      if (typeof tabindex === 'number' && !isNaN(tabindex)) {
+        reference.setAttribute('tabindex', `${tabindex}`);
+        popper.setAttribute('tabindex', '0');
+      }
+
 
       if (trigger === 'click') {
         destroyFns.push(
@@ -164,8 +167,8 @@ export const Tooltip = defineComponent({
           })
         );
       } else if (trigger === 'focus') {
-        if (props.tabindex < 0) {
-          console.warn('[Element Warn][Popover]a negative taindex means that the element cannot be focused by tab key');
+        if (typeof tabindex === 'number' && tabindex < 0) {
+          console.warn('[Power Warn][tooltip]a negative taindex means that the element cannot be focused by tab key');
         }
         destroyFns.push(
           addEvent(reference, 'focusin', show),

@@ -29,8 +29,9 @@ export declare class Input {
     placeholder?: string,
     name?: string,
   } & {
-    onBlur?: (e: Event) => void;
-    onFocus?: (e: Event) => void;
+    onBlur?: (e: FocusEvent) => void;
+    onFocus?: (e: FocusEvent) => void;
     onChange?: (value: string | number) => void;
+    onInput?: (e: Event) => void;
   } & HTMLAttributes;
 }

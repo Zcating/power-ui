@@ -1,11 +1,66 @@
-import { CSSProperties, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, toRef, watch } from 'vue';
+import { CSSProperties, Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, onUpdated, ref, renderSlot, toRef, watch, ExtractPropTypes, InputHTMLAttributes } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
-import { Enum, renderCondition } from 'vue-cdk/utils';
+import { Enum, Method, renderCondition } from 'vue-cdk/utils';
 import { calcTextareaHeight } from './utils';
 import { AutosizeData } from '.';
 
 type InputElement = HTMLInputElement | HTMLTextAreaElement;
 
+
+const inputProps = {
+  modelValue: [String, Number],
+  size: String,
+  resize: String,
+  form: String,
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
+  type: {
+    type: Enum<'text' | 'textarea'>(),
+    default: 'text'
+  },
+  autosize: {
+    type: [Boolean, Object],
+    default: false
+  },
+  autocomplete: {
+    type: String,
+    default: 'off'
+  },
+  validateEvent: {
+    type: [Boolean, String],
+    default: true
+  },
+  suffixIcon: String,
+  prefixIcon: String,
+  label: String,
+  clearable: {
+    type: Boolean,
+    default: false
+  },
+  showPassword: {
+    type: Boolean,
+    default: false
+  },
+  showWordLimit: {
+    type: Boolean,
+    default: false
+  },
+  tabindex: Number,
+  onChange: Method<(value: string | number) => void>(),
+  onInput: Method<(value: Event) => void>(),
+  onBlur: Method<(value: FocusEvent) => void>(),
+  onFocus: Method<(value: FocusEvent) => void>(),
+  onClear: Method<() => void>(),
+  'update:modelValue': Method<(value: string | number) => void>(),
+};
+
+type InputProps = ExtractPropTypes<typeof inputProps>;
 
 /**
  * @function useText
@@ -13,25 +68,20 @@ type InputElement = HTMLInputElement | HTMLTextAreaElement;
  */
 function useText(
   ctx: SetupContext,
-  modelValue: Ref<any>,
-  type: Ref<string>,
-  disabled: Ref<boolean>,
-  readonly: Ref<boolean>,
-  showPassword: Ref<boolean>,
-  showWordLimit: Ref<boolean>,
+  props: InputProps,
 ) {
-  const textValue = computed(() => String(modelValue.value ?? ''));
+  const textValue = computed(() => String(props.modelValue ?? ''));
   const textLength = computed(() => textValue.value.length);
   const upperLimit = computed(() => {
     const limit = Number(ctx.attrs.maxlength);
     return isNaN(limit) ? 0 : limit;
   });
-  const isWordLimitVisible = computed(() => showWordLimit.value &&
+  const isWordLimitVisible = computed(() => props.showWordLimit &&
     upperLimit.value &&
-    (type.value === 'text' || type.value === 'textarea') &&
-    !disabled &&
-    !readonly &&
-    !showPassword
+    (props.type === 'text' || props.type === 'textarea') &&
+    !props.disabled &&
+    !props.readonly &&
+    !props.showPassword
   );
   const inputExceed = computed(() => isWordLimitVisible.value && (textLength.value > upperLimit.value));
 
@@ -51,6 +101,7 @@ function useText(
  */
 function useInput(
   ctx: SetupContext,
+  props: InputProps,
   textValueRef: Ref<string>,
 ) {
   const inputRef = ref<HTMLInputElement>();
@@ -69,12 +120,21 @@ function useInput(
   }
 
   function clear() {
+    ctx.emit('update:modelValue', '');
     ctx.emit('input', '');
     ctx.emit('change', '');
-    ctx.emit('clear');
-    ctx.emit('update:modelValue', '');
+    ctx.emit('clear', '');
   }
 
+  /**
+   * @function setNativeInputValue
+   * 
+   * @description 
+   * setting value from vmodel while 
+   * vmodel change from parent component
+   * 
+   * @param value vmodel value
+   */
   function setNativeInputValue(value: string) {
     const input = getInput();
     if (!input || input.value === value) {
@@ -83,21 +143,37 @@ function useInput(
     input.value = value;
   }
 
-  function onFocus(event: Event) {
+  /**
+   * @function onFocus
+   * @param event 
+   */
+  function onFocus(event: FocusEvent) {
     focusedRef.value = true;
-    ctx.emit('focus', event);
+    props.onFocus?.(event);
   }
 
-  function onBlur(event: Event) {
+  /**
+   * @function onBlur
+   * @param event Focus Event
+   */
+  function onBlur(event: FocusEvent) {
     focusedRef.value = false;
-    ctx.emit('blur', event);
+    props.onBlur?.(event);
   }
 
-
+  /**
+   * @function onChange
+   * @param event
+   */
   function onChange(event: Event) {
-    ctx.emit('change', (event.target! as InputElement).value);
+    ctx.emit('input', event);
+    ctx.emit('change', (event.target as InputElement).value);
   }
 
+  /**
+   * @function onInput
+   * @param event
+   */
   function onInput(event: Event) {
     // should not emit input during composition
     // see: https://github.com/ElemeFE/element/issues/10516
@@ -105,21 +181,26 @@ function useInput(
       return;
     }
 
-    if (typeof ctx.attrs.onInput === 'function') {
-      ctx.attrs.onInput(event);
-    } else {
-      inputValue.value = (event.target as InputElement).value;
-    }
+    inputValue.value = (event.target as InputElement).value;
 
+    // you should run v-model setter before onChange.
+    // Emit is async.
     nextTick(() => {
-      setNativeInputValue(inputValue.value);
+      onChange(event);
     });
   }
 
+  /**
+   * 
+   */
   function onCompositionstart() {
     isComposing.value = true;
   }
 
+  /**
+   * 
+   * @param event 
+   */
   function onCompositionupdate(event: CompositionEvent) {
     // const text = event.data;
     // const lastCharacter = text[text.length - 1] || '';
@@ -127,6 +208,10 @@ function useInput(
     isComposing.value = true;
   }
 
+  /**
+   * 
+   * @param event 
+   */
   function onCompositionend(event: CompositionEvent) {
     if (isComposing.value) {
       isComposing.value = false;
@@ -318,68 +403,12 @@ function positionIcon(
 }
 
 export const Input = defineComponent({
-  name: 'el-input',
+  name: 'po-input',
   // prevent the $attrs applys to <div>
   inheritAttrs: false,
+  props: inputProps,
 
-  props: {
-    modelValue: [String, Number],
-    size: String,
-    resize: String,
-    form: String,
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-    type: {
-      type: Enum<'text' | 'textarea'>(),
-      default: 'text'
-    },
-    autosize: {
-      type: [Boolean, Object],
-      default: false
-    },
-    autocomplete: {
-      type: String,
-      default: 'off'
-    },
-    validateEvent: {
-      type: [Boolean, String],
-      default: true
-    },
-    suffixIcon: String,
-    prefixIcon: String,
-    label: String,
-    clearable: {
-      type: Boolean,
-      default: false
-    },
-    showPassword: {
-      type: Boolean,
-      default: false
-    },
-    showWordLimit: {
-      type: Boolean,
-      default: false
-    },
-    tabindex: Number,
-  },
-
-
-  emits: [
-    'update:modelValue',
-    'input',
-    'focus',
-    'blur',
-    'clear',
-    'change',
-  ],
-
-  setup(props, ctx: SetupContext) {
+  setup(props, ctx) {
     const typeRef = toRef(props, 'type');
     const diabledRef = toRef(props, 'disabled');
     const readonlyRef = toRef(props, 'readonly');
@@ -388,16 +417,12 @@ export const Input = defineComponent({
 
     const textState = useText(
       ctx,
-      toRef(props, 'modelValue'),
-      typeRef,
-      diabledRef,
-      readonlyRef,
-      showPassword,
-      toRef(props, 'showWordLimit')
+      props
     );
 
     const inputState = useInput(
       ctx,
+      props,
       textState.textValue,
     );
 
@@ -535,7 +560,7 @@ export const Input = defineComponent({
                 onCompositionend={onCompositionend}
                 onInput={onInput}
                 onFocus={onFocus}
-                onBlur={onBlur}            
+                onBlur={onBlur}
                 onChange={onChange}
                 aria-label={label}
                 tabindex={tabindex}

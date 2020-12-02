@@ -54,12 +54,16 @@ export class FormSerivce {
     this.hookErrors[name] = hook;
   }
 
-  onFieldBlur(el: HTMLElement, name: string, ruleItems?: RuleItem | RuleItem[]) {
-    this.onFieldEvent(el, name, ruleItems, 'blur');
-  }
 
-  onFieldChange(el: HTMLElement, name: string, ruleItems?: RuleItem | RuleItem[]) {
-    this.onFieldEvent(el, name, ruleItems, 'change');
+  handleFieldTrigger(name: string, ruleItems: RuleItem | RuleItem[] | undefined, trigger: 'blur' | 'change') {
+    const rules = this.validateField(name, trigger) ?? ruleItems;
+    if (!rules) {
+      return;
+    }
+    const schema = new Schema({ [name]: rules });
+    schema.validate(this.state.value, { firstFields: true }, (_, res) => {
+      this.hookErrors[name]?.(res?.[name]);
+    });
   }
 
   private validateField(name: string, trigger: 'blur' | 'change') {
@@ -71,23 +75,31 @@ export class FormSerivce {
     }
   }
 
-  private onFieldEvent(el: HTMLElement, name: string, ruleItems: RuleItem | RuleItem[] | undefined, trigger: 'change' | 'blur') {
-    const rules = this.validateField(name, trigger) ?? ruleItems;
-    if (!rules) {
-      return;
-    }
-    const listener = (event: any) => {
-      const schema = new Schema({ [name]: rules });
-      schema.validate(this.state.value, { firstFields: true }, (_, res) => {
-        this.hookErrors[name]?.(res?.[name]);
-      });
-    };
-    el.addEventListener(trigger, listener, true);
+  // onFieldBlur(el: HTMLElement, name: string, ruleItems?: RuleItem | RuleItem[]) {
+  //   this.onFieldEvent(el, name, ruleItems, 'blur');
+  // }
 
-    onUnmounted(() => {
-      el.removeEventListener(trigger, listener);
-    });
-  }
+  // onFieldChange(el: HTMLElement, name: string, ruleItems?: RuleItem | RuleItem[]) {
+  //   this.onFieldEvent(el, name, ruleItems, 'change');
+  // }
+
+  // private onFieldEvent(el: HTMLElement, name: string, ruleItems: RuleItem | RuleItem[] | undefined, trigger: 'change' | 'blur') {
+  //   const rules = this.validateField(name, trigger) ?? ruleItems;
+  //   if (!rules) {
+  //     return;
+  //   }
+  //   const listener = (event: any) => {
+  //     const schema = new Schema({ [name]: rules });
+  //     schema.validate(this.state.value, { firstFields: true }, (_, res) => {
+  //       this.hookErrors[name]?.(res?.[name]);
+  //     });
+  //   };
+  //   el.addEventListener(trigger, listener, true);
+
+  //   onUnmounted(() => {
+  //     el.removeEventListener(trigger, listener);
+  //   });
+  // }
 }
 
 

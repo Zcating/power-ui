@@ -1,5 +1,5 @@
-import { defineComponent, Prop, toRef } from 'vue';
-import { watchRef } from 'vue-cdk/hook';
+import { defineComponent, toRef } from 'vue';
+import { watchRef } from '../hook';
 import { List, Method, renderCondition } from '../utils';
 import { CdkSelectionDispatcher } from './selection-dispatcher';
 import { SelectionValue } from './types';

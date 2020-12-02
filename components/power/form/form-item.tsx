@@ -1,6 +1,6 @@
 import { RuleItem } from 'async-validator';
 import { ElSize } from 'power-ui/types';
-import { computed, defineComponent, getCurrentInstance, onMounted, reactive, ref, toRef, Transition, watch } from 'vue';
+import { cloneVNode, computed, defineComponent, getCurrentInstance, onMounted, reactive, ref, toRef, Transition, VNode, watch } from 'vue';
 import { coerceCssPixelValue } from 'vue-cdk/coercion';
 import { usePlatform } from 'vue-cdk/global';
 import { Enum, List, Model, renderCondition } from 'vue-cdk/utils';
@@ -110,8 +110,8 @@ export const FormItem = defineComponent({
         if (!el) {
           return;
         }
-        formService.onFieldBlur(el, props.name, props.rules);
-        formService.onFieldChange(el, props.name, props.rules);
+        // formService.onFieldBlur(el, props.name, props.rules);
+        // formService.onFieldChange(el, props.name, props.rules);
       });
     }
 
@@ -121,6 +121,27 @@ export const FormItem = defineComponent({
       const showError = validateStatus === 'error' && showMessage && props.showMessage;
       const showLabel = props.label || ctx.slots.label;
       const itemSize = props.size || size;
+      const children = (ctx.slots.default?.() ?? []);
+      if (children) {
+        let firstChild = children[0];
+        const originBlur = firstChild.props?.onBlur;
+        const originChange = firstChild.props?.onChange;
+        console.log(firstChild.props);
+        firstChild = cloneVNode(firstChild, {
+          onBlur: (event: FocusEvent) => {
+            if (typeof originBlur === 'function') {
+              originBlur(event);
+            }
+            formService?.handleFieldTrigger(props.name, props.rules, 'blur');
+          },
+          onChange: (value: any) => {
+            if (typeof originChange === 'function') {
+              originChange(value);
+            }
+            formService?.handleFieldTrigger(props.name, props.rules, 'change');
+          }
+        });
+      }
       return (
         <div
           class={[
@@ -148,7 +169,7 @@ export const FormItem = defineComponent({
             )
           )}
           <div ref={fieldRef} class="el-form-item__content" style={contentStyle.value}>
-            {ctx.slots.default?.()}
+            {children}
             <Transition name="el-zoom-in-top">
               {renderCondition(
                 showError,
