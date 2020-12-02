@@ -8,6 +8,8 @@ interface TriggerRule {
   trigger?: 'blur' | 'change' | ('blur' | 'change')[]
 }
 
+export type FieldRules = RuleItem & TriggerRule;
+
 export interface FormRules {
-  [field: string]: (RuleItem & TriggerRule) | (RuleItem & TriggerRule)[];
+  [field: string]: (FieldRules) | (FieldRules)[];
 }

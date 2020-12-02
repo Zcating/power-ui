@@ -1,11 +1,11 @@
-import { RuleItem } from 'async-validator';
+import { cloneVNode, computed, defineComponent, getCurrentInstance, reactive, ref, Transition } from 'vue';
 import { ElSize } from 'power-ui/types';
-import { cloneVNode, computed, defineComponent, getCurrentInstance, onMounted, reactive, ref, toRef, Transition, VNode, watch } from 'vue';
 import { coerceCssPixelValue } from 'vue-cdk/coercion';
 import { usePlatform } from 'vue-cdk/global';
 import { Enum, List, Model, renderCondition } from 'vue-cdk/utils';
 import { FormRef } from './form';
-import { useFormService } from './form.service';
+import { FormSerivce, useFormService } from './form.service';
+import { FieldRules } from './types';
 
 export const FormItem = defineComponent({
   props: {
@@ -34,7 +34,11 @@ export const FormItem = defineComponent({
       default: ''
     },
     rules: {
-      type: [Model<RuleItem>(), List<RuleItem>()],
+      type: [Model<FieldRules>(), List<FieldRules>()],
+    },
+    autoLink: {
+      type: Boolean,
+      default: true,
     }
   },
   setup(props, ctx) {
@@ -99,21 +103,30 @@ export const FormItem = defineComponent({
 
     const validate = reactive({ status: '', message: '' });
     const formService = useFormService();
-    const fieldRef = ref<HTMLDivElement | null>(null);
-    if (formService) {
-      formService.bindErrors(props.name, (errors) => {
-        validate.status = !errors ? 'success' : 'error';
-        validate.message = errors ? errors[0].message : '';
-      });
-      onMounted(() => {
-        const el = fieldRef.value;
-        if (!el) {
-          return;
-        }
-        // formService.onFieldBlur(el, props.name, props.rules);
-        // formService.onFieldChange(el, props.name, props.rules);
-      });
-    }
+    formService?.bindValidate(props.name, props.rules, (result: string[]) => {
+      validate.status = result.length > 0 ? 'error' : 'success';
+      validate.message = result[0] ?? '';
+    });
+
+    const required = computed(() => {
+      const fieldRules = formService?.rulesRef.value[props.name];
+      const { rules } = props;
+      const required1 = Array.isArray(fieldRules) ? fieldRules.some((value) => value.required) : fieldRules?.required;
+      const required2 = Array.isArray(rules) ? rules.some((value) => value.required) : rules?.required;
+      return !!(required1 || required2);
+    });
+
+    const handleFieldTrigger = async (trigger: 'blur' | 'change') => {
+      const rules = formService?.validateRules(props.name, props.rules, trigger);
+      if (!rules || rules.length === 0) {
+        return;
+      }
+
+      validate.status = 'validating';
+      const result = await formService?.fieldValidate(props.name, rules) ?? [];
+      validate.status = result.length > 0 ? 'error' : 'success';
+      validate.message = result[0] ?? '';
+    };
 
     return () => {
       const { message: validateMessage, status: validateStatus } = validate;
@@ -122,23 +135,22 @@ export const FormItem = defineComponent({
       const showLabel = props.label || ctx.slots.label;
       const itemSize = props.size || size;
       const children = (ctx.slots.default?.() ?? []);
-      if (children) {
-        let firstChild = children[0];
+      if (children.length > 0 && props.autoLink) {
+        const firstChild = children[0];
         const originBlur = firstChild.props?.onBlur;
         const originChange = firstChild.props?.onChange;
-        console.log(firstChild.props);
-        firstChild = cloneVNode(firstChild, {
+        children[0] = cloneVNode(firstChild, {
           onBlur: (event: FocusEvent) => {
             if (typeof originBlur === 'function') {
               originBlur(event);
             }
-            formService?.handleFieldTrigger(props.name, props.rules, 'blur');
+            handleFieldTrigger('blur');
           },
           onChange: (value: any) => {
             if (typeof originChange === 'function') {
               originChange(value);
             }
-            formService?.handleFieldTrigger(props.name, props.rules, 'change');
+            handleFieldTrigger('change');
           }
         });
       }
@@ -151,7 +163,7 @@ export const FormItem = defineComponent({
               'is-error': validateStatus === 'error',
               'is-validating': validateStatus === 'validating',
               'is-success': validateStatus === 'success',
-              'is-required': false,
+              'is-required': required.value,
               'is-no-asterisk': hideRequiredAsterisk
             },
             itemSize ? `el-form-item--${itemSize}` : ''
@@ -168,7 +180,7 @@ export const FormItem = defineComponent({
               </div>
             )
           )}
-          <div ref={fieldRef} class="el-form-item__content" style={contentStyle.value}>
+          <div class="el-form-item__content" style={contentStyle.value}>
             {children}
             <Transition name="el-zoom-in-top">
               {renderCondition(

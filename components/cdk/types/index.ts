@@ -9,3 +9,5 @@ export type VueNode = VNode | JSX.Element;
 
 
 export type Renderable = VueNode | number | string | boolean;
+
+export type MaybeArray<T> = T | T[]

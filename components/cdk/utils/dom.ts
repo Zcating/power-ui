@@ -44,7 +44,7 @@ export const renderCondition = <T>(test: T, node: VueNode<T>, elseNode?: VueNode
   }
 };
 
-export const isEqual = (value1: any[] | string | number, value2: any[] | string | number) => {
+export const isEqual = <T = any>(value1: T | T[], value2: T | T[]) => {
   const isArray1 = Array.isArray(value1);
   const isArray2 = Array.isArray(value2);
   if (isArray1 && isArray2) {

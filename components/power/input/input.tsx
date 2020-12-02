@@ -167,7 +167,7 @@ function useInput(
    */
   function onChange(event: Event) {
     ctx.emit('input', event);
-    ctx.emit('change', (event.target as InputElement).value);
+    ctx.emit('change', event);
   }
 
   /**
@@ -175,8 +175,6 @@ function useInput(
    * @param event
    */
   function onInput(event: Event) {
-    // should not emit input during composition
-    // see: https://github.com/ElemeFE/element/issues/10516
     if (isComposing.value) {
       return;
     }

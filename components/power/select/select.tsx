@@ -1,4 +1,4 @@
-import { Ref, SetupContext, computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
+import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
 import { List, isEqual, renderCondition, Method } from 'vue-cdk/utils';
 import { CdkSelection } from 'vue-cdk/selection';
 import { Tooltip } from '../tooltip';
@@ -7,36 +7,9 @@ import { provideDescMap } from './utils';
 import { SelectionValue } from 'vue-cdk/selection/types';
 import { watchRef } from 'vue-cdk/hook';
 
-function useClear(
-  ctx: SetupContext,
-  inputValue: Ref<any>,
-  visible: Ref<boolean>,
-  remote: Ref<boolean>,
-  filterable: Ref<boolean>,
-  multiple: Ref<boolean>
-) {
-  const iconClass = computed(() => {
-    return remote.value && filterable.value ? '' : (visible.value ? 'arrow-up is-reverse' : 'arrow-up');
-  });
-
-  const onClear = (event: Event) => {
-    event.stopPropagation();
-    const value = multiple.value ? [] : '';
-    if (!isEqual(inputValue.value, value)) {
-      ctx.emit('change', value);
-    }
-    ctx.emit('input', value);
-    ctx.emit('clear');
-    visible.value = false;
-  };
-
-  return {
-    iconClass,
-    onClear
-  };
-}
 
 export const Select = defineComponent({
+  name: 'po-select',
   inheritAttrs: false,
   props: {
     id: String,
@@ -85,7 +58,8 @@ export const Select = defineComponent({
     },
     onBlur: Method<(event: FocusEvent) => void>(),
     onFocus: Method<(event: FocusEvent) => void>(),
-    onChange: Method<(event: Event) => void>()
+    onChange: Method<(event: Event) => void>(),
+    onInput: Method<(event: (string | number)[] | string | number) => void>()
   },
 
   setup(props, ctx) {
@@ -93,6 +67,7 @@ export const Select = defineComponent({
     const tooltipVisible = ref(false);
     const modelRef = watchRef(toRef(props, 'modelValue'), (value) => {
       ctx.emit('update:modelValue', value);
+      console.log('select-change');
     });
 
     // provide a map to get description from selection.
@@ -106,12 +81,24 @@ export const Select = defineComponent({
       } else {
         selectedLabel.value = map.get(value);
         tooltipVisible.value = false;
+
+        ctx.emit('change', selectedLabel.value);
       }
     };
 
-    const handleClearClick = () => {
+    const handleClearClick = (event: Event) => {
+      event.stopPropagation();
+
       selectedLabel.value = '';
       modelRef.value = '';
+      tooltipVisible.value = false;
+
+      const value = props.multiple ? [] : '';
+      if (!isEqual(modelRef.value, value)) {
+        ctx.emit('change', value);
+      }
+      ctx.emit('input', value);
+      ctx.emit('clear');
     };
 
     const iconClass = computed(() => {
@@ -131,14 +118,11 @@ export const Select = defineComponent({
 
     const handleBlur = (event: FocusEvent) => {
       ctx.emit('blur', event);
+      console.log('select-blur');
     };
 
     const handleFocus = (event: FocusEvent) => {
       ctx.emit('focus', event);
-    };
-
-    const handleChange = (event: any) => {
-      ctx.emit('change', event);
     };
 
     const emptyText = computed(() => '');
@@ -225,7 +209,6 @@ export const Select = defineComponent({
               }}
               onFocus={handleFocus}
               onBlur={handleBlur}
-              onChange={handleChange}
             />
           </div>
         </Tooltip>

@@ -1,6 +1,6 @@
-import { inject, InjectionKey, onUnmounted, provide, Ref, toRaw } from 'vue';
-import Schema, { RuleItem, ValidateError } from 'async-validator';
-import { FormRules } from './types';
+import { inject, InjectionKey, provide, Ref, toRaw } from 'vue';
+import Schema, { ValidateError } from 'async-validator';
+import { FieldRules, FormRules } from './types';
 
 const token = Symbol() as InjectionKey<FormSerivce>;
 
@@ -8,11 +8,11 @@ export const useFormService = () => inject(token, null);
 
 export class FormSerivce {
   private readonly pendingState: { [key in string]: any } = {};
-  private readonly hookErrors: { [key in string]: (errors?: ValidateError[]) => void } = {};
+  private readonly hookErrors: { [key in string]: (errors?: string[]) => any } = {};
 
   constructor(
     private state: Ref<Record<string, any>>,
-    private rulesRef: Ref<FormRules>,
+    public rulesRef: Ref<FormRules>,
   ) {
     this.pendingState = toRaw(state.value);
 
@@ -20,15 +20,16 @@ export class FormSerivce {
   }
 
   async validate() {
-    return await (new Schema(this.rulesRef.value)).validate(
-      this.state.value,
-      {},
-      (errors, res) => {
-        Object.keys(res).forEach((value) => {
-          this.hookErrors[value]?.(res[value]);
-        });
-      }
-    );
+    const promises = Object.keys(this.hookErrors).map((key) => this.hookErrors[key]());
+    return Promise.all(promises);
+  }
+
+  bindValidate(name: string, fieldRules: FieldRules | FieldRules[] | undefined, hook: (result: string[]) => void) {
+    this.hookErrors[name] = async () => {
+      const rules = [...this.getRuleArray(fieldRules), ...this.getRuleArray(this.rulesRef.value[name])];
+      const result = await this.fieldValidate(name, rules);
+      hook(result);
+    };
   }
 
   reset(names: string[]) {
@@ -50,56 +51,46 @@ export class FormSerivce {
     }
   }
 
-  bindErrors(name: string, hook: (errors?: ValidateError[]) => void) {
-    this.hookErrors[name] = hook;
+  validateRules(name: string, rules: FieldRules | FieldRules[] | undefined, trigger: 'blur' | 'change') {
+    return [
+      ...this.getConditionRules(this.rulesRef.value[name], trigger),
+      ...this.getConditionRules(rules, trigger)
+    ];
   }
 
-
-  handleFieldTrigger(name: string, ruleItems: RuleItem | RuleItem[] | undefined, trigger: 'blur' | 'change') {
-    const rules = this.validateField(name, trigger) ?? ruleItems;
-    if (!rules) {
-      return;
+  async fieldValidate(name: string, rules: FieldRules[]) {
+    let result: string[] = [];
+    try {
+      await new Schema({ [name]: rules }).validate({ [name]: this.state.value[name] }, { firstFields: true });
+    } catch (e) {
+      if (e.errors) {
+        result = e.errors.map(({ message }: ValidateError) => message);
+      } else {
+        console.error(e);
+      }
     }
-    const schema = new Schema({ [name]: rules });
-    schema.validate(this.state.value, { firstFields: true }, (_, res) => {
-      this.hookErrors[name]?.(res?.[name]);
-    });
+    return result;
   }
 
-  private validateField(name: string, trigger: 'blur' | 'change') {
-    const rules = this.rulesRef.value[name];
+  private getConditionRules(rules: FieldRules | FieldRules[] | undefined, trigger: 'blur' | 'change') {
     if (Array.isArray(rules)) {
       return rules.filter(value => value.trigger === trigger);
     } else if (rules && rules.trigger === trigger) {
-      return rules;
+      return [rules];
+    } else {
+      return [];
     }
   }
 
-  // onFieldBlur(el: HTMLElement, name: string, ruleItems?: RuleItem | RuleItem[]) {
-  //   this.onFieldEvent(el, name, ruleItems, 'blur');
-  // }
-
-  // onFieldChange(el: HTMLElement, name: string, ruleItems?: RuleItem | RuleItem[]) {
-  //   this.onFieldEvent(el, name, ruleItems, 'change');
-  // }
-
-  // private onFieldEvent(el: HTMLElement, name: string, ruleItems: RuleItem | RuleItem[] | undefined, trigger: 'change' | 'blur') {
-  //   const rules = this.validateField(name, trigger) ?? ruleItems;
-  //   if (!rules) {
-  //     return;
-  //   }
-  //   const listener = (event: any) => {
-  //     const schema = new Schema({ [name]: rules });
-  //     schema.validate(this.state.value, { firstFields: true }, (_, res) => {
-  //       this.hookErrors[name]?.(res?.[name]);
-  //     });
-  //   };
-  //   el.addEventListener(trigger, listener, true);
-
-  //   onUnmounted(() => {
-  //     el.removeEventListener(trigger, listener);
-  //   });
-  // }
+  private getRuleArray(rules: FieldRules | FieldRules[] | undefined) {
+    if (Array.isArray(rules)) {
+      return rules;
+    } else if (rules) {
+      return [rules];
+    } else {
+      return [];
+    }
+  }
 }
 
 
