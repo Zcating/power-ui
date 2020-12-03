@@ -37,7 +37,7 @@ export function typeMonth(this: void, type: 'prev' | 'current' | 'next', current
   if (type === 'prev') {
     return dayjs(currentDate).subtract(1, 'month').set('date', 1).toDate();
   } else if (type === 'current') {
-    return dayjs(currentDate).toDate();
+    return dayjs().toDate();
   } else if (type === 'next') {
     return dayjs(currentDate).add(1, 'month').set('date', 1).toDate();
   } else {
