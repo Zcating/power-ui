@@ -68,6 +68,7 @@ export class VirtualScrollable {
     this.displayItemsRef.value = this.items.filter((el) => el._active);
   }, 300);
 
+
   constructor(items: ItemData[]) {
     // target data
     this.items = items;

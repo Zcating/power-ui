@@ -1,5 +1,4 @@
 import { defineComponent, renderSlot } from 'vue';
-import { renderCondition } from 'vue-cdk/utils';
 import { useVirtualScroll } from './virtual-scrollable';
 
 export const VirtualScroll = defineComponent({
