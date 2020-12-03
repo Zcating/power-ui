@@ -1,4 +1,4 @@
-import { List, renderCondition } from 'vue-cdk/utils';
+import { List, Method, renderCondition } from 'vue-cdk/utils';
 import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import { SliderButton } from './button';
 
@@ -6,6 +6,10 @@ import { SliderButton } from './button';
 
 export const Slider = defineComponent({
   props: {
+    modelValue: {
+      type: [Number, List<number>()],
+      default: 0,
+    },
     min: {
       type: Number,
       default: 0
@@ -30,19 +34,32 @@ export const Slider = defineComponent({
       type: Boolean,
       default: false,
     },
-    tooltipClass: String,
+    tooltipClass: { type: String, default: '' },
+
     vertical: {
       type: Boolean,
       default: false
     },
-    modelValue: {
-      type: [Number, List<number>()],
-      default: 0,
-    },
     height: {
       type: String
     },
+    onChange: {
+      type: Method<() => void>(),
+    },
+    onBlur: {
+      type: Method<() => void>()
+    },
+    onFocus: {
+      type: Method<() => void>()
+    }
   },
+  emits: [
+    'update:modelValue',
+    'blur',
+    'focus',
+    'change'
+  ],
+
   setup(props, ctx) {
     const firstValue = ref(0);
     const secondValue = ref(0);
@@ -138,7 +155,7 @@ export const Slider = defineComponent({
         offset = (event.clientX - rect.left) / size.value * 100;
       }
       if (props.range) {
-        // Caculate the relative distances between first & second.
+        // Caculate the absolute distances between first & second.
         const firstDist = Math.abs(offset - firstValue.value);
         const secondDist = Math.abs(offset - secondValue.value);
         if (firstDist < secondDist) {
@@ -160,6 +177,7 @@ export const Slider = defineComponent({
         aria-valuemin={props.min}
         aria-orientation={props.vertical ? 'vertical' : 'horizontal'}
         aria-disabled={props.disabled}
+        tabindex={0}
         {...ctx.attrs}
       >
         <div

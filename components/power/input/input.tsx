@@ -167,7 +167,7 @@ function useInput(
    */
   function onChange(event: Event) {
     ctx.emit('input', event);
-    ctx.emit('change', event);
+    ctx.emit('change', (event.target as HTMLInputElement).value);
   }
 
   /**
@@ -400,6 +400,11 @@ function positionIcon(
   });
 }
 
+/**
+ * @component Input
+ * @description 
+ * 
+ */
 export const Input = defineComponent({
   name: 'po-input',
   // prevent the $attrs applys to <div>

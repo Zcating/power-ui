@@ -309,7 +309,7 @@ export default defineComponent({
 
           <p>
             <Input v-model={input.value} placeholder="不能输入空格" onInput={(e: Event) => {
-              input.value = (e.target! as any).value.replace(/\s*/g, '');
+              input.value = (e.target as HTMLInputElement).value.replace(/\s*/g, '');
             }} />
             <Input v-model={input.value} placeholder="请输入内容2" clearable />
             <Input v-model={input.value} placeholder="请输入内容2" type="textarea" autosize />

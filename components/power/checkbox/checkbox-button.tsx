@@ -26,7 +26,8 @@ export const CheckboxButton = defineComponent({
     },
     trueLabel: [String, Number],
     falseLabel: [String, Number],
-    onChange: Method<(value: boolean) => void>()
+    onChange: Method<(value: boolean) => void>(),
+
   },
   setup(props, ctx) {
     const modelRef = watchRef(toRef(props, 'checked'), (value) => {
@@ -41,7 +42,7 @@ export const CheckboxButton = defineComponent({
     const handleChange = (event: any) => {
       const checked = event.target?.checked ?? false;
       modelRef.value = checked;
-      props.onChange?.(checked);
+      ctx.emit('change', checked);
     };
 
     const handleBlur = () => {

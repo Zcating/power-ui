@@ -39,7 +39,7 @@ export const CdkSelectionItem = defineComponent({
           return;
         }
         ctx.emit('update:modelValue', value);
-      });
+      }, { immediate: true });
     }
 
     return () => ctx.slots.default?.();

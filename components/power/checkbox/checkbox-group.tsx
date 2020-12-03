@@ -3,6 +3,7 @@ import { Enum, List, Method } from 'vue-cdk/utils';
 import { defineComponent, InjectionKey, provide, Ref, toRef } from 'vue';
 import { ElSize } from 'power-ui/types';
 import { SelectionValue } from 'vue-cdk/selection/types';
+import { MaybeArray } from 'vue-cdk/types';
 
 export interface CheckboxGroupData {
   textColor: Ref<string | undefined>;
@@ -25,9 +26,6 @@ export const CheckboxGroup = defineComponent({
       type: List<string | number>(),
       default: []
     },
-    onChange: {
-      type: Method<(value: (string | number)[]) => void>(),
-    },
     size: {
       type: Enum<ElSize>(),
       default: ''
@@ -44,6 +42,9 @@ export const CheckboxGroup = defineComponent({
       type: Boolean,
       default: false
     },
+    onChange: {
+      type: Method<(value: (string | number)[]) => void>()
+    }
   },
   emits: {
     'update:modelValue': (value: (string | number)[]) => true,

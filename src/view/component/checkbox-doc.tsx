@@ -2,7 +2,7 @@ import { Checkbox, CheckboxButton, CheckboxGroup, CheckboxGroupRef } from 'power
 
 import { computed, defineComponent, ref, shallowRef } from 'vue';
 
-export const CheckboxDoc = defineComponent((_, ctx) => {
+export const CheckboxDoc = defineComponent(() => {
   const cities = ['广州', '上海', '北京', '深圳'];
   const city = shallowRef(['广州']);
 
