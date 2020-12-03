@@ -1,6 +1,4 @@
 export * from './timer';
 export * from './dom';
-export * from './isType';
+export * from './object';
 export * from './props';
-export * from './transform';
-export * from './number';

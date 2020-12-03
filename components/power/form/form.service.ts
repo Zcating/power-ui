@@ -1,6 +1,7 @@
 import { inject, InjectionKey, provide, Ref, toRaw } from 'vue';
 import Schema, { ValidateError } from 'async-validator';
 import { FieldRules, FormRules } from './types';
+import { MaybeArray } from 'vue-cdk/types';
 
 const token = Symbol() as InjectionKey<FormSerivce>;
 
@@ -74,8 +75,8 @@ export class FormSerivce {
 
   private getConditionRules(rules: FieldRules | FieldRules[] | undefined, trigger: 'blur' | 'change') {
     if (Array.isArray(rules)) {
-      return rules.filter(value => value.trigger === trigger);
-    } else if (rules && rules.trigger === trigger) {
+      return rules.filter(value => this.isContain(value.trigger, trigger));
+    } else if (rules && this.isContain(rules.trigger, trigger)) {
       return [rules];
     } else {
       return [];
@@ -90,6 +91,10 @@ export class FormSerivce {
     } else {
       return [];
     }
+  }
+
+  private isContain<T>(values: MaybeArray<T>, target: T) {
+    return Array.isArray(values) ? values.indexOf(target) !== -1 : values === target;
   }
 }
 

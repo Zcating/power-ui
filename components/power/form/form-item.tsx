@@ -4,7 +4,7 @@ import { coerceCssPixelValue } from 'vue-cdk/coercion';
 import { usePlatform } from 'vue-cdk/global';
 import { Enum, List, Model, renderCondition } from 'vue-cdk/utils';
 import { FormRef } from './form';
-import { FormSerivce, useFormService } from './form.service';
+import { useFormService } from './form.service';
 import { FieldRules } from './types';
 
 export const FormItem = defineComponent({

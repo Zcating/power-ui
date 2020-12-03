@@ -47,8 +47,8 @@ export const CheckboxGroup = defineComponent({
     }
   },
   emits: {
-    'update:modelValue': (value: (string | number)[]) => true,
-    'change': (value: (string | number)[]) => true
+    'update:modelValue': (value: (string | number)[]) => !!value,
+    'change': (value: (string | number)[]) => !!value
   },
   setup(props, ctx) {
     // multiple will always return array.
@@ -65,7 +65,12 @@ export const CheckboxGroup = defineComponent({
     });
 
     return () => (
-      <div class="el-checkbox-group" role="group" aria-label="checkbox-group" {...ctx.attrs}>
+      <div
+        class="el-checkbox-group"
+        role="group"
+        aria-label="checkbox-group"
+        {...ctx.attrs}
+      >
         <CdkSelection
           ref="selection"
           multiple={true}

@@ -29,10 +29,17 @@ export const CheckboxButton = defineComponent({
     onChange: Method<(value: boolean) => void>(),
 
   },
+
+  emits: [
+    'update:checked',
+    'change'
+  ],
+
   setup(props, ctx) {
-    const modelRef = watchRef(toRef(props, 'checked'), (value) => {
-      ctx.emit('update:checked', value);
-    });
+    const modelRef = watchRef(
+      toRef(props, 'checked'),
+      (value) => ctx.emit('update:checked', value)
+    );
 
     const activeStyle = computed(() => {
       return {};
