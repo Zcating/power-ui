@@ -3,7 +3,6 @@ import {
   inject,
   InjectionKey,
 } from 'vue';
-import { getClassToken } from '../tools';
 import Breakpoint from './breakpoint';
 import Bidirection from './bidirection';
 import Platform from './platform';

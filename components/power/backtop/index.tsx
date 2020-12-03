@@ -7,10 +7,14 @@ import {
   ref,
   renderSlot,
   watch,
+  InjectionKey,
+  shallowRef,
 } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
-import { runWhileScroll, getFuncToken } from 'vue-cdk/tools';
+import { runWhileScroll } from 'vue-cdk/hook/tools';
 
+
+const token = Symbol() as InjectionKey<ReturnType<typeof backtopController>>;
 /**
  * visible while scroll to certain area
  * controll every where
@@ -23,10 +27,11 @@ import { runWhileScroll, getFuncToken } from 'vue-cdk/tools';
  */
 export function backtopController(target?: Ref<string>) {
   const { BODY } = usePlatform();
-  // for ssr
-  // not body element , no val
-  if (!BODY) return null;
-  const container = ref<HTMLElement>(BODY);
+  if (!BODY) {
+    return null;
+  }
+
+  const container = shallowRef<HTMLElement>(BODY);
   if (target) {
     watch(target, (res) => {
       if (res) {
@@ -34,6 +39,7 @@ export function backtopController(target?: Ref<string>) {
       }
     });
   }
+
   const visible = ref(false);
   const scrollToTop = () => {
     const beginTime = Date.now();
@@ -55,7 +61,8 @@ export function backtopController(target?: Ref<string>) {
     };
     rAF(frameFunc);
   };
-  provide('ele-backtop', { container, visible, scrollToTop });
+  provide(token, { container, visible, scrollToTop });
+
   return { container, visible, scrollToTop };
 }
 
@@ -81,14 +88,11 @@ export default defineComponent({
     },
   },
   setup(props, ctx) {
-    const backtop = inject(
-      getFuncToken(backtopController, 'ele-backtop'),
-      backtopController()
-    );
-    // for ssr
-    // no backtop logic
-    // no content
-    if (!backtop) return null;
+    const backtop = inject(token, backtopController());
+    if (!backtop) {
+      return null;
+    }
+
     const { container, visible, scrollToTop } = backtop;
     runWhileScroll(() => {
       const scrollTop = container.value.scrollTop;
@@ -110,8 +114,8 @@ export default defineComponent({
             {hasDefaultSlot ? (
               renderSlot(ctx.slots, 'default')
             ) : (
-              <i class='el-icon-caret-top'></i>
-            )}
+                <i class='el-icon-caret-top'></i>
+              )}
           </div>
         ) : null}
       </Transition>

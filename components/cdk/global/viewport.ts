@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue';
-import { runWhileResize } from '../tools';
+import { runWhileResize } from '../hook/tools';
 import Platform from './platform';
 
 /**
