@@ -1,7 +1,7 @@
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, shallowRef, watch } from 'vue';
 import { chunk } from 'lodash-es';
-import { daysRange, typeMonth } from 'vue-cdk';
-import { Method, Model } from 'vue-cdk/utils';
+import { Day, daysRange, typeMonth } from 'vue-cdk';
+import { List, Method, Model } from 'vue-cdk/utils';
 import { Renderable } from 'vue-cdk/types';
 import { zhCN, LangConfig } from 'power-ui/lang';
 import { ButtonGroup } from 'power-ui/button';
@@ -19,15 +19,19 @@ export default defineComponent({
     renderCell: {
       type: Method<(time: Date) => Renderable>(),
       default: (t: Date) => t.getDate(),
+    },
+    range: {
+      type: [List<Date>(), List<number>()]
     }
   },
   setup(props, ctx) {
-    const lang = zhCN as unknown as LangConfig;
-    const weekList = lang.datepicker.weeks;
+    const dateI18n = (zhCN as unknown as LangConfig).datepicker;
+    const weekList = dateI18n.weeks;
     const dateRef = watchRef(
       computed(() => {
-        let time: Date;
         const { modelValue } = props;
+
+        let time: Date;
         if (modelValue instanceof Date) {
           time = modelValue;
         } else if (typeof modelValue === 'string' || typeof modelValue === 'number') {
@@ -48,13 +52,18 @@ export default defineComponent({
 
 
 
-    const dayList = computed(() => {
-      return chunk(daysRange(dateRef.value), 7);
-    });
+    const days = shallowRef<Day[][]>([]);
+    watch(dateRef, (value, prev) => {
+      if (value.getMonth() === prev?.getMonth()) {
+        return;
+      }
+      console.log('value');
+      days.value = chunk(daysRange(value), 7);
+    }, { immediate: true });
 
     const title = computed(() => {
       const date = dateRef.value;
-      return `${date.getFullYear()} ${lang.datepicker.year} ${lang.datepicker[`month${date.getMonth() + 1}`]}`;
+      return `${date.getFullYear()} ${dateI18n.year} ${dateI18n[`month${date.getMonth() + 1}`]}`;
     });
 
     const isCurrentDay = (date: Date) => {
@@ -75,9 +84,9 @@ export default defineComponent({
           </div>
           <div class="el-calendar__button-group">
             <ButtonGroup>
-              <Button size="mini" onClick={() => clickMonth('prev')}>{lang.datepicker.prevMonth}</Button>
-              <Button size="mini" onClick={() => clickMonth('current')}>{lang.datepicker.today}</Button>
-              <Button size="mini" onClick={() => clickMonth('next')}>{lang.datepicker.nextMonth}</Button>
+              <Button size="mini" onClick={() => clickMonth('prev')}>{dateI18n.prevMonth}</Button>
+              <Button size="mini" onClick={() => clickMonth('current')}>{dateI18n.today}</Button>
+              <Button size="mini" onClick={() => clickMonth('next')}>{dateI18n.nextMonth}</Button>
             </ButtonGroup>
           </div>
         </div>
@@ -91,7 +100,7 @@ export default defineComponent({
               </tr>
             </thead>
             <tbody>
-              {dayList.value.map((row, idx) => (
+              {days.value.map((row, idx) => (
                 <tr class='el-calendar-table__row' key={idx}>
                   {row.map((col, idx2) => (
                     <td class={[col.type, isCurrentDay(col.time) ? 'is-selected' : '']} key={idx2}>

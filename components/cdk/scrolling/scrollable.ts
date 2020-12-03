@@ -47,19 +47,22 @@ export interface ScrollToOptions {
 export default class {
   nodeRef = ref<HTMLElement | null>(null);
   scrollCb: (e: Event) => void = noop;
-  private body = usePlatform().BODY;
+  private document = usePlatform().TOP?.document;
   private scrollAxisType?: ScrollAxisType;
   private handleScroll = (e: Event) => {
     this.scrollCb(e);
   };
+
   constructor() {
     onMounted(() => {
-      if (this.nodeRef.value)
+      if (this.nodeRef.value) {
         this.nodeRef.value.addEventListener('scroll', this.handleScroll);
+      }
     });
     onBeforeMount(() => {
-      if (this.nodeRef.value)
+      if (this.nodeRef.value) {
         this.nodeRef.value.removeEventListener('scroll', this.handleScroll);
+      }
     });
   }
 
@@ -80,9 +83,12 @@ export default class {
    *
    */
   scrollTo = (options: ScrollToOptions) => {
-    if (!this.nodeRef.value) return;
+    if (!this.nodeRef.value || !this.document) {
+      return;
+    }
+    const { body } = this.document;
     const el = this.nodeRef.value;
-    const isRtl = this.body?.dir && this.body?.dir === 'rtl';
+    const isRtl = body.dir && body.dir === 'rtl';
     if (options.left === undefined) {
       options.left = isRtl ? options.end : options.start;
     }
@@ -115,7 +121,9 @@ export default class {
    *
    */
   applyScrollToOptions = (options: ScrollToOptions) => {
-    if (!this.nodeRef.value) return;
+    if (!this.nodeRef.value) {
+      return;
+    }
     const el = this.nodeRef.value;
     if (options.top !== undefined) {
       el.scrollTop = options.top;
@@ -130,13 +138,20 @@ export default class {
    *
    */
   mesureScrollOffset = (from: ScrollFrom) => {
-    if (!this.nodeRef.value) return 0;
+    if (!this.nodeRef.value || !this.document) {
+      return 0;
+    }
     const el = this.nodeRef.value;
-    if (from === ScrollFrom.top) return el.scrollTop;
-    if (from === ScrollFrom.bottom)
+    if (from === ScrollFrom.top) {
+      return el.scrollTop;
+    }
+    if (from === ScrollFrom.bottom) {
       return el.scrollHeight - el.clientHeight - el.scrollTop;
+    }
+
+    const { body } = this.document;
     // switch from left/right while rtl
-    const isRtl = this.body?.dir && this.body?.dir === 'rtl';
+    const isRtl = body.dir && body.dir === 'rtl';
     if (from === ScrollFrom.start) {
       from = isRtl ? ScrollFrom.right : ScrollFrom.left;
     } else if (from === ScrollFrom.end) {
@@ -169,23 +184,25 @@ export default class {
    *
    */
   getScrollAxisType = (): ScrollAxisType => {
-    if (!this.body) {
+    if (!this.document) {
       this.scrollAxisType = ScrollAxisType.normal;
       return this.scrollAxisType;
     }
     if (this.scrollAxisType === undefined) {
-      const container = document.createElement('div');
+      const container = this.document.createElement('div');
       container.dir = 'rtl';
       container.style.width = '1px';
       container.style.overflow = 'auto';
       container.style.visibility = 'hidden';
       container.style.pointerEvents = 'none';
       container.style.position = 'absolute';
-      const content = document.createElement('div');
+
+      const content = this.document.createElement('div');
       content.style.width = '2px';
       content.style.height = '1px';
       container.appendChild(content);
-      document.body.append(container);
+      this.document.body.append(container);
+
       this.scrollAxisType = ScrollAxisType.normal;
       if (container.scrollLeft === 0) {
         container.scrollLeft = 1;

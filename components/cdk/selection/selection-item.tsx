@@ -42,6 +42,6 @@ export const CdkSelectionItem = defineComponent({
       }, { immediate: true });
     }
 
-    return () => ctx.slots.default?.();
+    return () => ctx.slots.default ? ctx.slots.default() : ctx.slots.renderState?.({ state });
   }
 });

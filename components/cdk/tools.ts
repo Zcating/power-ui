@@ -2,7 +2,6 @@ import {
   InjectionKey,
   Ref,
   computed,
-  isRef,
   onBeforeUnmount,
   onMounted,
   ref,
@@ -48,41 +47,6 @@ export function getClassToken<T>(
     return name as any;
   }
   return Symbol();
-}
-
-/**
- * mark a component or service to dirty
- * so that all the value will reactive once
- * use added number to ensure check every time
- *
- * @export
- * @returns
- */
-export function markDirty() {
-  const dirtyNum = ref(0);
-  const dirty = computed(() => {
-    return dirtyNum.value % 2 === 1 ? null : undefined;
-  });
-  const mark = () => {
-    dirtyNum.value++;
-  };
-  return {
-    dirty,
-    mark,
-  };
-}
-
-/**
- * sub component react to service's dirty ref
- *
- * @export
- * @param {(Ref<null | undefined>)} dirty
- * @returns
- */
-export function reactToService(dirty: Ref<null | undefined>) {
-  const { dirty: localDirty, mark } = markDirty();
-  watch(dirty, mark);
-  return localDirty;
 }
 
 /**

@@ -31,6 +31,7 @@ import {
   useMessage,
   useNotification
 } from 'power-ui';
+import CDKTest from 'vue-cdk/Test';
 import { Layout } from './layout';
 
 
@@ -351,6 +352,9 @@ export default defineComponent({
           </p>
           <p>
             <Rate></Rate>
+          </p>
+          <p>
+            <CDKTest />
           </p>
           <div style='height:200px;overflow-y:auto'>
             <div ref={divRef} style='height:1000px'></div>

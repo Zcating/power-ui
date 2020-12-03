@@ -1,5 +1,4 @@
 import { inject, InjectionKey, provide, ref } from 'vue';
-import { getClassToken } from 'vue-cdk/tools';
 import { MessageContainer, MessageContainerFactory } from './message-container';
 import { MessageData, MessageDataOptions } from './types';
 
@@ -68,7 +67,7 @@ class MessageServiceImpl extends MessageService {
 }
 
 
-const $message = getClassToken<MessageService>(MessageServiceImpl);
+const $message = Symbol() as InjectionKey<MessageService>;
 
 export const useMessage = () => inject($message)!;
 export const provideMessage = () => new MessageServiceImpl($message);

@@ -1,5 +1,4 @@
-import { VueWrapper, mount } from '@vue/test-utils';
-import { defineComponent, inject, ref} from 'vue';
+import { defineComponent, inject, ref } from 'vue';
 const OverlayTester = defineComponent({
   // name: 'overlay-spec',
   // setup(_, ctx) {
@@ -46,14 +45,14 @@ const OverlayTester = defineComponent({
   // }
 });
 
-export default OverlayTester;
+// export default OverlayTester;
 
-let compo: VueWrapper<any>;
-beforeEach(() => {
-  compo = mount(OverlayTester);
-});
-describe('cdk-virtual-scroll', () => {
-  it('will mount successfully', () => {
-    expect(compo).toBeTruthy();
-  });
-});
+// let compo: VueWrapper<any>;
+// beforeEach(() => {
+//   compo = mount(OverlayTester);
+// });
+// describe('cdk-virtual-scroll', () => {
+//   it('will mount successfully', () => {
+//     expect(compo).toBeTruthy();
+//   });
+// });

@@ -1,6 +1,7 @@
 import {
   provide,
   inject,
+  InjectionKey,
 } from 'vue';
 import { getClassToken } from '../tools';
 import Breakpoint from './breakpoint';
@@ -11,11 +12,11 @@ import ViewPort from './viewport';
 
 
 // provide token
-const platformToken = getClassToken(Platform);
-const breakpointToken = getClassToken(Breakpoint);
-const bidirectionToken = getClassToken(Bidirection);
-const clipboardToken = getClassToken(Clipboard);
-const viewportToken = getClassToken(ViewPort);
+const platformToken = Symbol() as InjectionKey<Platform>;
+const breakpointToken = Symbol() as InjectionKey<Breakpoint>;
+const bidirectionToken = Symbol() as InjectionKey<Bidirection>;
+const clipboardToken = Symbol() as InjectionKey<Clipboard>;
+const viewportToken = Symbol() as InjectionKey<ViewPort>;
 
 export const usePlatform = () => inject(platformToken)!;
 export const useBreakpoint = () => inject(breakpointToken)!;

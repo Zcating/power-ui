@@ -1,7 +1,6 @@
-import { Ref, onMounted, provide, ref } from 'vue';
-import { markDirty } from '../tools';
+import { inject, InjectionKey, onMounted, provide, Ref, ref, shallowRef } from 'vue';
 import Scrollable from './scrollable';
-
+import { throttle } from 'lodash-es';
 interface ItemData {
   [key: string]: any;
   _active?: boolean;
@@ -9,9 +8,17 @@ interface ItemData {
   _defaultHeight?: number;
 }
 
-export default class {
-  items: ItemData[] = [];
-  displayItems: ItemData[] = [];
+const token = Symbol() as InjectionKey<VirtualScrollable>;
+export const useVirtualScroll = () => inject(token, null);
+
+export class VirtualScrollable {
+  displayItemsRef: Ref<ItemData[]> = shallowRef([]);
+
+  get dispalyItems() {
+    return this.displayItemsRef.value;
+  }
+
+  private items: ItemData[] = [];
   defaultHeight = 100;
   beforeHeight = 0;
   totalHeight = 0;
@@ -24,19 +31,21 @@ export default class {
   scrollable: Scrollable;
   scrollTop = 0;
 
-  mark: () => void;
-  dirty: Ref<any>;
+
 
   /**
    * scroll listener
    *
    */
-  handleChange = () => {
+  handleChange = throttle(() => {
     // no container, no handler
-    if (!this.containerRef.value) return;
-    this.scrollTop = this.containerRef.value.scrollTop;
-    const containerHeight = this.containerRef.value.clientHeight;
-    const buffer = 3 * this.defaultHeight;
+    const container = this.containerRef.value;
+    if (!container) {
+      return;
+    }
+    this.scrollTop = container.scrollTop;
+    const containerHeight = container.clientHeight;
+    const buffer = 2 * this.defaultHeight;
     let beforeHeight = 0;
     let contentHeight = 0;
     let afterHeight = 0;
@@ -56,15 +65,10 @@ export default class {
     }
     this.beforeHeight = beforeHeight;
     this.totalHeight = beforeHeight + afterHeight + contentHeight;
-    this.displayItems = this.items.filter((el) => el._active);
-    this.mark();
-  };
+    this.displayItemsRef.value = this.items.filter((el) => el._active);
+  }, 300);
 
   constructor(items: ItemData[]) {
-    // reactivity
-    const { dirty, mark } = markDirty();
-    this.dirty = dirty;
-    this.mark = mark;
     // target data
     this.items = items;
     // bind scrollable
@@ -74,7 +78,7 @@ export default class {
     onMounted(() => {
       this.handleChange();
     });
-    provide('cdk-virtual-scroll', this);
+    provide(token, this);
   }
 
   /**

@@ -7,8 +7,8 @@ export default defineComponent({
     const bp = useBreakpoint();
     return () => (
       <div>
-        <p>span: {bp.span.value}</p>
-        <p>direction: {bp.direction.value}</p>
+        <p>span: {bp.span}</p>
+        <p>direction: {bp.direction}</p>
       </div>
     );
   },

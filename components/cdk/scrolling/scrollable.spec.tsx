@@ -1,6 +1,6 @@
 import { defineComponent, reactive, ref, toRaw } from 'vue';
 import Scrollable, { ScrollToOptions } from './scrollable';
-import './scrollable.spec.css';
+import './scrollable.spec.scss';
 
 export default defineComponent({
   name: 'scrollable-spec',

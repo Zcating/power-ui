@@ -9,10 +9,10 @@ export default defineComponent({
       <div>
         <button
           onClick={() => {
-            bidi.direction.value =
-              bidi.direction.value === 'ltr'
-                ? (bidi.direction.value = 'rtl')
-                : (bidi.direction.value = 'ltr');
+            bidi.direction =
+              bidi.direction === 'ltr'
+                ? (bidi.direction = 'rtl')
+                : (bidi.direction = 'ltr');
           }}
         >
           change direction

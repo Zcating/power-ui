@@ -1,5 +1,4 @@
 import { DefineComponent, InjectionKey, Ref, provide, ref, inject } from 'vue';
-import { getClassToken } from 'vue-cdk/tools';
 import createContainter from './notification-container';
 import { NotificationConfig, NotificationConfigOptions, NotificationData } from './types';
 
@@ -97,6 +96,6 @@ class NotificationServiceImpl extends NotificationService {
   }
 }
 
-const $notification = getClassToken(NotificationServiceImpl);
+const $notification = Symbol() as InjectionKey<NotificationService>;
 export const useNotification = () => inject($notification)!;
 export const provideNotification = () => new NotificationServiceImpl($notification);

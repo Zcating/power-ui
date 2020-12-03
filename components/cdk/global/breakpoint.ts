@@ -18,8 +18,16 @@ const breakPoints = {
  * @class
  */
 export default class {
-  private span = ref<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
-  private direction = ref<'portrait' | 'landscape'>('landscape');
+  private spanRef = ref<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
+  private directionRef = ref<'portrait' | 'landscape'>('landscape');
+
+  get span() {
+    return this.spanRef.value;
+  }
+
+  get direction() {
+    return this.directionRef.value;
+  }
 
   constructor(private platform: Platform) {
   }
@@ -38,11 +46,11 @@ export default class {
             case 'm':
             case 'l':
             case 'xl':
-              this.span.value = key;
+              this.spanRef.value = key;
               break;
             case 'portrait':
             case 'landscape':
-              this.direction.value = key;
+              this.directionRef.value = key;
               break;
           }
         }
