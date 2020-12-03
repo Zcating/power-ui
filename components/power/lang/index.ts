@@ -52,11 +52,13 @@ export { default as zhCN } from './zh-CN';
 export { default as zhTW } from './zh-TW';
 
 export interface LangConfig {
+
   colorpicker: {
     confirm: string;
     clear: string;
   };
   datepicker: {
+    [key: string]: any;
     now: string;
     today: string;
     cancel: string;

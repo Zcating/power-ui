@@ -30,7 +30,6 @@
   "dependencies": {
     "async-validator": "^3.4.0",
     "core-js": "^3.6.5",
-    "fecha": "^4.2.0",
     "lodash-es": "^4.17.15",
     "vue": "^3.0.2",
     "vue-router": "^4.0.0-beta.13"
@@ -57,7 +56,8 @@
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "typescript": "~3.9.3",
-    "vue-jest": "^5.0.0-0"
+    "vue-jest": "^5.0.0-0",
+    "dayjs": "^1.9.6"
   },
   "husky": {
     "hooks": {

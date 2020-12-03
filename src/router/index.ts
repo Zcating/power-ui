@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from '../view/home';
 import { ComponentDoc, CheckboxDoc, ButtonDoc, RadioDoc, SwitchDoc, Pending, AlertDoc, DialogDoc, TransferDoc, FormDoc } from '../view/component';
+import calendarDoc from '../view/component/calendar.doc';
 export default createRouter({
   history: createWebHashHistory(''),
   routes: [
@@ -44,6 +45,10 @@ export default createRouter({
           path: 'form',
           name: 'form',
           component: FormDoc,
+        }, {
+          path: 'calendar',
+          name: 'calendar',
+          component: calendarDoc,
         }, {
           path: ':name(.*)*',
           component: Pending
