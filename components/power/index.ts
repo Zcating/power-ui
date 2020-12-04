@@ -28,4 +28,5 @@ export { useMessage } from './message';
 export { useNotification } from './notification';
 export { Transfer } from './transfer';
 export { Form, FormItem, FormRules } from './form';
+export { Tree, TreeNodeData } from './tree';
 

@@ -1,10 +1,20 @@
-import { computed, defineComponent, provide, reactive } from 'vue';
-import { CdkTreeNode, TreeNodeData } from 'vue-cdk';
+import { Checkbox } from 'power-ui/checkbox';
+import { computed, defineComponent, Fragment, provide, reactive, toRef, VNode } from 'vue';
+import { CdkTreeNode, CdkTreeNodeData } from 'vue-cdk';
+import { List } from 'vue-cdk/utils';
 
-export default defineComponent({
+
+export interface TreeNodeData<T = any> extends CdkTreeNodeData<T> {
+  label: string;
+  value?: T;
+  children?: TreeNodeData<T>[];
+}
+
+export const Tree = defineComponent({
+  name: 'po-tree',
   props: {
     data: {
-      type: Array as () => TreeNodeData[],
+      type: List<TreeNodeData>(),
       default: [],
     },
     emptyText: {
@@ -68,7 +78,8 @@ export default defineComponent({
   },
   setup(props, ctx) {
     const { data, emptyText, highlightCurrent, } = props;
-    provide('cdk-tree-node', data);
+
+    provide('cdk-tree-node', toRef(props, 'data'));
     provide('cdk-tree-node-layer', 0);
 
     const dragState = reactive({
@@ -80,7 +91,7 @@ export default defineComponent({
     });
 
     const treeClass = computed(() => {
-      const clazz = ['el-class'];
+      const clazz = ['el-tree'];
       if (highlightCurrent) {
         clazz.push('el-tree--highlight-current');
       }
@@ -103,18 +114,35 @@ export default defineComponent({
 
     return () => (
       <div class={treeClass.value} role="tree">
-        {data.map((_, key) => (
-          <CdkTreeNode key={key} index={key} />
+        {data.map((node, key) => (
+          <CdkTreeNode
+            key={key}
+            node={node}
+            v-slots={{
+              default: ({ layer, children }: { layer: number, children: VNode | JSX.Element }) => (
+                <Fragment>
+                  <div class="el-tree-node">
+                    <div class="el-tree-node__content" style={{ paddingLeft: `${layer * props.indent}px` }}>
+                      <span onClick={() => console.log(node.label)} />
+                      <Checkbox />
+                      <span class="el-tree-node__loading-icon el-icon-loading" />
+                      <span class="el-tree-node__label">{node.label}</span>
+                    </div>
+                  </div>
+                  {children}
+                </Fragment>
+              )
+            }}
+          />
         ))}
         <div class="el-tree__empty-block">
-          <span class="el-tree__empty-text">{{ emptyText }}</span>
+          <span class="el-tree__empty-text">{emptyText}</span>
         </div>
         <div
           v-show={dragState.showDropIndicator}
           class="el-tree__drop-indicator"
           ref="dropIndicator"
-        >
-        </div>
+        />
       </div>
     );
   },

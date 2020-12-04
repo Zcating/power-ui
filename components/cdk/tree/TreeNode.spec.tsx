@@ -4,7 +4,7 @@ import { CdkTreeNode } from './tree-node';
 export default defineComponent({
   name: 'cdk-tree-node-spec',
   setup() {
-    const testData = [
+    const testData: any[] = [
       {
         label: 'test',
         content: 'tttttttt',
@@ -15,12 +15,12 @@ export default defineComponent({
           { label: 'test', content: 'tttttttt' },
           { label: 'test', content: 'tttttttt' },
           { label: 'test', content: 'tttttttt' },
-          { 
-            label: 'test2', 
-            content: '111', 
+          {
+            label: 'test2',
+            content: '111',
             children: [
-              {label: 'test3', content: 'tttttttt'}
-            ] 
+              { label: 'test3', content: 'tttttttt' }
+            ]
           }
         ],
       },
@@ -29,8 +29,8 @@ export default defineComponent({
     provide('cdk-tree-node-layer', 0);
     return () => (
       <>
-        {testData.map((_, key) => (
-          <CdkTreeNode key={key} index={key} />
+        {testData.map((node, key) => (
+          <CdkTreeNode key={key} node={node} />
         ))}
       </>
     );

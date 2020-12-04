@@ -9,4 +9,4 @@ export { default as DialogDoc } from './dialog-doc';
 export { default as TransferDoc } from './transfer-doc';
 export { default as FormDoc } from './form-doc';
 export { default as CalendarDoc } from './calendar.doc';
-
+export { default as TreeDoc } from './tree.doc';
