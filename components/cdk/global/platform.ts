@@ -27,6 +27,8 @@ export default class Platform {
 
   readonly TOP = this.BROWSER ? window : null;
 
+  readonly DOCUMENT = this.BROWSER ? document : null;
+
   readonly EDGE: boolean = this.BROWSER && /(edge)/i.test(navigator.userAgent);
 
   readonly TRIDENT: boolean =

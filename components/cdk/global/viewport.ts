@@ -1,5 +1,5 @@
-import { ref, watch } from 'vue';
-import { runWhileResize } from '../hook/tools';
+import { shallowRef, watch } from 'vue';
+import { useResize } from '../hook/tools';
 import Platform from './platform';
 
 /**
@@ -9,9 +9,8 @@ import Platform from './platform';
  * @class ViewPort
  */
 export default class ViewPort {
-  size = ref({ width: 0, height: 0 });
-  rect = ref({ top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0 });
-  isBrowser: boolean;
+  size = shallowRef({ width: 0, height: 0 });
+  rect = shallowRef({ top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0 });
 
   /**
    * update viewport size
@@ -19,19 +18,23 @@ export default class ViewPort {
    * @memberof ViewPort
    */
   updateSize = () => {
-    this.size.value = this.isBrowser
-      ? { width: window.innerWidth, height: window.innerHeight }
+    const { TOP } = this.platform;
+    this.size.value = TOP
+      ? { width: TOP.innerWidth, height: TOP.innerHeight }
       : { width: 0, height: 0 };
   };
 
-  constructor(private platform: Platform) {
-    this.isBrowser = platform.BROWSER;
-  }
+  constructor(private platform: Platform) { }
 
   observe() {
-    if (!this.isBrowser) return;
-    runWhileResize(this.updateSize);
-    const body = document.documentElement || document.body;
+    const { DOCUMENT } = this.platform;
+    if (!DOCUMENT) {
+      return;
+    }
+    useResize(DOCUMENT, this.updateSize);
+
+    const body = DOCUMENT.documentElement || DOCUMENT.body;
+
     watch(
       this.size,
       (res) => {

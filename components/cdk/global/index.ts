@@ -45,14 +45,14 @@ export function globalInject() {
   provide(viewportToken, new ViewPort(platform));
 
   // add overlay anchor
-  if (platform.BROWSER) {
+  if (platform.DOCUMENT && platform.BODY) {
     // if at browser environment
-    const overlayAnchor = document.createElement('div');
+    const overlayAnchor = platform.DOCUMENT.createElement('div');
     overlayAnchor.setAttribute('id', 'cdk-overlay-anchor');
     overlayAnchor.style.position = 'fixed';
     overlayAnchor.style.left = '0';
     overlayAnchor.style.top = '0';
     overlayAnchor.style.zIndex = '1000';
-    platform.BODY!.appendChild(overlayAnchor);
+    platform.BODY.appendChild(overlayAnchor);
   }
 }

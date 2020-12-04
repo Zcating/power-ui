@@ -11,7 +11,7 @@ import {
   shallowRef,
 } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
-import { runWhileScroll } from 'vue-cdk/hook/tools';
+import { useScroll } from 'vue-cdk/hook/tools';
 
 
 const token = Symbol() as InjectionKey<ReturnType<typeof backtopController>>;
@@ -94,11 +94,10 @@ export default defineComponent({
     }
 
     const { container, visible, scrollToTop } = backtop;
-    runWhileScroll(() => {
+    useScroll(() => {
       const scrollTop = container.value.scrollTop;
       visible.value = scrollTop >= props.visibilityHeight;
     });
-    const hasDefaultSlot = ctx.slots['default'] ? true : false;
     return () => (
       <Transition name='el-fade-in' appear mode='out-in'>
         {visible.value ? (
@@ -108,14 +107,13 @@ export default defineComponent({
               scrollToTop();
               props.onClick();
             }}
-            style={{ right: props.right + 'px', bottom: props.bottom + 'px' }}
+            style={{
+              right: props.right + 'px',
+              bottom: props.bottom + 'px'
+            }}
             class='el-backtop'
           >
-            {hasDefaultSlot ? (
-              renderSlot(ctx.slots, 'default')
-            ) : (
-                <i class='el-icon-caret-top'></i>
-              )}
+            {ctx.slots.default ? ctx.slots.default() : <i class='el-icon-caret-top' />}
           </div>
         ) : null}
       </Transition>
