@@ -1,6 +1,7 @@
 import {
   onBeforeUnmount,
   onMounted,
+  onUnmounted,
 } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
 
@@ -30,7 +31,7 @@ export function useResize(DOCUMENT: Document, func: () => void) {
  * @returns
  */
 export function useScroll(func: () => void) {
-  const DOCUMENT = usePlatform().TOP?.document;
+  const { DOCUMENT } = usePlatform();
   if (!DOCUMENT) {
     return;
   }
@@ -43,4 +44,42 @@ export function useScroll(func: () => void) {
   onBeforeUnmount(() => {
     DOCUMENT.removeEventListener('scroll', func, true);
   });
+}
+
+export function useAnimationFrame(this: void, func: () => boolean) {
+  const { TOP } = usePlatform();
+  if (!TOP) {
+    return;
+  }
+  const rAF = TOP.requestAnimationFrame || ((func) => TOP.setTimeout(func, 16));
+  const cancelAF = TOP.cancelAnimationFrame || ((id: number) => TOP.clearTimeout(id));
+
+  let id = 0;
+  const requstFunc = () => {
+    if (func()) {
+      cancelAF(id);
+      id = rAF(requstFunc);
+    } else {
+      cancelAF(id);
+    }
+  };
+  id = rAF(requstFunc);
+}
+
+export function useTimeout(this: void, func: () => void, duration: number) {
+  const { TOP } = usePlatform();
+  if (!TOP) {
+    return;
+  }
+  const id = TOP.setTimeout(func, duration);
+  return () => TOP.clearTimeout(id);
+}
+
+export function useInterval(this: void, func: (duration: number) => void, duration: number) {
+  const { TOP } = usePlatform();
+  if (!TOP) {
+    return;
+  }
+  const id = TOP.setInterval(func, duration);
+  return () => TOP.clearInterval(id);
 }

@@ -5,13 +5,13 @@ import {
   inject,
   provide,
   ref,
-  renderSlot,
   watch,
   InjectionKey,
   shallowRef,
 } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
-import { useScroll } from 'vue-cdk/hook/tools';
+import { useAnimationFrame, useScroll } from 'vue-cdk/hook/tools';
+import { Method } from 'vue-cdk/utils';
 
 
 const token = Symbol() as InjectionKey<ReturnType<typeof backtopController>>;
@@ -26,8 +26,8 @@ const token = Symbol() as InjectionKey<ReturnType<typeof backtopController>>;
  * @returns
  */
 export function backtopController(target?: Ref<string>) {
-  const { BODY } = usePlatform();
-  if (!BODY) {
+  const { BODY, TOP } = usePlatform();
+  if (!BODY || !TOP) {
     return null;
   }
 
@@ -44,22 +44,19 @@ export function backtopController(target?: Ref<string>) {
   const scrollToTop = () => {
     const beginTime = Date.now();
     const beginValue = container.value.scrollTop;
-    const rAF =
-      window.requestAnimationFrame || ((func) => setTimeout(func, 16));
     const cubic = (value: number) => Math.pow(value, 3);
-    const easeInOutCubic = (value: number) =>
-      value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2;
+    const easeInOutCubic = (value: number) => value < 0.5 ? cubic(value * 2) / 2 : 1 - cubic((1 - value) * 2) / 2;
 
-    const frameFunc = () => {
+    useAnimationFrame(() => {
       const progress = (Date.now() - beginTime) / 500;
       if (progress < 1) {
         container.value.scrollTop = beginValue * (1 - easeInOutCubic(progress));
-        rAF(frameFunc);
+        return true;
       } else {
         container.value.scrollTop = 0;
+        return false;
       }
-    };
-    rAF(frameFunc);
+    });
   };
   provide(token, { container, visible, scrollToTop });
 
@@ -83,7 +80,7 @@ export default defineComponent({
       default: 40,
     },
     onClick: {
-      type: Function,
+      type: Method<(event: MouseEvent) => void>(),
       default: () => { },
     },
   },
@@ -105,7 +102,7 @@ export default defineComponent({
             onClick={(e) => {
               e.stopPropagation();
               scrollToTop();
-              props.onClick();
+              ctx.emit('click', e);
             }}
             style={{
               right: props.right + 'px',
