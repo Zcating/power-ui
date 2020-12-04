@@ -10,7 +10,7 @@ import { watchRef } from 'vue-cdk/hook';
 
 
 export default defineComponent({
-  name: 'ele-calendar',
+  name: 'po-calendar',
   props: {
     modelValue: {
       type: [String, Number, Model<Date>()],
@@ -57,7 +57,6 @@ export default defineComponent({
       if (value.getMonth() === prev?.getMonth()) {
         return;
       }
-      console.log('value');
       days.value = chunk(daysRange(value), 7);
     }, { immediate: true });
 

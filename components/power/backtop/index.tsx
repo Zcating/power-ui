@@ -64,7 +64,7 @@ export function backtopController(target?: Ref<string>) {
 }
 
 export default defineComponent({
-  name: 'ele-backtop',
+  name: 'po-backtop',
   props: {
     visibilityHeight: {
       type: Number,

@@ -34,10 +34,10 @@ export const Button = defineComponent({
   emits: ['click'],
 
   setup(props, ctx) {
-    const formItem = inject('ele-form-item', { disabled: false, size: '' });
+    const formItem = inject('po-form-item', { disabled: false, size: '' });
     const buttonDisabled = computed(() => formItem.disabled || props.disabled);
     const buttonSize = computed(
-      () => formItem.size || props.size || inject('ele-global-size')
+      () => formItem.size || props.size || inject('po-global-size')
     );
 
     return () => (

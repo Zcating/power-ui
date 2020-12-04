@@ -4,12 +4,12 @@ import {
   onMounted,
   provide,
   ref,
-  renderSlot,
 } from 'vue';
+import { noop } from 'vue-cdk';
 
 // breadcrumb container
 export const Breadcrumb = defineComponent({
-  name: 'ele-breadcrumb',
+  name: 'po-breadcrumb',
   props: {
     seperator: {
       type: String,
@@ -21,14 +21,16 @@ export const Breadcrumb = defineComponent({
     },
     onSelected: {
       type: Function,
-      default: () => {},
+      default: () => { },
     },
   },
   setup(props, ctx) {
     const containerRef = ref<HTMLDivElement | null>(null);
-    provide('ele-breadcrumb', { props, containerRef });
+    provide('po-breadcrumb', { props, containerRef });
     onMounted(() => {
-      if (!containerRef.value) return;
+      if (!containerRef.value) {
+        return;
+      }
       const items = containerRef.value.querySelectorAll('.el-breadcrumb__item');
       if (items.length) {
         items[items.length - 1].setAttribute('aria-current', 'page');
@@ -41,7 +43,7 @@ export const Breadcrumb = defineComponent({
         role='navigation'
         ref={containerRef}
       >
-        {renderSlot(ctx.slots, 'default')}
+        {ctx.slots.default?.()}
       </div>
     );
   },
@@ -49,7 +51,7 @@ export const Breadcrumb = defineComponent({
 
 //breadcrumb item
 export const BreadcrumbItem = defineComponent({
-  name: 'ele-breadcrumb-item',
+  name: 'po-breadcrumb-item',
   props: {
     value: {
       type: String,
@@ -57,32 +59,29 @@ export const BreadcrumbItem = defineComponent({
     },
   },
   setup(props, ctx) {
-    const breadcrumb = inject('ele-breadcrumb', {
-      props: { seperator: '/', seperatorClass: '', onSelected: Function },
+    const breadcrumb = inject('po-breadcrumb', {
+      props: { seperator: '/', seperatorClass: '', onSelected: noop },
     });
     return () => (
       <span class='el-breadcrumb__item'>
         <span
           class='el-breadcrumb__inner is-link'
           role='link'
-          onClick={() => {
-            breadcrumb.props.onSelected(props.value);
-          }}
+          onClick={() => breadcrumb.props.onSelected(props.value)}
         >
-          {renderSlot(ctx.slots, 'default')}
+          {ctx.slots.default?.()}
         </span>
-        {breadcrumb.props.seperatorClass ? (
+        {breadcrumb.props.seperatorClass ?
           <i
             class={[
               'el-breadcrumb__separator',
               breadcrumb.props.seperatorClass,
             ]}
-          ></i>
-        ) : (
+          /> :
           <span class='el-breadcrumb__separator' role='presentation'>
             {breadcrumb.props.seperator}
           </span>
-        )}
+        }
       </span>
     );
   },

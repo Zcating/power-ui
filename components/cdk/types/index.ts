@@ -1,6 +1,6 @@
 import { VNode } from 'vue';
 
-export function noop() { return; }
+export function noop(...args: any) { return; }
 
 export type CdkAny = any;
 

@@ -3,7 +3,7 @@ import { ElSize } from '../types';
 import { computed, defineComponent, ref, renderSlot } from 'vue';
 
 export default defineComponent({
-  name: 'ele-avatar',
+  name: 'po-avatar',
   props: {
     size: {
       type: [Number, Enum<ElSize>()],

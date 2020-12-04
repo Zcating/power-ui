@@ -1,7 +1,7 @@
 import { Transition, computed, defineComponent, renderSlot } from 'vue';
 
 export default defineComponent({
-  name: 'ele-badge',
+  name: 'po-badge',
   props: {
     value: [String, Number],
     max: Number,

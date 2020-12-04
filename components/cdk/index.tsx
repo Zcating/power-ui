@@ -11,4 +11,4 @@ export * from './keycodes';
 export * from './selection';
 export * from './coercion';
 export * from './types';
-export * from './';
+export * from './global';
