@@ -1,7 +1,6 @@
 import {
   onBeforeUnmount,
   onMounted,
-  onUnmounted,
 } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
 
