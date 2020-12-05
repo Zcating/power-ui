@@ -1,5 +1,5 @@
 import { defineComponent, provide } from 'vue';
-import { CdkTreeNode } from './tree-node';
+import { CdkTree } from './tree';
 
 export default defineComponent({
   name: 'cdk-tree-node-spec',
@@ -25,14 +25,10 @@ export default defineComponent({
         ],
       },
     ];
-    provide('cdk-tree-node', testData);
     provide('cdk-tree-node-layer', 0);
     return () => (
-      <>
-        {testData.map((node, key) => (
-          <CdkTreeNode key={key} node={node} />
-        ))}
-      </>
+      <div></div>
+      // <CdkTree data={testData} getChilren={(data) => data.children} trackBy={(data)=> } />
     );
   },
 });

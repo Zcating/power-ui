@@ -14,7 +14,7 @@ export default defineComponent({
     virtualScroll.defaultHeight = 40;
 
     return () => (
-      <VirtualScroll style='height:200px'>
+      <VirtualScroll style='height:200px' maxScroll={true}>
         {virtualScroll.dispalyItems.map((el, key) => (
           <div
             key={key}
@@ -22,7 +22,7 @@ export default defineComponent({
               backgroundColor: 'black',
               color: 'white',
               padding: '10px',
-              // height: `${el._itemHeight || el._defaultHeight}px`,
+              height: `${el._itemHeight || el._defaultHeight}px`,
             }}
           >
             {el.name}

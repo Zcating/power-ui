@@ -1,10 +1,11 @@
-import { Checkbox } from 'power-ui/checkbox';
-import { computed, defineComponent, Fragment, provide, reactive, toRef, VNode } from 'vue';
-import { CdkTreeNode, CdkTreeNodeData } from 'vue-cdk';
+import { computed, defineComponent, provide, reactive, toRef } from 'vue';
 import { List } from 'vue-cdk/utils';
+import { CdkTree, TreeNodeSlotData } from 'vue-cdk/tree';
+import { TreeNodeContent } from './tree-node-content';
 
 
-export interface TreeNodeData<T = any> extends CdkTreeNodeData<T> {
+export interface TreeNodeData<T = any> {
+  key: string | number;
   label: string;
   value?: T;
   children?: TreeNodeData<T>[];
@@ -13,7 +14,7 @@ export interface TreeNodeData<T = any> extends CdkTreeNodeData<T> {
 export const Tree = defineComponent({
   name: 'po-tree',
   props: {
-    data: {
+    dataSource: {
       type: List<TreeNodeData>(),
       default: [],
     },
@@ -77,9 +78,7 @@ export const Tree = defineComponent({
     iconClass: String
   },
   setup(props, ctx) {
-    const { data, emptyText, highlightCurrent, } = props;
 
-    provide('cdk-tree-node', toRef(props, 'data'));
     provide('cdk-tree-node-layer', 0);
 
     const dragState = reactive({
@@ -92,7 +91,7 @@ export const Tree = defineComponent({
 
     const treeClass = computed(() => {
       const clazz = ['el-tree'];
-      if (highlightCurrent) {
+      if (props.highlightCurrent) {
         clazz.push('el-tree--highlight-current');
       }
       if (dragState.draggingNode) {
@@ -107,43 +106,40 @@ export const Tree = defineComponent({
       return clazz;
     });
 
-    // const isEmpty = computed(() => {
-    //   const { childNodes } = this.root;
-    //   return !childNodes || childNodes.length === 0 || childNodes.every(({ visible }) => !visible);
-    // })
-
-    return () => (
-      <div class={treeClass.value} role="tree">
-        {data.map((node, key) => (
-          <CdkTreeNode
-            key={key}
-            node={node}
+    return () => {
+      const { dataSource, emptyText } = props;
+      return (
+        <div class={treeClass.value} role="tree">
+          <CdkTree
+            data={dataSource}
+            getChilren={(data) => data.children}
+            trackBy={(data) => data.key}
             v-slots={{
-              default: ({ layer, children }: { layer: number, children: VNode | JSX.Element }) => (
-                <Fragment>
-                  <div class="el-tree-node">
-                    <div class="el-tree-node__content" style={{ paddingLeft: `${layer * props.indent}px` }}>
-                      <span onClick={() => console.log(node.label)} />
-                      <Checkbox />
-                      <span class="el-tree-node__loading-icon el-icon-loading" />
-                      <span class="el-tree-node__label">{node.label}</span>
-                    </div>
-                  </div>
-                  {children}
-                </Fragment>
-              )
+              default: (data: TreeNodeSlotData<TreeNodeData>) => {
+                return <TreeNodeContent
+                  showCheckbox={true}
+                  indent={data.layer * props.indent}
+                  isLeaf={data.isLeaf}
+                  label={data.node.label}
+                  children={data.children}
+                  v-model={[data.state.checked, 'checked']}
+                />;
+              }
             }}
           />
-        ))}
-        <div class="el-tree__empty-block">
-          <span class="el-tree__empty-text">{emptyText}</span>
+          {dataSource.length === 0 ?
+            (
+              <div class="el-tree__empty-block">
+                <span class="el-tree__empty-text">{emptyText}</span>
+              </div>
+            ) : null}
+          <div
+            v-show={dragState.showDropIndicator}
+            class="el-tree__drop-indicator"
+            ref="dropIndicator"
+          />
         </div>
-        <div
-          v-show={dragState.showDropIndicator}
-          class="el-tree__drop-indicator"
-          ref="dropIndicator"
-        />
-      </div>
-    );
+      );
+    };
   },
 });

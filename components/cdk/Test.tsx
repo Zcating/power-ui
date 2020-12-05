@@ -5,6 +5,7 @@ import PLAT from './global/platform.spec';
 import CB from './global/clipboard.spec';
 import SB from './scrolling/scrollable.spec';
 import SELECTION from './selection/selection.spec';
+import ACCORDION from './accordion/accordion.spec';
 import TR from './tree/TreeNode.spec';
 import VS from './scrolling/virtual-scroll.spec';
 // import OVERLAY from './overlay/overlay.spec';
@@ -30,6 +31,8 @@ export default defineComponent({
         <TR />
         <h2>virtual scroll</h2>
         <VS />
+        <h2> accordion</h2>
+        <ACCORDION />
       </>
     );
   },

@@ -37,7 +37,7 @@ export class VirtualScrollable {
    * scroll listener
    *
    */
-  handleChange = throttle(() => {
+  handleChange = () => {
     // no container, no handler
     const container = this.containerRef.value;
     if (!container) {
@@ -66,7 +66,7 @@ export class VirtualScrollable {
     this.beforeHeight = beforeHeight;
     this.totalHeight = beforeHeight + afterHeight + contentHeight;
     this.displayItemsRef.value = this.items.filter((el) => el._active);
-  }, 300);
+  };
 
 
   constructor(items: ItemData[]) {
