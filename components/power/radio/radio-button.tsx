@@ -76,7 +76,7 @@ export const RadioButton = defineComponent({
       const focus = focusRef.value;
       return (
         <CdkSelectionItem
-          value={String(value)}
+          trackedKey={String(value)}
           v-model={checkedRef.value}
         >
           <label

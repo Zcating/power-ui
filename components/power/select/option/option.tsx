@@ -40,7 +40,7 @@ export const Option = defineComponent({
     }
     return () => (
       <CdkSelectionItem
-        value={props.value}
+        trackedKey={props.value}
         v-model={selectedRef.value}
       >
         <li

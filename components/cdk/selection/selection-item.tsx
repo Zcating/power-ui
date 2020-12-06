@@ -11,7 +11,7 @@ import { useDispatcher } from './selection-dispatcher';
 export const CdkSelectionItem = defineComponent({
   name: 'cdk-selection-item',
   props: {
-    value: {
+    trackedKey: {
       type: [String, Number],
       required: true,
     },
@@ -27,7 +27,7 @@ export const CdkSelectionItem = defineComponent({
 
     const dispatcher = useDispatcher();
     if (dispatcher) {
-      dispatcher.subscribe(props.value, state);
+      dispatcher.subscribe(props.trackedKey, state);
       watch(() => props.modelValue, (value) => {
         if (value === state.selected) {
           return;

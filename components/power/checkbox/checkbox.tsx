@@ -52,7 +52,7 @@ export const Checkbox = defineComponent({
 
     return () => (
       <CdkSelectionItem
-        value={props.value}
+        trackedKey={props.value}
         v-model={modelRef.value}
       >
         <label
