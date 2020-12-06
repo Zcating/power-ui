@@ -1,6 +1,6 @@
-import { defineComponent, inject, provide, shallowReactive, shallowRef, toRef, TransitionGroup, watch } from 'vue';
+import { defineComponent, inject, provide, shallowReactive, shallowRef, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
-import { Enum, List, Method, thenable } from 'vue-cdk/utils';
+import { List, Method, thenable } from 'vue-cdk/utils';
 import { TreeControl, useTreeControl } from './tree-control';
 import { CdkTreeNodeState, GetChildren, TrackBy } from './types';
 

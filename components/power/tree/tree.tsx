@@ -1,4 +1,4 @@
-import { computed, defineComponent, provide, reactive, ref, shallowRef, toRef, watch } from 'vue';
+import { computed, defineComponent, reactive, shallowRef, watch } from 'vue';
 import { List } from 'vue-cdk/utils';
 import { CdkTree, TreeNodeSlotData } from 'vue-cdk/tree';
 import { TreeNodeContent } from './tree-node-content';
@@ -71,9 +71,6 @@ export const Tree = defineComponent({
     iconClass: String
   },
   setup(props, ctx) {
-
-    provide('cdk-tree-node-layer', 0);
-
     const dragState = reactive({
       showDropIndicator: false,
       draggingNode: null,
