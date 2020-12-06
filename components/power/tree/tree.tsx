@@ -1,4 +1,4 @@
-import { computed, defineComponent, provide, reactive, toRef } from 'vue';
+import { computed, defineComponent, provide, reactive, ref, shallowRef, toRef, watch } from 'vue';
 import { List } from 'vue-cdk/utils';
 import { CdkTree, TreeNodeSlotData } from 'vue-cdk/tree';
 import { TreeNodeContent } from './tree-node-content';
@@ -46,13 +46,6 @@ export const Tree = defineComponent({
       type: Boolean,
       default: false
     },
-    props: {
-      default: {
-        children: 'children',
-        label: 'label',
-        disabled: 'disabled'
-      }
-    },
     lazy: {
       type: Boolean,
       default: false
@@ -62,8 +55,8 @@ export const Tree = defineComponent({
       default: 18
     },
     checkOnClickNode: Boolean,
-    defaultCheckedKeys: Array,
-    defaultExpandedKeys: Array,
+    defaultCheckedKeys: List<string | number>(),
+    defaultExpandedKeys: List<string | number>(),
     currentNodeKey: [String, Number],
     renderContent: Function,
     allowDrag: Function,
@@ -106,25 +99,37 @@ export const Tree = defineComponent({
       return clazz;
     });
 
+    const checkedKeys = shallowRef(['2-2']);
+    watch(checkedKeys, (value) => {
+      console.log(value);
+    });
+
     return () => {
-      const { dataSource, emptyText } = props;
+      const { dataSource, emptyText, checkStrictly } = props;
       return (
         <div class={treeClass.value} role="tree">
           <CdkTree
             data={dataSource}
+            v-model={[checkedKeys.value, 'checkedKeys']}
             getChilren={(data) => data.children}
             trackBy={(data) => data.key}
+            checkStrictly={checkStrictly}
             v-slots={{
-              default: (data: TreeNodeSlotData<TreeNodeData>) => {
-                return <TreeNodeContent
+              default: (data: TreeNodeSlotData<TreeNodeData>) => (
+                <TreeNodeContent
                   showCheckbox={true}
-                  indent={data.layer * props.indent}
+                  indent={data.level * props.indent}
                   isLeaf={data.isLeaf}
                   label={data.node.label}
                   children={data.children}
-                  v-model={[data.state.checked, 'checked']}
-                />;
-              }
+                  {...{
+                    checked: data.state.checked,
+                    'onUpdate:checked': (value: boolean) => data.state.checked = value,
+                    expanded: data.state.expanded,
+                    'onUpdate:expanded': (value: boolean) => data.state.expanded = value,
+                  }}
+                />
+              )
             }}
           />
           {dataSource.length === 0 ?

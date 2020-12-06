@@ -27,7 +27,30 @@ export default defineComponent(() => {
       label: '二级 2-2',
       children: [{
         key: '2-2-1',
-        label: '三级 2-2-1'
+        label: '三级 2-2-1',
+        children: [{
+          key: '2-2-1-1',
+          label: '四级 2-2-1-1'
+        },{
+          key: '2-2-1-2',
+          label: '四级 2-2-1-2'
+        }, {
+          key: '2-2-1-3',
+          label: '四级 2-2-1-3'
+        }]
+      }, {
+        key: '2-2-2',
+        label: '三级 2-2-2',
+        children: [{
+          key: '2-2-2-1',
+          label: '四级 2-2-1-1'
+        },{
+          key: '2-2-2-2',
+          label: '四级 2-2-1-2'
+        }, {
+          key: '2-2-2-3',
+          label: '四级 2-2-1-3'
+        }]
       }]
     }]
   }, {

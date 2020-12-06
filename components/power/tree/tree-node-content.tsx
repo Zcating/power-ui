@@ -1,7 +1,8 @@
 import { Checkbox } from 'power-ui/checkbox';
-import { defineComponent, reactive, shallowReactive, toRef } from 'vue';
+import { defineComponent, reactive, toRef } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { List } from 'vue-cdk/utils';
+import {CollapseTransition} from '../transition';
 
 export const TreeNodeContent = defineComponent({
   props: {
@@ -11,15 +12,11 @@ export const TreeNodeContent = defineComponent({
     },
     showCheckbox: {
       type: Boolean,
-      default: true
+      default: false
     },
     indent: {
       type: Number,
       default: 0,
-    },
-    multipleExpand: {
-      type: Boolean,
-      default: false
     },
     iconClass: {
       type: String,
@@ -36,42 +33,45 @@ export const TreeNodeContent = defineComponent({
       type: Boolean,
       default: false
     },
+    expanded: {
+      type: Boolean,
+      default: false
+    }
   },
   setup(props, ctx) {
     const nodeState = reactive({
-      expanded: false,
       isCurrent: false,
       visible: false,
       disabled: false,
       loading: false,
-      expandedChildren: false,
     });
 
     const checked = watchRef(toRef(props, 'checked'), (value) => {
       ctx.emit('update:checked', value);
-      console.log(value);
     });
 
+    const expanded = watchRef(toRef(props, 'expanded'), (value) => {
+      ctx.emit('update:expanded', value);
+    });
 
     const handleExpanded = () => {
-      nodeState.expanded = !nodeState.expanded;
+      expanded.value = !expanded.value;
     };
 
     return () => {
-      const { iconClass, indent, showCheckbox, label, isLeaf } = props;
+      const { iconClass, indent, showCheckbox, label, isLeaf, children } = props;
       return [
         <div
           class={['el-tree-node', {
-            'is-expanded': nodeState.expanded,
+            'is-expanded': expanded.value,
             'is-current': nodeState.isCurrent,
-            'is-hidden': !nodeState.visible,
             'is-focusable': !nodeState.disabled,
             'is-checked': !nodeState.disabled && checked.value
           }]}
           onClick={handleExpanded}
           role="treeitem"
           tabindex={-1}
-          aria-expanded={nodeState.expanded}
+          aria-expanded={expanded.value}
           aria-disabled={nodeState.disabled}
           aria-checked={checked.value}
         >
@@ -80,7 +80,7 @@ export const TreeNodeContent = defineComponent({
               class={[
                 {
                   'is-leaf': isLeaf,
-                  expanded: !isLeaf && nodeState.expanded
+                  expanded: !isLeaf && expanded.value
                 },
                 'el-tree-node__expand-icon',
                 iconClass ? iconClass : 'el-icon-caret-right'
@@ -91,7 +91,11 @@ export const TreeNodeContent = defineComponent({
             <span class="el-tree-node__label">{label}</span>
           </div>
         </div>,
-        props.children
+        <CollapseTransition>
+          <div v-show={expanded.value}>
+            {children}
+          </div>
+        </CollapseTransition>
       ];
     };
   }

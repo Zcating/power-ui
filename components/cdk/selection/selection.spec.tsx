@@ -44,7 +44,7 @@ export default defineComponent({
         </button>
 
         <CdkSelection ref={selectionRef} multiple={state.multiple}>
-          {array.map((value) => <CdkSelectionItem value={value} v-slots={{ renderState: widgetBuilder(value) }} />)}
+          {array.map((value) => <CdkSelectionItem trackedKey={value} v-slots={{ renderState: widgetBuilder(value) }} />)}
         </CdkSelection>
       </>
     );

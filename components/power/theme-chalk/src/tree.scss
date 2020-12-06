@@ -121,3 +121,46 @@
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
   background-color: mix($--color-white, $--color-primary, 92%);
 }
+
+
+
+.el-collapse {
+  @mixin el-collapse-animation {
+    animation-name: el-collapse;
+    animation-duration: 0.3s;
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  @keyframes el-collapse {
+    0% {
+      // opacity: 0;
+      height: 0;
+      // transform: translateY(-100%);
+      // transform-origin: top center;
+    }
+    100% {
+      // opacity: 1;
+      // transform: translateY(0);
+      // transform-origin: top center;
+      height: 100%;
+    }
+  }
+  &-enter {
+    // opacity: 0;
+    height: 0;
+    // transform: scaleY(0);
+  }
+
+  &-enter-active {
+    @include el-collapse-animation;
+  }
+  
+  &-leave {
+    // opacity: 1;
+    height: 100%;
+  }
+
+  &-leave-active {
+    @include el-collapse-animation;
+    animation-direction: reverse;
+  }
+}

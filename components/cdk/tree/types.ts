@@ -7,5 +7,15 @@ export interface CdkTreeNodeState {
   checked: boolean;
   expanded: boolean;
   loading: boolean;
-  keys: (string | number)[]
+  subKeys: (string | number)[];
+  subDeepKeys: (string | number)[];
+  sameLevelKeys: (string | number)[];
+}
+
+export interface TreeNodeSlotData<T = any> {
+  state: CdkTreeNodeState;
+  node: T;
+  level: number;
+  children: JSX.Element[];
+  isLeaf: boolean;
 }
