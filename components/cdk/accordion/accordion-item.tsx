@@ -1,6 +1,6 @@
 import { defineComponent, reactive, renderSlot, watch } from 'vue';
 import { CdkAccordionDispatcher } from './accordion-dispatcher';
-import { SelectionItemState } from './types';
+import { AccordionItemState } from './types';
 
 /**
  * @description
@@ -18,7 +18,7 @@ export const CdkAccordionItem = defineComponent({
     }
   },
   setup(props, ctx) {
-    const state = reactive<SelectionItemState>({ selected: props.expanded });
+    const state = reactive<AccordionItemState>({ selected: props.expanded });
 
     const dispatcher = CdkAccordionDispatcher.instance();
     if (dispatcher) {

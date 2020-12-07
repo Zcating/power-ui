@@ -1,5 +1,5 @@
 import { inject, InjectionKey, onUnmounted, provide, watch } from 'vue';
-import { SelectionItemState } from './types';
+import { AccordionItemState as AccordionItemState } from './types';
 
 
 
@@ -18,7 +18,7 @@ export class CdkAccordionDispatcher {
     return inject(this.key);
   }
 
-  readonly states: SelectionItemState[] = [];
+  readonly states: AccordionItemState[] = [];
 
   multiple = false;
 
@@ -28,7 +28,7 @@ export class CdkAccordionDispatcher {
     provide(CdkAccordionDispatcher.key, this);
   }
 
-  subscribe(state: SelectionItemState) {
+  subscribe(state: AccordionItemState) {
     if (this.multiple) {
       state.selected = this.initValue;
     }

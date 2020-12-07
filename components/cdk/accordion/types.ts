@@ -1,8 +1,3 @@
-import { VNode } from 'vue';
-
-export interface SelectionItemState {
+export interface AccordionItemState {
   selected: boolean;
 }
-
-// selection item slot builder
-export type SelectionItemSlotBuilder = (state: SelectionItemState) => VNode | JSX.Element

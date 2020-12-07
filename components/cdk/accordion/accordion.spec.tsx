@@ -1,10 +1,10 @@
 import { defineComponent, reactive } from 'vue';
 import { CdkAccordion } from './accordion';
 import { CdkAccordionItem } from './accordion-item';
-import { SelectionItemState } from './types';
+import { AccordionItemState } from './types';
 
 const WidgetBuilder = defineComponent(({ value }: { value: number }) => {
-  const state: SelectionItemState = reactive({ selected: false });
+  const state: AccordionItemState = reactive({ selected: false });
   return () => (
     <CdkAccordionItem
       v-model={[state.selected, 'selected']}
