@@ -1,4 +1,4 @@
-import { shallowRef, watch } from 'vue';
+import { shallowRef, UnwrapRef, watch } from 'vue';
 import { useResize } from '../hook/tools';
 import Platform from './platform';
 
@@ -26,7 +26,7 @@ export default class ViewPort {
 
   constructor(private platform: Platform) { }
 
-  observe() {
+  observe(hook?: (data: UnwrapRef<ViewPort['rect']>) => void) {
     const { DOCUMENT } = this.platform;
     if (!DOCUMENT) {
       return;
@@ -50,6 +50,7 @@ export default class ViewPort {
           width,
           height,
         };
+        hook?.(this.rect.value);
       },
       { immediate: true }
     );

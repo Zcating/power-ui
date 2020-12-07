@@ -1,6 +1,20 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from '../view/home';
-import { ComponentDoc, CheckboxDoc, ButtonDoc, RadioDoc, SwitchDoc, Pending, AlertDoc, DialogDoc, TransferDoc, FormDoc, TreeDoc, CalendarDoc } from '../view/component';
+import {
+  ComponentDoc,
+  CheckboxDoc,
+  ButtonDoc,
+  RadioDoc,
+  SwitchDoc,
+  Pending,
+  AlertDoc,
+  DialogDoc,
+  TransferDoc,
+  FormDoc,
+  TreeDoc,
+  CalendarDoc,
+  CarouselDoc
+} from '../view/component';
 export default createRouter({
   history: createWebHashHistory(''),
   routes: [
@@ -52,6 +66,10 @@ export default createRouter({
           path: 'tree',
           name: 'tree',
           component: TreeDoc,
+        }, {
+          path: 'carousel',
+          name: 'carousel',
+          component: CarouselDoc
         }, {
           path: ':name(.*)*',
           component: Pending
