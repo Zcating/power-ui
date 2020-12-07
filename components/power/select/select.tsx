@@ -1,4 +1,4 @@
-import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, ref, toRef } from 'vue';
+import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, Ref, ref, toRef, UnwrapRef } from 'vue';
 import { List, isEqual, renderCondition, Method } from 'vue-cdk/utils';
 import { CdkSelection } from 'vue-cdk/selection';
 import { Tooltip } from '../tooltip';
@@ -59,15 +59,14 @@ export const Select = defineComponent({
     onBlur: Method<(event: FocusEvent) => void>(),
     onFocus: Method<(event: FocusEvent) => void>(),
     onChange: Method<(event: Event) => void>(),
-    onInput: Method<(event: (string | number)[] | string | number) => void>()
+    onInput: Method<(event: SelectionValue) => void>()
   },
 
   setup(props, ctx) {
     const selectedLabel = ref('');
     const tooltipVisible = ref(false);
-    const modelRef = watchRef(toRef(props, 'modelValue'), (value) => {
+    const modelRef = watchRef(toRef(props, 'modelValue') as Ref<SelectionValue>, (value) => {
       ctx.emit('update:modelValue', value);
-      console.log('select-change');
     });
 
     // provide a map to get description from selection.
