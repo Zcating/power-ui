@@ -9,7 +9,7 @@ const CdkTreeNode = defineComponent({
   name: 'cdk-tree-node',
   props: {
     nodeData: { type: Object, required: true },
-    sameLevelKeys: {type: List<string| number>(), required: true},
+    sameLevelKeys: { type: List<string | number>(), required: true },
   },
   setup(props, ctx) {
 
@@ -57,7 +57,7 @@ const CdkTreeNode = defineComponent({
       watch(nodesRef, (nodes) => {
         state.subKeys = control.getKeys(nodes);
         state.subDeepKeys = control.expandTreeKey(nodes);
-      }, {immediate: true});
+      }, { immediate: true });
     }
 
     return () => {
@@ -65,15 +65,15 @@ const CdkTreeNode = defineComponent({
 
       const isLeaf = nodes.length === 0;
       const children = !isLeaf ? nodes.map((node) => (
-        <CdkTreeNode 
-          key={control.trackBy(node)} 
-          nodeData={node} 
-          sameLevelKeys={state.subKeys} 
-          v-slots={{ ...ctx.slots }} 
+        <CdkTreeNode
+          key={control.trackBy(node)}
+          nodeData={node}
+          sameLevelKeys={state.subKeys}
+          v-slots={{ ...ctx.slots }}
         />
       )) : [];
 
-      return  ctx.slots.default?.({ state, node: currentNode, level, children, isLeaf });
+      return ctx.slots.default?.({ state, node: currentNode, level, children, isLeaf });
     };
   },
 });
@@ -100,7 +100,7 @@ export const CdkTree = defineComponent({
       default: false
     },
     checkedKeys: {
-      type: List<number| string>(),
+      type: List<number | string>(),
       default: []
     },
     checkStrictly: {
@@ -111,9 +111,9 @@ export const CdkTree = defineComponent({
 
   setup(props, ctx) {
     const control = new TreeControl(
-      props.data, 
-      props.getChilren, 
-      props.trackBy, 
+      props.data,
+      props.getChilren,
+      props.trackBy,
       toRef(props, 'multiple'),
       toRef(props, 'checkStrictly'),
       watchRef(toRef(props, 'checkedKeys'), (value) => ctx.emit('update:checkedKeys', value))
@@ -121,14 +121,14 @@ export const CdkTree = defineComponent({
 
     return () => (
       props.data.map((node) => (
-        <CdkTreeNode 
-          key={control.trackBy(node)} 
+        <CdkTreeNode
+          key={control.trackBy(node)}
           nodeData={node}
-          sameLevelKeys={control.getKeys(props.data)} 
-          v-slots={{ ...ctx.slots }} 
+          sameLevelKeys={control.getKeys(props.data)}
+          v-slots={{ ...ctx.slots }}
         />
       ))
     );
-    
+
   }
 });

@@ -114,12 +114,12 @@ export const Tree = defineComponent({
             v-slots={{
               default: (data: TreeNodeSlotData<TreeNodeData>) => (
                 <TreeNodeContent
-                  showCheckbox={true}
-                  indent={data.level * props.indent}
-                  isLeaf={data.isLeaf}
-                  label={data.node.label}
-                  children={data.children}
                   {...{
+                    showCheckbox: true,
+                    indent: data.level * props.indent,
+                    isLeaf: data.isLeaf,
+                    label: data.node.label,
+                    children: data.children,
                     checked: data.state.checked,
                     'onUpdate:checked': (value: boolean) => data.state.checked = value,
                     expanded: data.state.expanded,
@@ -129,12 +129,11 @@ export const Tree = defineComponent({
               )
             }}
           />
-          {dataSource.length === 0 ?
-            (
-              <div class="el-tree__empty-block">
-                <span class="el-tree__empty-text">{emptyText}</span>
-              </div>
-            ) : null}
+          {dataSource.length === 0 ? (
+            <div class="el-tree__empty-block">
+              <span class="el-tree__empty-text">{emptyText}</span>
+            </div>
+          ) : null}
           <div
             v-show={dragState.showDropIndicator}
             class="el-tree__drop-indicator"
