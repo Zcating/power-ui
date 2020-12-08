@@ -1,7 +1,6 @@
 import { throttle } from 'lodash-es';
-import { defineComponent, Transition, ref, computed, Fragment } from 'vue';
-import { useViewport } from 'vue-cdk';
-import { domRef } from 'vue-cdk/hook';
+import { defineComponent, Transition, ref, computed, Fragment, reactive, customRef, watch, watchEffect } from 'vue';
+import { useInterval } from 'vue-cdk/hook';
 import { Enum } from 'vue-cdk/utils';
 import { CarouselItem } from './carousel-item';
 
@@ -47,7 +46,10 @@ export const Carousel = defineComponent({
       default: 'hover',
       validator: (val: any) => ['hover', 'always', 'never'].indexOf(val) !== -1
     },
-    type: String,
+    type: {
+      type: Enum<'default' | 'card'>(),
+      default: 'card'
+    },
     loop: {
       type: Boolean,
       default: true
@@ -64,21 +66,42 @@ export const Carousel = defineComponent({
       }
     });
 
-    const activeIndex = ref(0);
+    const state = reactive({
+      activeIndex: customRef((track, trigger) => {
+        let index = 0;
+        return {
+          get() {
+            track();
+            return index;
+          },
+          set(val: number) {
+            if (val < 0) {
+              index = props.loop ? state.length - 1 : 0;
+            } else if (val >= state.length) {
+              index = props.loop ? 0 : state.length - 1;
+            } else {
+              index = val;
+            }
+            trigger();
+          }
+        };
+      }),
+      length: 0,
+    });
     const throttledArrowClick = throttle((e: Event, index: number) => {
       e.stopImmediatePropagation();
+      state.activeIndex = index;
     }, 300);
 
-    const handleIndicatorHover = (index: number) => {
-      if (props.trigger === 'hover' && index === activeIndex.value) {
-        activeIndex.value = index;
+    const indicatorHover = throttle((index: number) => {
+      if (props.trigger === 'hover' && index !== state.activeIndex) {
+        state.activeIndex = index;
       }
-    };
-    const throttledIndicatorHover = throttle(handleIndicatorHover, 300);
+    }, 300);
 
-    const handleIndicatorClick = (e: Event, index: number) => {
+    const handleIndicatorClick = (index: number) => (e: Event) => {
       e.stopImmediatePropagation();
-      activeIndex.value = index;
+      state.activeIndex = index;
     };
 
     const indicatorsClasses = computed(() => {
@@ -97,41 +120,53 @@ export const Carousel = defineComponent({
       }
     });
 
-
-    const containerRef = domRef<HTMLElement>((el) => {
-
-    });
-
-    useViewport().observe(() => {
-
-    });
-
+    // hover
     const hoverRef = ref(false);
     const onHover = (value: boolean) => (e: Event) => {
       e.stopImmediatePropagation();
       hoverRef.value = value;
     };
 
+    // arrow visible
     const arrowDisplay = computed(() => props.arrow !== 'never' && props.direction !== 'vertical');
     const arrowVisible = (reachBorder: boolean) => {
       return (props.arrow === 'always' || hoverRef.value) && (props.loop || reachBorder);
     };
 
+    // get size of container
+    const containerDiv = ref<HTMLDivElement | null>(null);
+    const sizeRef = computed(() => {
+      const container = containerDiv.value;
+      if (!container) {
+        return 0;
+      }
+      return props.direction === 'vertical' ? container.offsetHeight : container.offsetWidth;
+    });
 
+    // timer
+    watchEffect((onInvalidate) => {
+      const stop = useInterval(() => {
+        state.activeIndex += 1;
+      }, props.interval);
+      onInvalidate(stop);
+    });
 
     return () => {
       const { direction, indicatorPosition, type, loop } = props;
 
       const nodes = ctx.slots.default?.() ?? [];
+      state.length = nodes.length;
+
       const children = nodes.map((node, index) => (
         <CarouselItem
           key={index}
+          v-model={state.activeIndex}
           index={index}
           type={type}
           loop={loop}
           direction={direction}
           length={nodes.length}
-          v-model={activeIndex.value}
+          size={sizeRef.value}
         >
           {node}
         </CarouselItem>
@@ -140,19 +175,18 @@ export const Carousel = defineComponent({
       return (
         <div
           class={carouselClasses.value}
-          ref={containerRef}
           onMouseenter={onHover(true)}
           onMouseleave={onHover(false)}
         >
-          <div class="el-carousel__container">
+          <div class="el-carousel__container" ref={containerDiv}>
             {arrowDisplay.value ? (
               <Fragment>
                 <Transition name="carousel-arrow-left">
                   <button
                     type="button"
-                    v-show={arrowVisible(activeIndex.value > 0)}
+                    v-show={arrowVisible(state.activeIndex > 0)}
                     class="el-carousel__arrow el-carousel__arrow--left"
-                    onClick={(e) => throttledArrowClick(e, activeIndex.value - 1)}
+                    onClick={(e) => throttledArrowClick(e, state.activeIndex - 1)}
                   >
                     <i class="el-icon-arrow-left" />
                   </button>
@@ -160,9 +194,9 @@ export const Carousel = defineComponent({
                 <Transition name="carousel-arrow-right">
                   <button
                     type="button"
-                    v-show={arrowVisible(activeIndex.value < nodes.length - 1)}
+                    v-show={arrowVisible(state.activeIndex < nodes.length - 1)}
                     class="el-carousel__arrow el-carousel__arrow--right"
-                    onClick={(e) => throttledArrowClick(e, activeIndex.value + 1)}
+                    onClick={(e) => throttledArrowClick(e, state.activeIndex + 1)}
                   >
                     <i class="el-icon-arrow-right" />
                   </button>
@@ -172,19 +206,17 @@ export const Carousel = defineComponent({
             {children}
           </div>
           {indicatorPosition !== 'none' ? (
-            <ul
-              class={indicatorsClasses.value}
-            >
-              {nodes.map((item, index) => (
+            <ul class={indicatorsClasses.value}>
+              {nodes.map((_, index) => (
                 <li
                   key={index}
                   class={[
                     'el-carousel__indicator',
                     'el-carousel__indicator--' + direction,
-                    { 'is-active': index === activeIndex.value }
+                    { 'is-active': index === state.activeIndex }
                   ]}
-                  onMouseenter={() => throttledIndicatorHover(index)}
-                  onClick={(e) => handleIndicatorClick(e, index)}
+                  onMouseenter={() => indicatorHover(index)}
+                  onClick={handleIndicatorClick(index)}
                 >
                   <button class="el-carousel__button" />
                 </li>

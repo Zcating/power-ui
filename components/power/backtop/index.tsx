@@ -91,10 +91,13 @@ export default defineComponent({
     }
 
     const { container, visible, scrollToTop } = backtop;
-    useScroll(() => {
-      const scrollTop = container.value.scrollTop;
-      visible.value = scrollTop >= props.visibilityHeight;
-    });
+    const { DOCUMENT } = usePlatform();
+    if (DOCUMENT) {
+      useScroll(DOCUMENT, () => {
+        const scrollTop = container.value.scrollTop;
+        visible.value = scrollTop >= props.visibilityHeight;
+      });
+    }
     return () => (
       <Transition name='el-fade-in' appear mode='out-in'>
         {visible.value ? (

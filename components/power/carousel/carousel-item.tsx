@@ -1,5 +1,7 @@
-import { computed, defineComponent, getCurrentInstance, reactive } from 'vue';
-import { Enum } from 'vue-cdk/utils';
+import { computed, defineComponent, getCurrentInstance, onMounted, reactive, watch } from 'vue';
+import { usePlatform } from 'vue-cdk';
+import { useResize } from 'vue-cdk/hook';
+import { Enum, Method } from 'vue-cdk/utils';
 
 const CARD_SCALE = 0.83;
 
@@ -10,11 +12,15 @@ export const CarouselItem = defineComponent({
   props: {
     type: {
       type: String,
-      defautl: ''
+      required: true
     },
     direction: {
       type: Enum<'vertical' | 'horizontal'>(),
-      default: 'vertical'
+      required: true
+    },
+    index: {
+      type: Number,
+      required: true
     },
     length: {
       type: Number,
@@ -22,13 +28,13 @@ export const CarouselItem = defineComponent({
     },
     loop: {
       type: Boolean,
-      default: false
+      required: true,
     },
     modelValue: {
       type: Number,
       default: 0,
     },
-    index: {
+    size: {
       type: Number,
       required: true
     }
@@ -43,35 +49,33 @@ export const CarouselItem = defineComponent({
       ready: false,
       active: false,
       translate: 0,
-      scale: 0
+      scale: 1
     });
-
 
 
     const parent = getCurrentInstance()?.parent;
     const parentElRef = computed(() => {
       return parent?.proxy?.$el;
     });
-    const handleItemClick = (e: Event) => {
-      const parent = parentElRef.value;
-      if (parent && parent.type === 'card') {
-        const index = parent.items.indexOf(this);
-        parent.setActiveItem(index);
+
+    const handleItemClick = () => {
+      if (props.type === 'card' && props.modelValue !== props.index) {
+        ctx.emit('update:modelValue', props.index);
       }
     };
+
     const calcCardTranslate = (index: number, activeIndex: number) => {
-      const parentWidth = parentElRef.value.offsetWidth;
       if (state.inStage) {
-        return parentWidth * ((2 - CARD_SCALE) * (index - activeIndex) + 1) / 4;
+        return props.size * ((2 - CARD_SCALE) * (index - activeIndex) + 1) / 4;
       } else if (index < activeIndex) {
-        return -(1 + CARD_SCALE) * parentWidth / 4;
+        return -(1 + CARD_SCALE) * props.size / 4;
       } else {
-        return (3 + CARD_SCALE) * parentWidth / 4;
+        return (3 + CARD_SCALE) * props.size / 4;
       }
     };
-    const calcTranslate = (index: number, activeIndex: number, vertical: boolean) => {
-      const distance = parentElRef.value[vertical ? 'offsetHeight' : 'offsetWidth'];
-      return distance * (index - activeIndex);
+
+    const calcTranslate = (index: number, activeIndex: number) => {
+      return props.size * (index - activeIndex);
     };
 
     const processIndex = (index: number, activeIndex: number, length: number) => {
@@ -96,6 +100,7 @@ export const CarouselItem = defineComponent({
       if (index !== activeIndex && length > 2 && loop) {
         index = processIndex(index, activeIndex, length);
       }
+
       if (type === 'card') {
         if (direction === 'vertical') {
           console.warn('[Element Warn][Carousel]vertical direction is not supported in card mode');
@@ -106,10 +111,23 @@ export const CarouselItem = defineComponent({
         state.scale = state.active ? 1 : CARD_SCALE;
       } else {
         state.active = index === activeIndex;
-        state.translate = calcTranslate(index, activeIndex, direction === 'vertical');
+        state.translate = calcTranslate(index, activeIndex);
       }
       state.ready = true;
     };
+
+    onMounted(() => {
+      watch(() => props.modelValue, (activeIndex, oldIndex) => {
+        translateItem(props.index, activeIndex, oldIndex);
+      }, { immediate: true });
+    });
+
+    const { DOCUMENT } = usePlatform();
+    if (DOCUMENT) {
+      useResize(DOCUMENT, () => {
+        translateItem(props.index, props.modelValue);
+      });
+    }
 
     const itemStyle = computed(() => {
       const translateType = props.direction === 'vertical' ? 'translateY' : 'translateX';

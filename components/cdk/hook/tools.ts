@@ -1,8 +1,11 @@
 import {
+  isRef,
   onBeforeUnmount,
   onMounted,
+  Ref,
 } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
+import { noop } from 'vue-cdk/types';
 
 /**
  * run a function while resize
@@ -11,15 +14,35 @@ import { usePlatform } from 'vue-cdk/global';
  * @param {() => void} func
  * @returns
  */
-export function useResize(DOCUMENT: Document, func: () => void) {
-  onMounted(() => {
-    DOCUMENT.addEventListener('resize', func);
-    DOCUMENT.addEventListener('orientationchange', func);
-  });
-  onBeforeUnmount(() => {
-    DOCUMENT.removeEventListener('resize', func);
-    DOCUMENT.removeEventListener('orientationchange', func);
-  });
+export function useResize(
+  dom: Document | HTMLElement | Ref<Document | HTMLElement | null>,
+  func: (e: Event) => void
+) {
+  if (isRef(dom)) {
+    onMounted(() => {
+      if (!dom.value) {
+        return;
+      }
+      dom.value.addEventListener('resize', func);
+      dom.value.addEventListener('orientationchange', func);
+    });
+    onBeforeUnmount(() => {
+      if (!dom.value) {
+        return;
+      }
+      dom.value.removeEventListener('resize', func);
+      dom.value.removeEventListener('orientationchange', func);
+    });
+  } else {
+    onMounted(() => {
+      dom.addEventListener('resize', func);
+      dom.addEventListener('orientationchange', func);
+    });
+    onBeforeUnmount(() => {
+      dom.removeEventListener('resize', func);
+      dom.removeEventListener('orientationchange', func);
+    });
+  }
 }
 
 /**
@@ -29,19 +52,14 @@ export function useResize(DOCUMENT: Document, func: () => void) {
  * @param {() => void} func
  * @returns
  */
-export function useScroll(func: () => void) {
-  const { DOCUMENT } = usePlatform();
-  if (!DOCUMENT) {
-    return;
-  }
-
+export function useScroll(dom: Document | HTMLElement, func: () => void) {
   onMounted(() => {
-    DOCUMENT.addEventListener('scroll', func, true);
-    DOCUMENT.addEventListener('mousewheel', func);
+    dom.addEventListener('scroll', func, true);
+    dom.addEventListener('mousewheel', func);
   });
 
   onBeforeUnmount(() => {
-    DOCUMENT.removeEventListener('scroll', func, true);
+    dom.removeEventListener('scroll', func, true);
   });
 }
 
@@ -68,16 +86,16 @@ export function useAnimationFrame(this: void, func: () => boolean) {
 export function useTimeout(this: void, func: () => void, duration: number) {
   const { TOP } = usePlatform();
   if (!TOP) {
-    return;
+    return noop;
   }
   const id = TOP.setTimeout(func, duration);
   return () => TOP.clearTimeout(id);
 }
 
-export function useInterval(this: void, func: (duration: number) => void, duration: number) {
+export function useInterval(this: void, func: (duration?: number) => void, duration: number) {
   const { TOP } = usePlatform();
   if (!TOP) {
-    return;
+    return noop;
   }
   const id = TOP.setInterval(func, duration);
   return () => TOP.clearInterval(id);
