@@ -1,7 +1,8 @@
-import { computed, defineComponent, reactive, shallowRef, watch } from 'vue';
+import { computed, defineComponent, reactive, shallowRef, toRef, watch } from 'vue';
 import { List } from 'vue-cdk/utils';
 import { CdkTree, TreeNodeSlotData } from 'vue-cdk/tree';
 import { TreeNodeContent } from './tree-node-content';
+import { watchRef } from 'vue-cdk/hook';
 
 
 export interface TreeNodeData<T = any> {
@@ -54,10 +55,14 @@ export const Tree = defineComponent({
       type: Number,
       default: 18
     },
-    checkOnClickNode: Boolean,
+    checkedKeys: {
+      type: List<string | number>(),
+      default: []
+    },
     defaultCheckedKeys: List<string | number>(),
     defaultExpandedKeys: List<string | number>(),
     currentNodeKey: [String, Number],
+    checkOnClickNode: Boolean,
     renderContent: Function,
     allowDrag: Function,
     allowDrop: Function,
@@ -96,10 +101,10 @@ export const Tree = defineComponent({
       return clazz;
     });
 
-    const checkedKeys = shallowRef(['2-2']);
-    watch(checkedKeys, (value) => {
-      console.log(value);
-    });
+    const checkedKeys = watchRef(
+      toRef(props, 'checkedKeys'),
+      (value) => ctx.emit('update:checkedKeys', value)
+    );
 
     return () => {
       const { dataSource, emptyText, checkStrictly } = props;
