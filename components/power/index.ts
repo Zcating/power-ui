@@ -1,4 +1,4 @@
-export { PowerViewProvider } from './power-view-provider';
+export { PowerModule as PowerViewProvider } from './power-module';
 export { default as Alert } from './alert';
 export { default as Avatar } from './avatar';
 export { Button, ButtonGroup } from './button';
@@ -24,8 +24,8 @@ export { Select, SelectOption, SelectOptionGroup } from './select';
 export { Slider } from './slider';
 export { Rate } from './rate';
 export { Checkbox, CheckboxGroup, CheckboxButton, CheckboxGroupRef } from './checkbox';
-export { useMessage } from './message';
-export { useNotification } from './notification';
+export { useMessage, message } from './message';
+export { useNotification, notification } from './notification';
 export { Transfer } from './transfer';
 export { Form, FormItem, FormRules } from './form';
 export { Tree, TreeNodeData } from './tree';

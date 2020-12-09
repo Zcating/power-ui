@@ -1,7 +1,7 @@
 import {
-  provide,
   inject,
   InjectionKey,
+  App,
 } from 'vue';
 import Breakpoint from './breakpoint';
 import Bidirection from './bidirection';
@@ -34,25 +34,27 @@ export const useViewport = () => inject(viewportToken)!;
  *
  * @export
  */
-export function globalInject() {
-  const platform = new Platform();
-  provide(platformToken, new Platform());
-  // ! order should be manage carefully
-  // ! platform first
-  provide(breakpointToken, new Breakpoint(platform));
-  provide(bidirectionToken, new Bidirection(platform));
-  provide(clipboardToken, new Clipboard(platform));
-  provide(viewportToken, new ViewPort(platform));
+export const cdk = {
+  install(app: App) {
+    const platform = new Platform();
+    app.provide(platformToken, new Platform());
+    // ! order should be manage carefully
+    // ! platform first
+    app.provide(breakpointToken, new Breakpoint(platform));
+    app.provide(bidirectionToken, new Bidirection(platform));
+    app.provide(clipboardToken, new Clipboard(platform));
+    app.provide(viewportToken, new ViewPort(platform));
 
-  // add overlay anchor
-  if (platform.DOCUMENT && platform.BODY) {
-    // if at browser environment
-    const overlayAnchor = platform.DOCUMENT.createElement('div');
-    overlayAnchor.setAttribute('id', 'cdk-overlay-anchor');
-    overlayAnchor.style.position = 'fixed';
-    overlayAnchor.style.left = '0';
-    overlayAnchor.style.top = '0';
-    overlayAnchor.style.zIndex = '1000';
-    platform.BODY.appendChild(overlayAnchor);
+    // add overlay anchor
+    if (platform.DOCUMENT && platform.BODY) {
+      // if at browser environment
+      const overlayAnchor = platform.DOCUMENT.createElement('div');
+      overlayAnchor.setAttribute('id', 'cdk-overlay-anchor');
+      overlayAnchor.style.position = 'fixed';
+      overlayAnchor.style.left = '0';
+      overlayAnchor.style.top = '0';
+      overlayAnchor.style.zIndex = '1000';
+      platform.BODY.appendChild(overlayAnchor);
+    }
   }
-}
+};

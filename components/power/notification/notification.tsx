@@ -1,153 +1,60 @@
-import { Transition, computed, defineComponent, onMounted, ref, renderSlot } from 'vue';
-import { NotificationPosition, NotificationType } from './types';
-import { CdkTimer, Enum, Method } from 'vue-cdk/utils';
+import { Overlay } from 'vue-cdk';
+import { computed, defineComponent, inject } from 'vue';
+import { NotificationItem } from './notification-item';
+import { NotificationPosition, positionClassTag } from './types';
+import { $notificationImpl } from './notification.service';
 
 
-const typeMap = {
-  success: 'success',
-  info: 'info',
-  warning: 'warning',
-  error: 'error'
-};
-
+/**
+ * @component Notification
+ * 
+ * @name po-notification & PoNotification
+ * 
+ * @description 
+ * TODO: add description
+ * 
+ */
 export const Notification = defineComponent({
-  props: {
-    notificationId: {
-      type: String,
-      default: ''
-    },
-    title: {
-      type: String,
-      default: ''
-    },
-    message: {
-      type: String,
-      default: ''
-    },
-    type: {
-      type: Enum<NotificationType>(),
-      default: '',
-    },
-    showClose: {
-      type: Boolean,
-      default: false,
-    },
-    position: {
-      type: Enum<NotificationPosition>(),
-      default: 'top-right',
-    },
-    duration: {
-      type: Number,
-      default: 4500,
-    },
-    onClick: {
-      type: Method<((e: Event) => void) | null>(),
-      default: null,
-    },
-    onClose: {
-      type: Method<(() => void) | null>(),
-      default: null
-    },
-    customClass: String,
-    onDestroy: Function,
-    visible: {
-      type: Boolean,
-      default: false
-    }
-  },
-  setup(props, ctx) {
-    const {
-      notificationId,
-      message,
-      title,
-      type,
-      showClose,
-      position,
-      onDestroy,
-      duration,
-      onClick,
-      onClose,
-    } = props;
+  name: 'po-notification',
+  setup() {
+    const service = inject($notificationImpl)!;
 
-    const visible = ref(false);
-    onMounted(() => {
-      visible.value = true;
-    });
+    const visible = computed(() => service.datas.length > 0);
 
-    const timer = duration > 0 ? new CdkTimer(() => close(), duration).start() : undefined;
-
-
-    const click = (e: Event) => {
-      if (typeof onClick === 'function') {
-        onClick(e);
-      }
+    const createNotifications = (position: NotificationPosition) => {
+      const _datas = service.datas;
+      const tag = positionClassTag[position];
+      const verticalProperty = position.indexOf('top') > -1 ? 'top' : 'bottom';
+      const targets = _datas.filter(value => value.position === position);
+      return targets.length > 0 ? (
+        <div
+          class={`el-notification-container el-notification-container__${tag}`}
+          style={{ [verticalProperty]: `${service._config.offset}px` }}
+        >
+          {...targets.map((value) => (
+            <NotificationItem
+              {...value}
+              key={value.notificationId}
+              onDestroy={service.close}
+            ></NotificationItem>
+          ))}
+        </div>
+      ) : undefined;
     };
 
-    const close = () => {
-      visible.value = false;
-      setTimeout(() => {
-        onDestroy?.(notificationId);
-      }, 300);
-      if (typeof onClose === 'function') {
-        onClose();
-      }
-    };
-
-    const typeClass = computed(() => {
-      return type ? `el-icon-${typeMap[type]}` : '';
-    });
-
-    const groupClass = computed(() => {
-      const clazz = ['el-notification__group'];
-      if (!!typeClass) {
-        clazz.push('is-with-icon');
-      }
-      return clazz;
-    });
-
-    const panelClass = computed(() => {
-      const horizontal = position.indexOf('right') > -1 ? 'right' : 'left';
-      const vertical = position.indexOf('top') > -1 ? 'top' : 'bottom';
-      const animationClass = visible.value ?
-        `el-notification-fade-${horizontal}` :
-        `el-notification-fade-leave-${vertical}`;
-
-      return ['el-notification', animationClass, horizontal, vertical];
-    });
 
     return () => {
-      const icon = type ? (
-        <i class={['el-notification__icon', typeClass]}></i>
-      ) : undefined;
-
-      const closeIcon = showClose ? (
-        <div
-          class="el-notification__closeBtn el-icon-close"
-          onClick={close}
-        ></div>
-      ) : undefined;
-
+      const tls = createNotifications('top-left');
+      const trs = createNotifications('top-right');
+      const bls = createNotifications('bottom-left');
+      const brs = createNotifications('bottom-right');
       return (
-        <Transition>
-          <div
-            v-show={visible.value}
-            class={panelClass.value}
-            onMouseenter={() => timer?.end()}
-            onMouseleave={() => timer?.start()}
-            onClick={click}
-            role="alert"
-          >
-            {icon}
-            <div class={groupClass.value}>
-              <h2 class="el-notification__title">{title}</h2>
-              <div class="el-notification__content" v-show={!!message}>
-                {renderSlot(ctx.slots, 'default')}
-                <p>{message}</p>
-              </div>
-              {closeIcon}
-            </div>
-          </div>
-        </Transition>
+        <Overlay visible={visible.value} hasBackdrop={false}>
+          {trs}
+          {tls}
+          {bls}
+          {brs}
+        </Overlay>
       );
     };
   }

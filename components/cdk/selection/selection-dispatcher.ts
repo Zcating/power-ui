@@ -43,7 +43,6 @@ export class CdkSelectionDispatcher {
   }
 
   subscribe(key: number | string, state: SelectionItemState) {
-    console.log(key, this.dataRef.value, this.testEquals(this.dataRef.value, key));
     state.selected = this.testEquals(this.dataRef.value, key);
     this.states.set(key, state);
     this._count.value = this.states.size;

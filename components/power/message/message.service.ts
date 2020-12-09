@@ -1,8 +1,10 @@
-import { inject, InjectionKey, provide, ref } from 'vue';
-import { MessageContainer, MessageContainerFactory } from './message-container';
+import { InjectionKey, shallowRef } from 'vue';
 import { MessageData, MessageDataOptions } from './types';
 
 let _$counter = 0;
+
+export const $message = Symbol() as InjectionKey<MessageService>;
+export const $messageImpl = Symbol() as InjectionKey<MessageServiceImpl>;
 
 export abstract class MessageService {
 
@@ -27,14 +29,15 @@ export abstract class MessageService {
   protected abstract create(data: MessageData): void;
 }
 
-class MessageServiceImpl extends MessageService {
-  private instances = ref<Required<MessageData>[]>([]);
-  readonly container: MessageContainer;
+export class MessageServiceImpl extends MessageService {
+  private instances = shallowRef<Required<MessageData>[]>([]);
 
-  constructor(key: InjectionKey<MessageService>) {
-    super();
-    this.container = this.render();
-    provide(key, this);
+  get datas() {
+    return this.instances.value;
+  }
+
+  closeAll(): void {
+    this.instances.value = [];
   }
 
   protected create(data: MessageData) {
@@ -46,28 +49,12 @@ class MessageServiceImpl extends MessageService {
       messageId: this.getInstanceId(),
       createdAt: new Date()
     };
-    this.instances.value.push(messageData);
-
-    // trigger change
-    this.instances.value = this.instances.value;
+    this.instances.value = [...this.instances.value, messageData];
   }
 
-  closeAll(): void {
-    this.instances.value = [];
-  }
-
-  destroy(id: string) {
+  readonly destroy = (id: string) => {
     const instances = this.instances.value;
     this.instances.value = instances.filter((value) => value.messageId !== id);
   }
-
-  render() {
-    return MessageContainerFactory(this.instances, this.destroy.bind(this));
-  }
 }
 
-
-const $message = Symbol() as InjectionKey<MessageService>;
-
-export const useMessage = () => inject($message)!;
-export const provideMessage = () => new MessageServiceImpl($message);

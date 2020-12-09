@@ -1,8 +1,10 @@
-import { DefineComponent, InjectionKey, Ref, provide, ref, inject } from 'vue';
-import createContainter from './notification-container';
+import { InjectionKey, Ref, ref, shallowRef } from 'vue';
 import { NotificationConfig, NotificationConfigOptions, NotificationData } from './types';
 
 let _notiCounter = 0;
+
+export const $notification = Symbol() as InjectionKey<NotificationService>;
+export const $notificationImpl = Symbol() as InjectionKey<NotificationServiceImpl>;
 
 export abstract class NotificationService {
 
@@ -23,20 +25,21 @@ export abstract class NotificationService {
   protected abstract create(data: NotificationData): void;
 }
 
-class NotificationServiceImpl extends NotificationService {
-  readonly container: DefineComponent;
+export class NotificationServiceImpl extends NotificationService {
 
-  private readonly instances: Ref<Required<NotificationData>[]> = ref([]);
+  private readonly instances: Ref<Required<NotificationData>[]> = shallowRef([]);
 
-  private readonly _config: Ref<NotificationConfig> = ref({
+  private readonly _configRef: Ref<NotificationConfig> = ref({
     offset: 16,
     duration: 4500,
   });
 
-  constructor(key: InjectionKey<NotificationService>) {
-    super();
-    this.container = this.render();
-    provide(key, this);
+  get datas() {
+    return this.instances.value;
+  }
+
+  get _config() {
+    return this._configRef.value;
   }
 
   notify(data: NotificationData): void {
@@ -63,8 +66,16 @@ class NotificationServiceImpl extends NotificationService {
     this.instances.value = [];
   }
 
+  config(options: NotificationConfigOptions) {
+    const current = this._configRef.value;
+    this._configRef.value = {
+      offset: options.offset || current.offset,
+      duration: options.duration || current.duration
+    };
+  }
+
   protected create(data: NotificationData): void {
-    this.instances.value.push({
+    this.instances.value = [...this.instances.value, {
       notificationId: `el-noti-${_notiCounter++}`,
       title: data.title || '',
       message: data.message || '',
@@ -72,30 +83,14 @@ class NotificationServiceImpl extends NotificationService {
       customClass: data.customClass || '',
       position: data.position || 'top-right',
       showClose: data.showClose || false,
-      duration: data.duration ?? this._config.value.duration,
+      duration: data.duration ?? this._configRef.value.duration,
       onClick: data.onClick || null,
       onClose: data.onClose || null,
-    });
+    }];
   }
 
-  close(id: string) {
+  close = (id: string) => {
     const instances = this.instances.value;
     this.instances.value = instances.filter((value) => value.notificationId !== id);
   }
-
-  config(options: NotificationConfigOptions) {
-    const current = this._config.value;
-    this._config.value = {
-      offset: options.offset || current.offset,
-      duration: options.duration || current.duration
-    };
-  }
-
-  render(): DefineComponent {
-    return createContainter(this._config, this.instances, this.close.bind(this)) as any;
-  }
 }
-
-const $notification = Symbol() as InjectionKey<NotificationService>;
-export const useNotification = () => inject($notification)!;
-export const provideNotification = () => new NotificationServiceImpl($notification);

@@ -138,7 +138,6 @@ export default defineComponent({
           <p>
             <Button onClick={() => showModal.value = true}>show Dialog</Button>
             <Dialog
-              id="fuck"
               title="提示"
               width="30%"
               v-model={[showModal.value, 'visible']}

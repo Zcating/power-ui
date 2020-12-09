@@ -7,7 +7,7 @@ const WidgetBuilder = defineComponent(({ value }: { value: number }) => {
   const state: AccordionItemState = reactive({ selected: false });
   return () => (
     <CdkAccordionItem
-      v-model={[state.selected, 'selected']}
+      v-model={[state.selected, 'expanded']}
       v-slots={{
         default: () => [
           <p>

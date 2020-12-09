@@ -11,6 +11,7 @@ import { AccordionItemState } from './types';
  */
 export const CdkAccordionItem = defineComponent({
   name: 'cdk-accordion-item',
+  inheritAttrs: false,
   props: {
     expanded: {
       type: Boolean,
