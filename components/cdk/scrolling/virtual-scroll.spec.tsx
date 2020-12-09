@@ -10,19 +10,17 @@ export default defineComponent({
       arr.push({ name: 'test' + Math.random() });
     }
 
-    const virtualScroll = new VirtualScrollable(arr);
-    virtualScroll.defaultHeight = 40;
+    const virtualScroll = new VirtualScrollable<{ name: string }>(arr, () => 40);
 
     return () => (
-      <VirtualScroll style='height:200px' maxScroll={true}>
+      <VirtualScroll style={{ height: '200px' }} maxScroll={true}>
         {virtualScroll.dispalyItems.map((el, key) => (
           <div
             key={key}
             style={{
               backgroundColor: 'black',
               color: 'white',
-              padding: '10px',
-              height: `${el._itemHeight || el._defaultHeight}px`,
+              height: '40px',
             }}
           >
             {el.name}
@@ -32,6 +30,7 @@ export default defineComponent({
     );
   },
 });
+
 // import { VueWrapper, mount } from '@vue/test-utils';
 // let compo: VueWrapper<any>;
 // beforeEach(() => {

@@ -44,24 +44,22 @@ export interface ScrollToOptions {
   end?: number;
 }
 
-export default class {
-  nodeRef = ref<HTMLElement | null>(null);
-  scrollCb: (e: Event) => void = noop;
+export class Scrollable {
   private document = usePlatform().TOP?.document;
   private scrollAxisType?: ScrollAxisType;
-  private handleScroll = (e: Event) => {
-    this.scrollCb(e);
-  };
 
-  constructor() {
+  constructor(
+    public nodeRef: Ref<HTMLElement | null> = ref(null),
+    private callback: (this: void, e: Event) => void = noop
+  ) {
     onMounted(() => {
       if (this.nodeRef.value) {
-        this.nodeRef.value.addEventListener('scroll', this.handleScroll);
+        this.nodeRef.value.addEventListener('scroll', this.callback);
       }
     });
     onBeforeMount(() => {
       if (this.nodeRef.value) {
-        this.nodeRef.value.removeEventListener('scroll', this.handleScroll);
+        this.nodeRef.value.removeEventListener('scroll', this.callback);
       }
     });
   }

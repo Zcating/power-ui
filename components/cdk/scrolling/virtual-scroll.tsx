@@ -15,7 +15,7 @@ export const VirtualScroll = defineComponent({
   setup(props, ctx) {
     const virtualScroll = useVirtualScroll();
     if (!virtualScroll) {
-      throw Error('You should new a virtualScrollable first');
+      throw Error('You should new a virtualScrollable first.');
     }
 
     return () => (
@@ -24,7 +24,6 @@ export const VirtualScroll = defineComponent({
         ref={virtualScroll.containerRef}
         {...ctx.attrs}
       >
-
         {props.maxScroll ? <div style={{ height: virtualScroll.totalHeight + 'px' }} /> : null}
         <div
           style={{
