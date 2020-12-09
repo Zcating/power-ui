@@ -1,7 +1,7 @@
-import { computed, defineComponent, getCurrentInstance, onMounted, reactive, watch } from 'vue';
+import { computed, defineComponent, onMounted, reactive, watch } from 'vue';
 import { usePlatform } from 'vue-cdk';
 import { useResize } from 'vue-cdk/hook';
-import { Enum, Method } from 'vue-cdk/utils';
+import { Enum } from 'vue-cdk/utils';
 
 const CARD_SCALE = 0.83;
 
@@ -50,12 +50,6 @@ export const CarouselItem = defineComponent({
       active: false,
       translate: 0,
       scale: 1
-    });
-
-
-    const parent = getCurrentInstance()?.parent;
-    const parentElRef = computed(() => {
-      return parent?.proxy?.$el;
     });
 
     const handleItemClick = () => {
