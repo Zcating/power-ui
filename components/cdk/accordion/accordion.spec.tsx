@@ -1,31 +1,36 @@
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
 import { CdkAccordion } from './accordion';
 import { CdkAccordionItem } from './accordion-item';
 import { AccordionItemState } from './types';
 
-const WidgetBuilder = defineComponent(({ value }: { value: number }) => {
-  const state: AccordionItemState = reactive({ selected: false });
-  return () => (
-    <CdkAccordionItem
-      v-model={[state.selected, 'expanded']}
-      v-slots={{
-        default: () => [
-          <p>
-            Item {value}：
-            <button onClick={() => state.selected = !state.selected}>
-              {state.selected ? 'close' : 'expanded'}
-            </button>
-          </p>,
-          <p v-show={state.selected}>
-            I only show if item {value} is expanded
-          </p>
-        ]
-      }}
-    />
-  );
+const WidgetBuilder = defineComponent({
+  props: {
+    value: Number
+  },
+  setup(props) {
+    const state: AccordionItemState = reactive({ expanded: true });
+
+    return () => (
+      <CdkAccordionItem
+        v-model={[state.expanded, 'expanded']}
+        v-slots={{
+          default: () => [
+            <p>
+              Item {props.value}：
+              <button onClick={() => state.expanded = !state.expanded}>
+                {state.expanded ? 'close' : 'expanded'}
+              </button>
+            </p>,
+            <p v-show={state.expanded}>
+              I only show if item {props.value} is expanded
+            </p>
+          ]
+        }}
+      />
+    );
+  }
 });
 
-WidgetBuilder.props = { value: Number };
 
 export default defineComponent({
   name: 'cdk-selection-spec',
@@ -50,7 +55,7 @@ export default defineComponent({
         </button>
 
         <CdkAccordion multiple={state.multiple} expanded={state.selected}>
-          {array.map((value) => <WidgetBuilder value={value} />)}
+          {array.map((value, index) => <WidgetBuilder key={index} value={value} />)}
         </CdkAccordion>
       </>
     );

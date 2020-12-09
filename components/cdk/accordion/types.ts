@@ -1,3 +1,3 @@
 export interface AccordionItemState {
-  selected: boolean;
+  expanded: boolean;
 }

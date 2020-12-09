@@ -1,4 +1,4 @@
-import { defineComponent, renderSlot, watch } from 'vue';
+import { defineComponent, watch } from 'vue';
 import { CdkAccordionDispatcher } from './accordion-dispatcher';
 
 /**
@@ -33,10 +33,8 @@ export const CdkAccordion = defineComponent({
       dispatcher.multiple = value;
     }, { immediate: true });
 
-    return () => (
-      <>
-        {renderSlot(ctx.slots, 'default')}
-      </>
-    );
+    return () => ctx.slots.default?.();
   }
 });
+
+export type CdkAccordionRef = InstanceType<typeof CdkAccordion>;

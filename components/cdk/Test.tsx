@@ -25,8 +25,6 @@ export default defineComponent({
         <CB />
         <h2>scrollable</h2>
         <SB />
-        <h2>accordion</h2>
-        <SELECTION />
         <h2>tree</h2>
         <TR />
         <h2>virtual scroll</h2>

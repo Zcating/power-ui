@@ -29,17 +29,21 @@ export class CdkAccordionDispatcher {
   }
 
   subscribe(state: AccordionItemState) {
+    if (this.states.indexOf(state) !== -1) {
+      return;
+    }
     if (this.multiple) {
-      state.selected = this.initValue;
+      state.expanded = this.initValue;
     }
     this.states.push(state);
-    watch(() => state.selected, (value) => {
+
+    watch(() => state.expanded, (value) => {
       if (this.multiple || !value) {
         return;
       }
       this.states.forEach((curState) => {
         if (curState !== state) {
-          curState.selected = false;
+          curState.expanded = false;
         }
       });
     });
@@ -56,7 +60,7 @@ export class CdkAccordionDispatcher {
   notify(value: boolean) {
     if (this.multiple) {
       this.initValue = value;
-      this.states.forEach(state => state.selected = value);
+      this.states.forEach(state => state.expanded = value);
     }
   }
 }
