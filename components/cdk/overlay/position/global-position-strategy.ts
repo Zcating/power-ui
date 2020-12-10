@@ -1,4 +1,4 @@
-import { CSSProperties, ref } from 'vue';
+import { CSSProperties, Ref, ref } from 'vue';
 import { OverlayProps, PositionStrategy } from './position-strategy';
 
 
@@ -21,7 +21,6 @@ export class GlobalPositionStrategy extends PositionStrategy {
   private _justifyContent = '';
   private _width = '';
   private _height = '';
-
   /**
    * Sets the top position of the overlay. Clears any previously set vertical position.
    * @param value New top offset.
@@ -111,7 +110,10 @@ export class GlobalPositionStrategy extends PositionStrategy {
    * setup the position style.
    * @returns OverlayProps
    */
-  setup(): OverlayProps {
+  setup(
+    panel: Ref<HTMLElement | null>,
+    visible: Ref<boolean>
+  ): OverlayProps {
     const positionedStyle = ref<CSSProperties>({
       width: this._width,
       height: this._height,

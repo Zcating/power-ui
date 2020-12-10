@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref } from 'vue';
+import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick } from 'vue';
 import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './types';
 import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
@@ -31,10 +31,6 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     overlayY: 'top',
   });
 
-  private subscribe?: () => void;
-
-  private readonly positionedStyle = ref<CSSProperties>({ position: 'absolute' });
-
   private readonly window: Window;
 
   constructor(
@@ -48,9 +44,45 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     this.window = window;
   }
 
-  setup(): OverlayProps {
+  setup(panelRef: Ref<HTMLElement | null>, visible: Ref<boolean>): OverlayProps {
+    const positionedStyle = ref<CSSProperties>({ position: 'absolute' });
+    onMounted(() => {
+      const panel = panelRef.value;
+      if (!panel) {
+        return;
+      }
+      const handleChange = () => {
+        // TODO: add optimize for throttle
+        const point = this._calculatePosition(panel);
+        // set the current position style's value.
+        // the current position style is a 'ref'. 
+        const style = positionedStyle.value;
+        style.left = coerceCssPixelValue(point.x);
+        style.top = coerceCssPixelValue(point.y);
+      };
+
+      // use next tick to prevent the origin ref unmounted error.
+      onUpdated(() => {
+        handleChange();
+      });
+
+      watch(visible, (value) => {
+        if (value) {
+          nextTick(() => {
+            handleChange();
+            this.subscribe(handleChange);
+          });
+        } else {
+          this.unsubscribe(handleChange);
+        }
+      });
+
+      onUnmounted(() => {
+        this.unsubscribe(handleChange);
+      });
+    });
     return {
-      positionedStyle: this.positionedStyle,
+      positionedStyle,
       containerStyle: {
         position: 'fixed',
         top: '0',
@@ -61,46 +93,20 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     };
   }
 
-  apply(panel: HTMLElement): void {
-    this.subscribe = () => {
-      // TODO: add optimize for throttle
-      const point = this._calculatePosition(panel);
-      // set the current position style's value.
-      // the current position style is a 'ref'. 
-      const style = this.positionedStyle.value;
-      style.left = coerceCssPixelValue(point.x);
-      style.top = coerceCssPixelValue(point.y);
-    };
-    this.subscribe();
-
+  subscribe(event: (e?: Event) => void): void {
     // at last, we need to caculate the position
     // when scrolling.
     const { window } = this;
-    window.addEventListener('scroll', this.subscribe, true);
-    window.addEventListener('resize', this.subscribe);
-    window.addEventListener('orientationchange', this.subscribe);
+    window.addEventListener('scroll', event, true);
+    window.addEventListener('resize', event);
+    window.addEventListener('orientationchange', event);
   }
 
-  update(): void {
-    this.subscribe?.();
-  }
-
-  disapply(): void {
-    this.unsubscribe();
-  }
-
-  dispose(): void {
-    this.unsubscribe();
-  }
-
-  unsubscribe() {
-    if (this.subscribe) {
-      const { window } = this;
-      window.removeEventListener('scroll', this.subscribe);
-      window.removeEventListener('resize', this.subscribe);
-      window.removeEventListener('orientationchange', this.subscribe);
-      this.subscribe = undefined;
-    }
+  unsubscribe(event: (e?: Event) => void) {
+    const { window } = this;
+    window.removeEventListener('scroll', event, true);
+    window.removeEventListener('resize', event);
+    window.removeEventListener('orientationchange', event);
   }
 
   /**
@@ -214,7 +220,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
       if (element) {
         return element.getBoundingClientRect();
       } else {
-        throw Error('Make sure your element is bound by ref param.');
+        throw Error('[cdk][flexible-position-strategy]Make sure your element is bound by ref param.');
       }
     }
 

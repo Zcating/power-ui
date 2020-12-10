@@ -70,15 +70,12 @@ export const Overlay = defineComponent({
     panelClass: String,
   },
   setup(props, ctx) {
-    const strategy = inject('cdk-overlay-strategy', new GlobalPositionStrategy());
-    const overlayProps = strategy.setup();
-    const positionedStyle = watchRef(overlayProps.positionedStyle);
-    const containerStyle = ref(overlayProps.containerStyle);
 
 
-    const visible = watchRef(toRef(props, 'visible'), (value) => {
-      ctx.emit('update:visible', value);
-    });
+    const visible = watchRef(
+      toRef(props, 'visible'),
+      (value) => ctx.emit('update:visible', value)
+    );
 
     const clickBackground = (event: Event) => {
       event.preventDefault();
@@ -89,30 +86,11 @@ export const Overlay = defineComponent({
       }
     };
 
-    const overlayRef = ref<HTMLElement>();
-    onMounted(() => {
-      const overlay = overlayRef.value;
-      if (!overlay) {
-        return;
-      }
-      watch(visible, (value) => {
-        if (value) {
-          nextTick(() => {
-            strategy.apply?.(overlay);
-          });
-        } else {
-          strategy.disapply?.();
-        }
-      });
-
-      onUpdated(() => {
-        strategy.update?.(overlay);
-      });
-
-      onUnmounted(() => {
-        strategy.dispose();
-      });
-    });
+    const panelRef = ref<HTMLElement | null>(null);
+    const strategy = inject('cdk-overlay-strategy', new GlobalPositionStrategy());
+    const overlayProps = strategy.setup(panelRef, visible);
+    const positionedStyle = watchRef(overlayProps.positionedStyle);
+    const containerStyle = ref(overlayProps.containerStyle);
 
     const body = usePlatform().BODY;
     if (body) {
@@ -146,7 +124,7 @@ export const Overlay = defineComponent({
               onClick={clickBackground}
             >
               <div
-                ref={overlayRef}
+                ref={panelRef}
                 class="cdk-overlay"
                 style={positionedStyle.value}
                 onClick={event => event.cancelBubble = true}
