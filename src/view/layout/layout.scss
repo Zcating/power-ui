@@ -9,17 +9,17 @@
     right: 0;
     bottom: 0;
     display: flex;
-    justify-content: center;
     .el-doc-sider {
+      margin-left: 20px;
       width: 240px;
       transition: padding-top 0.3s;
       overflow-y: scroll;
     }
 
     .el-doc-content {
-      padding-left: 30px;
-      width: 900px;
       overflow-y: scroll;
+      flex: 1;
+      padding: 0 30px;
     }
   }
   .el-doc__footer {

@@ -1,9 +1,12 @@
 import { computed, customRef, defineComponent, reactive, ref, watch } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
+import { watchRef } from 'vue-cdk/hook';
 import { Method, addEvent, toFixedNumber } from 'vue-cdk/utils';
 import { Tooltip } from '../tooltip';
 
 export const SliderButton = defineComponent({
+  name: 'po-slider-button',
+  inheritAttrs: false,
   props: {
     modelValue: {
       type: Number,
@@ -13,12 +16,15 @@ export const SliderButton = defineComponent({
       type: Boolean,
       default: false
     },
-    tooltipClass: String,
+    tooltipClass: {
+      type: String,
+      default: ''
+    },
     disabled: {
       type: Boolean,
       default: false
     },
-    size: {
+    sliderLength: {
       type: Number,
       default: 1
     },
@@ -42,7 +48,6 @@ export const SliderButton = defineComponent({
       tyep: Number,
       default: 0
     },
-
     position: {
       type: Number,
       default: 0
@@ -56,106 +61,98 @@ export const SliderButton = defineComponent({
   },
 
   setup(props, ctx) {
-    const formatValue = computed(() => {
-      return props.format(props.modelValue);
-    });
-
     const WINDOW = usePlatform().TOP!;
 
+    // define state
     const state = reactive({
       showTooltip: false,
       hovering: false,
-      dragging: false,
-    });
+      dragging: watchRef(
+        ref(false),
+        (value) => ctx.emit('drag', value)
+      ),
+      position: customRef((track, trigger) => {
+        let position = 0;
+        const result = {
+          get() {
+            track();
+            return position;
+          },
+          set(newValue: number) {
+            if (newValue === null || isNaN(newValue)) {
+              return;
+            }
+            if (newValue <= props.min) {
+              position = 0;
+            } else if (newValue >= props.max) {
+              position = 100;
+            } else {
+              position = newValue;
+            }
+            trigger();
 
-    watch(() => state.dragging, (value) => {
-      ctx.emit('drag', value);
-    });
+            const { max, min, steps, precision } = props;
+            const lengthPerStep = 100 / ((max - min) / steps);
+            const stepCount = Math.round(position / lengthPerStep);
+            const nextValue = toFixedNumber(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
+            ctx.emit('update:modelValue', nextValue);
 
-    const positionRef = customRef((track, trigger) => {
-      let position = 0;
-      return {
-        get() {
-          track();
-          return position;
-        },
-        set(newValue: number) {
-          if (newValue === null || isNaN(newValue)) {
-            return;
+            console.log(stepCount, newValue, nextValue);
           }
-          if (newValue < 0) {
-            position = 0;
-          } else if (newValue > 100) {
-            position = 100;
-          } else {
-            position = newValue;
-          }
-          trigger();
-
-          const { max, min, steps, precision } = props;
-          const lengthPerStep = 100 / ((max - min) / steps);
-          const stepCount = Math.round(position / lengthPerStep);
-          const nextValue = toFixedNumber(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
-          ctx.emit('update:modelValue', nextValue);
-        }
-      };
+        };
+        watch(() => props.position, (value) => {
+          result.set(value);
+        });
+        return result;
+      }),
+      formatValue: computed(() => props.format(props.modelValue)),
+      wrapperStyle: computed(() => {
+        const { min, max, modelValue, vertical } = props;
+        const position = `${(modelValue - min) / (max - min) * 100}%`;
+        return vertical ? { bottom: position } : { left: position };
+      }),
     });
 
-    watch(() => props.position, (value) => {
-      positionRef.value = value;
-    });
-
+    // mouse event
     const handleMouseEnter = () => {
       state.hovering = true;
       state.showTooltip = true;
     };
+
     const handleMouseLeave = () => {
       state.hovering = false;
       state.showTooltip = false;
     };
+    // mouse event end
+
+
+    // drag event
+    const getPosition = (event: Event) => {
+      let position = 0;
+      if (event instanceof MouseEvent) {
+        position = props.vertical ? event.clientY : event.clientX;
+      } else if (event instanceof TouchEvent) {
+        const touch = event.touches[0];
+        position = props.vertical ? touch.clientY : touch.clientX;
+      }
+      return position;
+    };
+
     const handleDrag = (event: Event) => {
       if (props.disabled) {
         return;
       }
       event.preventDefault();
       state.dragging = true;
-      let prevX = 0;
-      let prevY = 0;
-      if (event instanceof MouseEvent) {
-        prevX = event.clientX;
-        prevY = event.clientY;
-      } else if (event instanceof TouchEvent) {
-        const touch = event.touches[0];
-        prevX = touch.clientX;
-        prevY = touch.clientY;
-      }
 
-      const start = positionRef.value;
-
+      const prevPos = getPosition(event);
+      const start = state.position;
       const disposes = [
         addEvent(WINDOW, ['mousemove', 'touchmove'], (event: MouseEvent | TouchEvent) => {
           if (!state.dragging) {
             return;
           }
-
-          let currentX = 0;
-          let currentY = 0;
-          if (event instanceof MouseEvent) {
-            currentX = event.clientX;
-            currentY = event.clientY;
-          } else if (event instanceof TouchEvent) {
-            const touch = (event as TouchEvent).touches[0];
-            currentX = touch.clientX;
-            currentY = touch.clientY;
-          }
-
-          let diff = 0;
-          if (props.vertical) {
-            diff = (prevY - currentY) / props.size * 100;
-          } else {
-            diff = (currentX - prevX) / props.size * 100;
-          }
-          positionRef.value = start + diff;
+          state.position = start + Math.abs(getPosition(event) - prevPos) / props.sliderLength * 100;
         }),
 
         addEvent(WINDOW, ['mouseup', 'touchend', 'contextmenu'], () => {
@@ -165,42 +162,40 @@ export const SliderButton = defineComponent({
         })
       ];
     };
+    // drag event end
 
     const buttonRef = ref<HTMLDivElement | null>(null);
 
-    const wrapperStyle = computed(() => {
-      const { min, max, modelValue, vertical } = props;
-      const position = `${(modelValue - min) / (max - min) * 100}%`;
-      return vertical ? { bottom: position } : { left: position };
-    });
-
-    return () => (
-      <div
-        class="el-slider__button-wrapper"
-        tabindex={0}
-        ref={buttonRef}
-        style={wrapperStyle.value}
-        onMouseenter={handleMouseEnter}
-        onMouseleave={handleMouseLeave}
-        onMousedown={handleDrag}
-        onTouchstart={handleDrag}
-        onFocus={handleMouseEnter}
-        onBlur={handleMouseLeave}
-      >
-        <Tooltip
-          v-model={state.showTooltip}
-          trigger="custom"
-          placement={props.vertical ? 'right' : 'top'}
-          v-slots={{
-            default: () => (
-              <div class={['el-slider__button', { 'hover': state.hovering, 'dragging': state.dragging }]} />
-            ),
-            content: () => (
-              <span style={{ textAlign: 'center' }}>{formatValue.value}</span>
-            )
-          }}
-        />
-      </div>
-    );
+    return () => {
+      const { wrapperStyle, hovering, dragging, formatValue } = state;
+      return (
+        <div
+          class="el-slider__button-wrapper"
+          tabindex={0}
+          ref={buttonRef}
+          style={wrapperStyle}
+          onMouseenter={handleMouseEnter}
+          onMouseleave={handleMouseLeave}
+          onMousedown={handleDrag}
+          onTouchstart={handleDrag}
+          onFocus={handleMouseEnter}
+          onBlur={handleMouseLeave}
+        >
+          <Tooltip
+            v-model={state.showTooltip}
+            trigger="custom"
+            placement={props.vertical ? 'right' : 'top'}
+            v-slots={{
+              default: () => (
+                <div class={['el-slider__button', { 'hover': hovering, 'dragging': dragging }]} {...ctx.attrs} />
+              ),
+              content: () => (
+                <span style={{ textAlign: 'center' }}>{formatValue}</span>
+              )
+            }}
+          />
+        </div>
+      );
+    };
   }
 });

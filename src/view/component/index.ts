@@ -11,3 +11,4 @@ export { default as FormDoc } from './form-doc';
 export { default as CalendarDoc } from './calendar.doc';
 export { default as TreeDoc } from './tree.doc';
 export { default as CarouselDoc } from './carousel.doc';
+export { default as ColorPickerDoc } from './color-picker.doc';

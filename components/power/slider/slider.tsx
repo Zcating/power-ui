@@ -1,6 +1,7 @@
-import { List, Method, renderCondition } from 'vue-cdk/utils';
+import { List, Method, Model, renderCondition } from 'vue-cdk/utils';
 import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import { SliderButton } from './button';
+import { watchRef } from 'vue-cdk/hook';
 
 
 
@@ -34,14 +35,20 @@ export const Slider = defineComponent({
       type: Boolean,
       default: false,
     },
-    tooltipClass: { type: String, default: '' },
-
+    tooltipClass: {
+      type: String,
+      default: ''
+    },
     vertical: {
       type: Boolean,
       default: false
     },
     height: {
       type: String
+    },
+    buttonClass: {
+      type: String,
+      default: ''
     },
     onChange: {
       type: Method<() => void>(),
@@ -51,7 +58,11 @@ export const Slider = defineComponent({
     },
     onFocus: {
       type: Method<() => void>()
-    }
+    },
+    color: {
+      type: Model<{ runway: string, bar: string }>(),
+      default: {}
+    },
   },
   emits: [
     'update:modelValue',
@@ -61,7 +72,7 @@ export const Slider = defineComponent({
   ],
 
   setup(props, ctx) {
-    const firstValue = ref(0);
+    const firstValue = watchRef(ref(0));
     const secondValue = ref(0);
     watch(
       () => [props.modelValue, props.min, props.max],
@@ -89,6 +100,7 @@ export const Slider = defineComponent({
       } else {
         ctx.emit('update:modelValue', value);
       }
+      // console.log(value);
     });
     watch(secondValue, (value) => {
       if (props.range) {
@@ -98,15 +110,16 @@ export const Slider = defineComponent({
 
     const sliderRef = ref<HTMLDivElement | null>(null);
 
-    const size = computed(() => {
+    const sliderLength = computed(() => {
       const slider = sliderRef.value;
       if (!slider) {
-        return 0;
+        return 1;
       }
+      console.log(slider);
       if (props.vertical) {
-        return slider.clientHeight ?? 0;
+        return slider.clientHeight ?? 1;
       } else {
-        return slider.clientWidth ?? 0;
+        return slider.clientWidth ?? 1;
       }
     });
 
@@ -150,9 +163,9 @@ export const Slider = defineComponent({
       const rect = slider.getBoundingClientRect();
       let offset: number;
       if (props.vertical) {
-        offset = (rect.bottom - event.clientY) / size.value * 100;
+        offset = (rect.bottom - event.clientY) / sliderLength.value * 100;
       } else {
-        offset = (event.clientX - rect.left) / size.value * 100;
+        offset = (event.clientX - rect.left) / sliderLength.value * 100;
       }
       if (props.range) {
         // Caculate the absolute distances between first & second.
@@ -168,52 +181,64 @@ export const Slider = defineComponent({
       }
     };
 
-    return () => (
-      <div
-        ref={sliderRef}
-        class={['el-slider', { 'is-vertical': props.vertical }]}
-        role="slider"
-        aria-valuemax={props.max}
-        aria-valuemin={props.min}
-        aria-orientation={props.vertical ? 'vertical' : 'horizontal'}
-        aria-disabled={props.disabled}
-        tabindex={0}
-        {...ctx.attrs}
-      >
+    return () => {
+      console.log(sliderRef.value?.clientWidth);
+      return (
         <div
-          class={['el-slider__runway', { 'disabled': props.disabled }]}
-          style={props.vertical ? { height: props.height } : undefined}
-          onClick={onSliderClick}
+          ref={sliderRef}
+          class={['el-slider', { 'is-vertical': props.vertical }]}
+          role="slider"
+          aria-valuemax={props.max}
+          aria-valuemin={props.min}
+          aria-orientation={props.vertical ? 'vertical' : 'horizontal'}
+          aria-disabled={props.disabled}
+          tabindex={0}
+          {...ctx.attrs}
         >
-          <div class="el-slider__bar" style={barStyle.value} />
-          <SliderButton
-            ref="button1"
-            v-model={firstValue.value}
-            tooltipClass={props.tooltipClass}
-            vertical={props.vertical}
-            size={size.value}
-            max={props.max}
-            min={props.min}
-            position={positions.first}
-            precision={precision.value}
-            onDrag={(value) => dragging.value = value}
-          />
-          {renderCondition(
-            props.range,
+          <div
+            class={['el-slider__runway', { 'disabled': props.disabled }]}
+            style={{
+              background: props.color?.runway,
+              height: props.vertical ? props.height : undefined,
+            }}
+            onClick={onSliderClick}
+          >
+            <div class="el-slider__bar" style={{
+              background: props.color?.bar,
+              ...barStyle.value
+            }} />
             <SliderButton
-              ref="button2"
-              v-model={secondValue.value}
+              ref="button1"
+              class={props.buttonClass}
+              v-model={firstValue.value}
               tooltipClass={props.tooltipClass}
               vertical={props.vertical}
-              size={size.value}
+              sliderLength={sliderLength.value}
               max={props.max}
               min={props.min}
-              position={positions.second}
+              position={positions.first}
               precision={precision.value}
               onDrag={(value) => dragging.value = value}
-            />)}
+            />
+            {renderCondition(
+              props.range,
+              () => <SliderButton
+                ref="button2"
+                class={props.buttonClass}
+                v-model={secondValue.value}
+                tooltipClass={props.tooltipClass}
+                vertical={props.vertical}
+                sliderLength={sliderLength.value}
+                max={props.max}
+                min={props.min}
+                position={positions.second}
+                precision={precision.value}
+                onDrag={(value) => dragging.value = value}
+              />
+            )}
+          </div>
         </div>
-      </div>
-    );
+      );
+    };
   }
 });

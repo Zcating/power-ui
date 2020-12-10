@@ -50,11 +50,7 @@
 
   @include e(bar) {
     position: relative;
-    background: linear-gradient(
-      to right, #f00 0%,
-      #ff0 17%, #0f0 33%,
-      #0ff 50%, #00f 67%,
-      #f0f 83%, #f00 100%);
+    background: linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
     height: 100%;
   }
 
@@ -79,11 +75,7 @@
     padding: 2px 0;
 
     .el-color-hue-slider__bar {
-      background: linear-gradient(
-        to bottom, #f00 0%,
-        #ff0 17%, #0f0 33%,
-        #0ff 50%, #00f 67%,
-        #f0f 83%, #f00 100%);
+      background: linear-gradient(to bottom, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
     }
 
     .el-color-hue-slider__thumb {
@@ -100,7 +92,7 @@
   width: 280px;
   height: 180px;
 
-  @include e(('white', 'black')) {
+  @include e(("white", "black")) {
     position: absolute;
     top: 0;
     left: 0;
@@ -108,12 +100,12 @@
     bottom: 0;
   }
 
-  @include e('white') {
-    background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  @include e("white") {
+    background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
   }
 
-  @include e('black') {
-    background: linear-gradient(to top, #000, rgba(0,0,0,0));
+  @include e("black") {
+    background: linear-gradient(to top, #000, rgba(0, 0, 0, 0));
   }
 
   @include e(cursor) {
@@ -123,7 +115,7 @@
       cursor: head;
       width: 4px;
       height: 4px;
-      box-shadow: 0 0 0 1.5px #fff, inset 0 0 1px 1px rgba(0,0,0,0.3), 0 0 1px 2px rgba(0,0,0,0.4);
+      box-shadow: 0 0 0 1.5px #fff, inset 0 0 1px 1px rgba(0, 0, 0, 0.3), 0 0 1px 2px rgba(0, 0, 0, 0.4);
       border-radius: 50%;
       transform: translate(-2px, -2px);
     }
@@ -139,9 +131,7 @@
 
   @include e(bar) {
     position: relative;
-    background: linear-gradient(
-      to right, rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 1) 100%);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
     height: 100%;
   }
 
@@ -165,9 +155,7 @@
     height: 180px;
 
     .el-color-alpha-slider__bar {
-      background: linear-gradient(
-        to bottom, rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 1) 100%);
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
     }
 
     .el-color-alpha-slider__thumb {
@@ -311,7 +299,7 @@
     left: 1px;
     z-index: 1;
     cursor: not-allowed;
-    background-color: rgba(255, 255, 255, .7);
+    background-color: rgba(255, 255, 255, 0.7);
   }
 
   @include e(trigger) {
@@ -372,13 +360,94 @@
   }
 
   @include e(panel) {
-    position: absolute;
-    z-index: 10;
     padding: 6px;
     box-sizing: content-box;
     background-color: $--color-white;
     border: 1px solid $--border-color-lighter;
-    border-radius: $--border-radius-base;
-    box-shadow: $--dropdown-menu-box-shadow;
+    // border-radius: $--border-radius-base;
+    // box-shadow: $--dropdown-menu-box-shadow;
+    border-radius: 2px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@mixin fill-saturation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+@include b(pallet) {
+  background: #fff;
+  // border-radius: 2px;
+  // box-shadow: 0 0 2px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-sizing: initial;
+  font-family: "Menlo";
+
+  @include e(saturation) {
+    width: 100%;
+    padding-bottom: 55%;
+    position: relative;
+    border-radius: 2px 2px 0 0;
+    overflow: hidden;
+
+    &--white {
+      @include fill-saturation();
+      background: linear-gradient(90deg, #fff, hsla(0, 0%, 100%, 0));
+    }
+
+    &--black {
+      @include fill-saturation();
+      background: linear-gradient(0deg, #000, transparent);
+    }
+  }
+
+  @include e(body) {
+    padding: 14px 14px 12px;
+  }
+
+  @include e(control) {
+    display: flex;
+  }
+
+  @include e(color) {
+    width: 42px;
+    @include m(swatch) {
+      width: 28px;
+      height: 28px;
+      border-radius: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .active {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-radius: 20px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+    }
+  }
+
+  @include e(sliders) {
+    flex: 1;
+  }
+
+  @include e(slider) {
+    height: 10px;
+    position: relative;
+
+    &.hue {
+      margin-bottom: 16px;
+    }
+    .el-pallet__slider--button {
+      width: 12px;
+      height: 12px;
+    }
   }
 }

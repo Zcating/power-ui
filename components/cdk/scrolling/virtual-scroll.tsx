@@ -17,7 +17,6 @@ export const VirtualScroll = defineComponent({
     if (!virtualScroll) {
       throw Error('You should new a virtualScrollable first.');
     }
-
     return () => (
       <div
         style={{ position: 'relative', overflow: 'auto' }}

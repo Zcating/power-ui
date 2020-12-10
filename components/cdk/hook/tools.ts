@@ -4,8 +4,6 @@ import {
   onMounted,
   Ref,
 } from 'vue';
-import { usePlatform } from 'vue-cdk/global';
-import { noop } from 'vue-cdk/types';
 
 /**
  * run a function while resize
@@ -64,12 +62,8 @@ export function useScroll(dom: Document | HTMLElement, func: () => void) {
 }
 
 export function useAnimationFrame(this: void, func: () => boolean) {
-  const { TOP } = usePlatform();
-  if (!TOP) {
-    return;
-  }
-  const rAF = TOP.requestAnimationFrame || ((func) => TOP.setTimeout(func, 16));
-  const cancelAF = TOP.cancelAnimationFrame || ((id: number) => TOP.clearTimeout(id));
+  const rAF = requestAnimationFrame || ((func) => setTimeout(func, 16));
+  const cancelAF = cancelAnimationFrame || ((id: number) => clearTimeout(id));
 
   let id = 0;
   const requstFunc = () => {
@@ -84,19 +78,11 @@ export function useAnimationFrame(this: void, func: () => boolean) {
 }
 
 export function useTimeout(this: void, func: () => void, duration: number) {
-  const { TOP } = usePlatform();
-  if (!TOP) {
-    return noop;
-  }
-  const id = TOP.setTimeout(func, duration);
-  return () => TOP.clearTimeout(id);
+  const id = setTimeout(func, duration);
+  return () => clearTimeout(id);
 }
 
 export function useInterval(this: void, func: (duration?: number) => void, duration: number) {
-  const { TOP } = usePlatform();
-  if (!TOP) {
-    return noop;
-  }
-  const id = TOP.setInterval(func, duration);
-  return () => TOP.clearInterval(id);
+  const id = setInterval(func, duration);
+  return () => clearInterval(id);
 }

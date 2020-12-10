@@ -345,8 +345,8 @@ export default defineComponent({
           <p>
             <Slider
               style={{ marginLeft: '20px', width: '600px' }}
-              max={20}
-              min={10}
+            // max={20}
+            // min={10}
             />
           </p>
           <p>

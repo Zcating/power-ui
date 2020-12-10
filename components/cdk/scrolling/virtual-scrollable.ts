@@ -1,4 +1,5 @@
 import { inject, InjectionKey, onMounted, provide, Ref, ref, shallowRef } from 'vue';
+import { noop } from 'vue-cdk/types';
 import { Scrollable } from './scrollable';
 
 
@@ -21,7 +22,6 @@ export class VirtualScrollable<T = any> {
    */
   containerRef = ref<HTMLElement | null>(null);
   scrollable: Scrollable;
-  scrollTop = 0;
 
   /**
    * scroll listener
@@ -33,35 +33,36 @@ export class VirtualScrollable<T = any> {
     if (!container) {
       return;
     }
-    this.scrollTop = container.scrollTop;
-    const containerHeight = container.clientHeight;
-    const buffer = 2 * this.defaultHeight;
+    const { defaultHeight, items, activeTags, itemHeight } = this;
+    const { scrollTop, clientHeight: containerHeight } = container;
+    const buffer = 2 * defaultHeight;
     let beforeHeight = 0;
     let contentHeight = 0;
     let afterHeight = 0;
-    for (let i = 0; i < this.items.length; i++) {
-      const item = this.items[i];
-      const height = this.itemHeight?.(item) ?? this.defaultHeight;
-      if (beforeHeight < this.scrollTop - buffer) {
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const height = itemHeight?.(item) ?? defaultHeight;
+      if (beforeHeight < scrollTop - buffer) {
         beforeHeight += height;
-        this.activeTags[i] = 0;
+        activeTags[i] = 0;
       } else if (contentHeight < containerHeight + 3 * buffer) {
         contentHeight += height;
-        this.activeTags[i] = 1;
+        activeTags[i] = 1;
       } else {
         afterHeight += height;
-        this.activeTags[i] = 0;
+        activeTags[i] = 0;
       }
     }
+
     this.beforeHeight = beforeHeight;
     this.totalHeight = beforeHeight + afterHeight + contentHeight;
-    this.displayItemsRef.value = this.items.filter((_, index) => this.activeTags[index] === 1);
+    this.displayItemsRef.value = items.filter((_, index) => this.activeTags[index] === 1);
   };
 
   private activeTags: Int8Array;
   constructor(
-    private items: T[],
-    private itemHeight?: (this: void, data: T) => number,
+    private readonly items: T[] = [],
+    private readonly itemHeight: (this: void, data: T) => number = noop,
   ) {
     this.activeTags = new Int8Array(items.length);
 

@@ -13,7 +13,8 @@ import {
   FormDoc,
   TreeDoc,
   CalendarDoc,
-  CarouselDoc
+  CarouselDoc,
+  ColorPickerDoc
 } from '../view/component';
 export default createRouter({
   history: createWebHashHistory(''),
@@ -70,6 +71,10 @@ export default createRouter({
           path: 'carousel',
           name: 'carousel',
           component: CarouselDoc
+        }, {
+          path: 'color-picker',
+          name: 'color-picker',
+          component: ColorPickerDoc
         }, {
           path: ':name(.*)*',
           component: Pending
