@@ -69,6 +69,9 @@ export const Overlay = defineComponent({
     backdropClick: Function,
     panelClass: String,
   },
+  emits: [
+    'update:visible'
+  ],
   setup(props, ctx) {
 
 

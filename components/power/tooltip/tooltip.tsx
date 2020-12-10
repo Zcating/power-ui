@@ -58,6 +58,9 @@ export const Tooltip = defineComponent({
       default: false,
     },
   },
+  emits: [
+    'update:modelValue'
+  ],
   setup(props, ctx) {
     const visible = watchRef(toRef(props, 'modelValue'), (value) => ctx.emit('update:modelValue', value));
     const referenceRef = ref<HTMLElement | null>(null);
