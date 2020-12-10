@@ -1,6 +1,6 @@
 import { throttle } from 'lodash-es';
 import { defineComponent, Transition, ref, computed, Fragment, reactive, customRef, watch, watchEffect } from 'vue';
-import { useInterval } from 'vue-cdk/hook';
+import { useTimeout } from 'vue-cdk/hook';
 import { Enum } from 'vue-cdk/utils';
 import { CarouselItem } from './carousel-item';
 
@@ -65,6 +65,8 @@ export const Carousel = defineComponent({
         return ['el-carousel', 'el-carousel--' + props.direction];
       }
     });
+    // get size of container
+    const containerDiv = ref<HTMLDivElement | null>(null);
 
     const state = reactive({
       activeIndex: customRef((track, trigger) => {
@@ -87,7 +89,15 @@ export const Carousel = defineComponent({
         };
       }),
       length: 0,
+      size: computed(() => {
+        const container = containerDiv.value;
+        if (!container) {
+          return 0;
+        }
+        return props.direction === 'vertical' ? container.offsetHeight : container.offsetWidth;
+      })
     });
+
     const throttledArrowClick = throttle((e: Event, index: number) => {
       e.stopImmediatePropagation();
       state.activeIndex = index;
@@ -133,23 +143,14 @@ export const Carousel = defineComponent({
       return (props.arrow === 'always' || hoverRef.value) && (props.loop || reachBorder);
     };
 
-    // get size of container
-    const containerDiv = ref<HTMLDivElement | null>(null);
-    const sizeRef = computed(() => {
-      const container = containerDiv.value;
-      if (!container) {
-        return 0;
-      }
-      return props.direction === 'vertical' ? container.offsetHeight : container.offsetWidth;
-    });
-
     // timer
-    watchEffect((onInvalidate) => {
-      const stop = useInterval(() => {
+    watch(() => state.activeIndex, (value, oldValue, onInvalidate) => {
+      // when activeIndex changed, need to reset timer.
+      const stop = useTimeout(() => {
         state.activeIndex += 1;
       }, props.interval);
       onInvalidate(stop);
-    });
+    }, { immediate: true });
 
     return () => {
       const { direction, indicatorPosition, type, loop } = props;
@@ -166,7 +167,7 @@ export const Carousel = defineComponent({
           loop={loop}
           direction={direction}
           length={nodes.length}
-          size={sizeRef.value}
+          size={state.size}
         >
           {node}
         </CarouselItem>
