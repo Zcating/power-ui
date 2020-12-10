@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, reactive, watch } from 'vue';
+import { computed, defineComponent, nextTick, onMounted, reactive, watch } from 'vue';
 import { usePlatform } from 'vue-cdk';
 import { useResize } from 'vue-cdk/hook';
 import { Enum } from 'vue-cdk/utils';
@@ -112,7 +112,9 @@ export const CarouselItem = defineComponent({
 
     onMounted(() => {
       watch(() => props.modelValue, (activeIndex, oldIndex) => {
-        translateItem(props.index, activeIndex, oldIndex);
+        nextTick(() => {
+          translateItem(props.index, activeIndex, oldIndex);
+        });
       }, { immediate: true });
     });
 
