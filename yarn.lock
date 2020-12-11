@@ -1231,6 +1231,11 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
+"@juggle/resize-observer@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.npm.taobao.org/@juggle/resize-observer/download/@juggle/resize-observer-3.2.0.tgz#5e0b448d27fe3091bae6216456512c5904d05661"
+  integrity sha1-XgtEjSf+MJG65iFkVlEsWQTQVmE=
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.npm.taobao.org/@mrmlnc/readdir-enhanced/download/@mrmlnc/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -1476,6 +1481,11 @@
   version "1.2.3"
   resolved "https://registry.npm.taobao.org/@types/range-parser/download/@types/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha1-fuMwunyq+5gJC+zoal7kQRWQTCw=
+
+"@types/resize-observer-browser@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.npm.taobao.org/@types/resize-observer-browser/download/@types/resize-observer-browser-0.1.4.tgz#84879a4d6d4aaefde53d4b29c91c0c4cbcffc26f"
+  integrity sha1-hIeaTW1Krv3lPUspyRwMTLz/wm8=
 
 "@types/serve-static@*":
   version "1.13.5"

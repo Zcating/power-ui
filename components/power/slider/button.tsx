@@ -1,4 +1,4 @@
-import { computed, customRef, defineComponent, reactive, ref, watch } from 'vue';
+import { computed, customRef, defineComponent, reactive, ref, toRef, watch } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
 import { watchRef } from 'vue-cdk/hook';
 import { Method, addEvent, toFixedNumber } from 'vue-cdk/utils';
@@ -52,6 +52,10 @@ export const SliderButton = defineComponent({
       type: Number,
       default: 0
     },
+    enableTooltip: {
+      type: Boolean,
+      default: false
+    },
     onDrag: Method<(value: boolean) => void>(),
   },
 
@@ -65,7 +69,27 @@ export const SliderButton = defineComponent({
 
     // define state
     const state = reactive({
-      showTooltip: false,
+      showTooltip: customRef<boolean>((track, trigger) => {
+        let show = false;
+        const eenableTooltip = computed(() => {
+          if (!eenableTooltip.value) {
+            show = false;
+          }
+          return props.enableTooltip;
+        });
+        return {
+          set(value: boolean) {
+            if (eenableTooltip.value) {
+              show = value;
+              trigger();
+            }
+          },
+          get() {
+            track();
+            return show;
+          }
+        };
+      }),
       hovering: false,
       dragging: watchRef(
         ref(false),
@@ -89,17 +113,18 @@ export const SliderButton = defineComponent({
             } else {
               position = newValue;
             }
-            trigger();
-
             const { max, min, steps, precision } = props;
             const lengthPerStep = 100 / ((max - min) / steps);
             const stepCount = Math.round(position / lengthPerStep);
             const nextValue = toFixedNumber(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
             ctx.emit('update:modelValue', nextValue);
 
-            console.log(stepCount, newValue, nextValue);
+            trigger();
           }
         };
+        watch(() => props.modelValue, (value) => {
+          result.set(value);
+        }, { immediate: true });
         watch(() => props.position, (value) => {
           result.set(value);
         });
@@ -108,8 +133,8 @@ export const SliderButton = defineComponent({
       formatValue: computed(() => props.format(props.modelValue)),
       wrapperStyle: computed(() => {
         const { min, max, modelValue, vertical } = props;
-        const position = `${(modelValue - min) / (max - min) * 100}%`;
-        return vertical ? { bottom: position } : { left: position };
+        const offset = `${(modelValue - min) / (max - min) * 100}%`;
+        return vertical ? { bottom: offset } : { left: offset };
       }),
     });
 
@@ -135,6 +160,7 @@ export const SliderButton = defineComponent({
         const touch = event.touches[0];
         position = props.vertical ? touch.clientY : touch.clientX;
       }
+      console.log(position);
       return position;
     };
 
@@ -152,7 +178,11 @@ export const SliderButton = defineComponent({
           if (!state.dragging) {
             return;
           }
-          state.position = start + Math.abs(getPosition(event) - prevPos) / props.sliderLength * 100;
+          if (props.vertical) {
+            state.position = start + (prevPos - getPosition(event)) / props.sliderLength * 100;
+          } else {
+            state.position = start + (getPosition(event) - prevPos) / props.sliderLength * 100;
+          }
         }),
 
         addEvent(WINDOW, ['mouseup', 'touchend', 'contextmenu'], () => {

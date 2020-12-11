@@ -1,8 +1,12 @@
+import { ResizeObserver, ResizeObserverEntry } from '@juggle/resize-observer';
 import {
   isRef,
   onBeforeUnmount,
   onMounted,
+  onUnmounted,
   Ref,
+  shallowRef,
+  watch,
 } from 'vue';
 
 /**
@@ -42,6 +46,32 @@ export function useResize(
     });
   }
 }
+
+export const useBoxResize = <T>(
+  doms: Ref<HTMLElement | null>,
+  initValue: T,
+  callback: (entry: ResizeObserverEntry) => T
+) => {
+  const returnRef = shallowRef<T>(initValue);
+
+  const observer = new ResizeObserver((values) => {
+    returnRef.value = callback(values[0]);
+  });
+
+  onMounted(() => {
+    const dom = doms.value;
+    if (!dom) {
+      return;
+    }
+    observer.observe(dom);
+
+    onUnmounted(() => {
+      observer.unobserve(dom);
+    });
+  });
+
+  return returnRef;
+};
 
 /**
  * run while scroll

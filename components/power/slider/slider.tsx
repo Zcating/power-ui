@@ -1,7 +1,7 @@
 import { List, Method, Model, renderCondition } from 'vue-cdk/utils';
 import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import { SliderButton } from './button';
-import { watchRef } from 'vue-cdk/hook';
+import { useBoxResize } from 'vue-cdk/hook';
 
 
 
@@ -50,6 +50,10 @@ export const Slider = defineComponent({
       type: String,
       default: ''
     },
+    enableTooltip: {
+      type: Boolean,
+      default: true
+    },
     onChange: {
       type: Method<() => void>(),
     },
@@ -72,7 +76,7 @@ export const Slider = defineComponent({
   ],
 
   setup(props, ctx) {
-    const firstValue = watchRef(ref(0));
+    const firstValue = ref(0);
     const secondValue = ref(0);
     watch(
       () => [props.modelValue, props.min, props.max],
@@ -89,7 +93,6 @@ export const Slider = defineComponent({
       },
       { immediate: true }
     );
-
     const createSection = (value1: number, value2: number) => {
       return value1 > value2 ? [value2, value1] : [value1, value2];
     };
@@ -100,7 +103,6 @@ export const Slider = defineComponent({
       } else {
         ctx.emit('update:modelValue', value);
       }
-      // console.log(value);
     });
     watch(secondValue, (value) => {
       if (props.range) {
@@ -109,17 +111,11 @@ export const Slider = defineComponent({
     });
 
     const sliderRef = ref<HTMLDivElement | null>(null);
-
-    const sliderLength = computed(() => {
-      const slider = sliderRef.value;
-      if (!slider) {
-        return 1;
-      }
-      console.log(slider);
+    const sliderLength = useBoxResize(sliderRef, 0, (value) => {
       if (props.vertical) {
-        return slider.clientHeight ?? 1;
+        return value.contentRect.height;
       } else {
-        return slider.clientWidth ?? 1;
+        return value.contentRect.width;
       }
     });
 
@@ -182,7 +178,6 @@ export const Slider = defineComponent({
     };
 
     return () => {
-      console.log(sliderRef.value?.clientWidth);
       return (
         <div
           ref={sliderRef}
@@ -219,6 +214,7 @@ export const Slider = defineComponent({
               position={positions.first}
               precision={precision.value}
               onDrag={(value) => dragging.value = value}
+              enableTooltip={props.enableTooltip}
             />
             {renderCondition(
               props.range,
@@ -234,6 +230,7 @@ export const Slider = defineComponent({
                 position={positions.second}
                 precision={precision.value}
                 onDrag={(value) => dragging.value = value}
+                enableTooltip={props.enableTooltip}
               />
             )}
           </div>

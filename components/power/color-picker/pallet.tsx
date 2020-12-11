@@ -4,8 +4,8 @@ import { Slider } from '../slider';
 export const Pallet = defineComponent({
   setup(props, ctx) {
     const rgbColor = ref('#00bbaa');
-    const rgbPercent = ref(0);
-    const alphaPercent = ref(0);
+    const rgbPercent = ref(100);
+    const alphaPercent = ref(100);
     return () => (
       <div class={['el-pallet']}>
         <div class={['el-pallet__saturation']} style={{ background: rgbColor.value }}>
@@ -26,6 +26,7 @@ export const Pallet = defineComponent({
               <div class="el-pallet__slider hue">
                 <Slider
                   v-model={rgbPercent.value}
+                  enableTooltip={false}
                   max={100}
                   min={0}
                   buttonClass={'el-pallet__slider--button'}
@@ -38,6 +39,7 @@ export const Pallet = defineComponent({
               <div class="el-pallet__slider alpha">
                 <Slider
                   v-model={alphaPercent.value}
+                  enableTooltip={false}
                   max={100}
                   min={0}
                   buttonClass={'el-pallet__slider--button'}
