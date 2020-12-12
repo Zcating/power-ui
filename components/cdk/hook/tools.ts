@@ -6,7 +6,6 @@ import {
   onUnmounted,
   Ref,
   shallowRef,
-  watch,
 } from 'vue';
 
 /**

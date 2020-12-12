@@ -13,10 +13,7 @@ export const ColorPicker = defineComponent({
         placement={'bottom'}
         trigger={'click'}
         v-slots={{
-          content: () => (
-            <Pallet>
-            </Pallet>
-          )
+          content: () => <Pallet />
         }}
       >
         <div class={['el-color-picker', 'el-color-picker--default']}>

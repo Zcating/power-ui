@@ -410,6 +410,7 @@
 
   @include e(control) {
     display: flex;
+    align-items: center;
   }
 
   @include e(color) {
@@ -439,12 +440,8 @@
   }
 
   @include e(slider) {
-    height: 10px;
     position: relative;
 
-    &.hue {
-      margin-bottom: 16px;
-    }
     .el-pallet__slider--button {
       width: 12px;
       height: 12px;

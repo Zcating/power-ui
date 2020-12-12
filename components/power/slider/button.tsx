@@ -160,7 +160,6 @@ export const SliderButton = defineComponent({
         const touch = event.touches[0];
         position = props.vertical ? touch.clientY : touch.clientX;
       }
-      console.log(position);
       return position;
     };
 
