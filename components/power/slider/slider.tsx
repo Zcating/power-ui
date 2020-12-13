@@ -1,7 +1,7 @@
 import { List, Method, Model, renderCondition } from 'vue-cdk/utils';
 import { computed, defineComponent, reactive, ref, watch } from 'vue';
 import { SliderButton } from './button';
-import { useBoxResize } from 'vue-cdk/hook';
+import { useBoxResize, watchRef } from 'vue-cdk/hook';
 
 
 
@@ -76,8 +76,22 @@ export const Slider = defineComponent({
   ],
 
   setup(props, ctx) {
-    const firstValue = ref(0);
-    const secondValue = ref(0);
+    const createSection = (value1: number, value2: number) => {
+      return value1 > value2 ? [value2, value1] : [value1, value2];
+    };
+    
+    const firstValue = watchRef(0,  (value) => {
+      if (props.range) {
+        ctx.emit('update:modelValue', createSection(value, secondValue.value));
+      } else {
+        ctx.emit('update:modelValue', value);
+      }
+    });
+    const secondValue = watchRef(0, (value) => {
+      if (props.range) {
+        ctx.emit('update:modelValue', createSection(value, firstValue.value));
+      }
+    });
     watch(
       () => [props.modelValue, props.min, props.max],
       (values) => {
@@ -93,22 +107,6 @@ export const Slider = defineComponent({
       },
       { immediate: true }
     );
-    const createSection = (value1: number, value2: number) => {
-      return value1 > value2 ? [value2, value1] : [value1, value2];
-    };
-
-    watch(firstValue, (value) => {
-      if (props.range) {
-        ctx.emit('update:modelValue', createSection(value, secondValue.value));
-      } else {
-        ctx.emit('update:modelValue', value);
-      }
-    });
-    watch(secondValue, (value) => {
-      if (props.range) {
-        ctx.emit('update:modelValue', createSection(value, firstValue.value));
-      }
-    });
 
     const sliderRef = ref<HTMLDivElement | null>(null);
     const sliderLength = useBoxResize(sliderRef, 0, (value) => {
@@ -150,6 +148,7 @@ export const Slider = defineComponent({
     });
 
     const dragging = ref(false);
+    const handleDrag = (value: boolean) => dragging.value = value;
 
     const onSliderClick = (event: MouseEvent) => {
       const slider = sliderRef.value;
@@ -211,10 +210,10 @@ export const Slider = defineComponent({
               sliderLength={sliderLength.value}
               max={props.max}
               min={props.min}
-              position={positions.first}
+              clickedPosition={positions.first}
               precision={precision.value}
-              onDrag={(value) => dragging.value = value}
               enableTooltip={props.enableTooltip}
+              onDrag={handleDrag}              
             />
             {renderCondition(
               props.range,
@@ -227,10 +226,10 @@ export const Slider = defineComponent({
                 sliderLength={sliderLength.value}
                 max={props.max}
                 min={props.min}
-                position={positions.second}
+                clickedPosition={positions.second}
                 precision={precision.value}
-                onDrag={(value) => dragging.value = value}
                 enableTooltip={props.enableTooltip}
+                onDrag={handleDrag}
               />
             )}
           </div>

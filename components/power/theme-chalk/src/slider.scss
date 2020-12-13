@@ -5,6 +5,8 @@
 @import "common/var";
 
 @include b(slider) {
+  outline: none;
+  
   @include utils-clearfix;
 
   @include e(runway) {

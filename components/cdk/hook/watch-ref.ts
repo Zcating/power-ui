@@ -1,4 +1,4 @@
-import { Ref, shallowRef, watch } from 'vue';
+import { isRef, Ref, shallowRef, unref, watch } from 'vue';
 
 
 /**
@@ -7,12 +7,14 @@ import { Ref, shallowRef, watch } from 'vue';
  * 
  * @function watchRef
  */
-export function watchRef<T>(propValue: Ref<T>, setter?: (value: T, oldValue: T) => void, modelChange?: (value: T, oldValue: T) => void) {
-  const vmodel = shallowRef(propValue.value);
-  watch(propValue, (value, oldValue) => {
-    vmodel.value = value;
-    modelChange?.(value, oldValue);
-  }, { deep: true });
+export function watchRef<T>(propValue: Ref<T> | T, setter?: (value: T, oldValue: T) => void, modelChange?: (value: T, oldValue: T) => void) {
+  const vmodel = shallowRef(unref(propValue)) as Ref<T>;
+  if (isRef(propValue)) {
+    watch(propValue, (value, oldValue) => {
+      vmodel.value = value;
+      modelChange?.(value, oldValue);
+    }, { deep: true });
+  }
 
   if (typeof setter === 'function') {
     watch(vmodel, (value, oldValue) => {

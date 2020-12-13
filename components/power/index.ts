@@ -1,4 +1,4 @@
-export { PowerModule as PowerViewProvider } from './power-module';
+export { PowerModule } from './power-module';
 export { default as Alert } from './alert';
 export { default as Avatar } from './avatar';
 export { Button, ButtonGroup } from './button';

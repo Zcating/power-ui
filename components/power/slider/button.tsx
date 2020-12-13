@@ -1,4 +1,4 @@
-import { computed, customRef, defineComponent, reactive, ref, toRef, watch } from 'vue';
+import { computed, customRef, defineComponent, reactive, ref, toRef, watch, watchEffect } from 'vue';
 import { usePlatform } from 'vue-cdk/global';
 import { watchRef } from 'vue-cdk/hook';
 import { Method, addEvent, toFixedNumber } from 'vue-cdk/utils';
@@ -10,6 +10,22 @@ export const SliderButton = defineComponent({
   props: {
     modelValue: {
       type: Number,
+      default: 0
+    },
+    max: {
+      type: Number,
+      default: 100,
+    },
+    min: {
+      type: Number,
+      default: 0,
+    },
+    steps: {
+      type: Number,
+      default: 1,
+    },
+    precision: {
+      tyep: Number,
       default: 0
     },
     vertical: {
@@ -32,23 +48,7 @@ export const SliderButton = defineComponent({
       type: Method<(value: number) => string>(),
       default: String
     },
-    max: {
-      type: Number,
-      default: 100,
-    },
-    min: {
-      type: Number,
-      default: 0,
-    },
-    steps: {
-      type: Number,
-      default: 1,
-    },
-    precision: {
-      tyep: Number,
-      default: 0
-    },
-    position: {
+    clickedPosition: {
       type: Number,
       default: 0
     },
@@ -106,28 +106,30 @@ export const SliderButton = defineComponent({
             if (newValue === null || isNaN(newValue)) {
               return;
             }
-            if (newValue <= props.min) {
+            if (newValue <= 0) {
               position = 0;
-            } else if (newValue >= props.max) {
+            } else if (newValue >= 100) {
               position = 100;
             } else {
               position = newValue;
             }
+            trigger();
+
             const { max, min, steps, precision } = props;
             const lengthPerStep = 100 / ((max - min) / steps);
             const stepCount = Math.round(position / lengthPerStep);
             const nextValue = toFixedNumber(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
-            ctx.emit('update:modelValue', nextValue);
-
-            trigger();
+            ctx.emit('update:modelValue', nextValue);            
           }
         };
+        //
         watch(() => props.modelValue, (value) => {
-          result.set(value);
-        }, { immediate: true });
-        watch(() => props.position, (value) => {
-          result.set(value);
-        });
+          result.set(value / (props.max - props.min) * 100);
+        }, {immediate: true});
+        
+        // whlie clicking runway, the position should change.
+        watch(() => props.clickedPosition, (value) => result.set(value));
+
         return result;
       }),
       formatValue: computed(() => props.format(props.modelValue)),
