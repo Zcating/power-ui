@@ -1,14 +1,70 @@
-import { computed, defineComponent, reactive, watch, watchEffect } from 'vue';
+import { computed, defineComponent, onMounted, onUnmounted, reactive, Ref, ref, toRef, watch } from 'vue';
+import { usePlatform } from 'vue-cdk';
+import { watchRef } from 'vue-cdk/hook';
+import { addEvent } from 'vue-cdk/utils';
 import { Slider } from '../slider';
+import { hsl2hsv, hsl2rgba, hsv2hsl, rgb2hsl } from './utils';
+
+const useDraggable = (eleRef: Ref<HTMLElement | null>, onDrag: (event: MouseEvent) => void) => {
+  onMounted(() => {
+    const { DOCUMENT } = usePlatform();
+    const panel = eleRef.value;
+    if (!DOCUMENT || !panel) {
+      return;
+    }
+    const stopMouseDown = addEvent(panel, 'mousedown', () => {
+      let isDragging = false;
+      if (isDragging) {
+        return;
+      }
+      isDragging = true;
+      DOCUMENT.onselectstart = function () { return false; };
+      DOCUMENT.ondragstart = function () { return false; };
+
+      const removed = [
+        addEvent(DOCUMENT, 'mousemove', onDrag),
+        addEvent(DOCUMENT, 'mouseup', (event) => {
+          removed.forEach((value) => value());
+          document.onselectstart = null;
+          document.ondragstart = null;
+
+          isDragging = false;
+          onDrag(event);
+        })
+      ];
+    });
+    onUnmounted(() => {
+      stopMouseDown();
+    });
+  });
+};
 
 export const Pallet = defineComponent({
+  props: {
+    modelValue: {
+      type: String,
+      default: '#00000000'
+    }
+  },
+  emits: ['update:modelValue'],
   setup(props, ctx) {
+    const modelRef = watchRef(toRef(props, 'modelValue'), (value) => {
+      ctx.emit('update:modelValue', value);
+      console.log(value);
+    });
     const hsl = reactive({
       h: 100,
       s: 100,
       l: 35,
       alpha: 100
     });
+    function toHex(d: number) {
+      return ('0' + (d.toString(16))).slice(-2);
+    }
+    watch(() => hsl, (hslValue) => {
+      const rgb = hsl2rgba(hslValue.h, hslValue.l, hslValue.s);
+      modelRef.value = `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}${toHex(Math.round(hslValue.alpha * 255 / 100))}`;
+    }, { deep: true });
 
     const hslColor = computed(() => {
       return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
@@ -23,46 +79,33 @@ export const Pallet = defineComponent({
       left: 0,
     });
 
-    const hsl2hsv = (hue: number, sat: number, light: number)  => {
-      sat = sat / 100;
-      light = light / 100;
-      let smin = sat;
-      const lmin = Math.max(light, 0.01);
-    
-      light *= 2;
-      sat *= (light <= 1) ? light : 2 - light;
-      smin *= lmin <= 1 ? lmin : 2 - lmin;
-      const v = (light + sat) / 2;
-      const sv = light === 0 ? (2 * smin) / (lmin + smin) : (2 * sat) / (light + sat);
-    
-      return {
-        h: hue,
-        s: sv * 100,
-        v: v * 100
-      };
-    };
-
-    watch(() => hsl.h, () => {
-      const hsv = hsl2hsv(hsl.h, hsl.l, hsl.s);
-      cursorStyle.left = hsv.s;
-    }, {immediate: true});
-    watch(() => hsl.l, () => {
-      const hsv = hsl2hsv(hsl.h, hsl.l, hsl.s);      
-      cursorStyle.top = hsv.v;
-    }, {immediate: true});
-
-    const handleClick = (event: MouseEvent) => {
-      console.log(event.target);
-
-    };
+    const svPanelRef = ref<HTMLDivElement | null>(null);
+    useDraggable(svPanelRef, (event: MouseEvent) => {
+      const svPanel = svPanelRef.value;
+      if (!svPanel) {
+        return;
+      }
+      const rect = svPanel.getBoundingClientRect();
+      const left = event.clientX - rect.left;
+      const top = event.clientY - rect.top;
+      cursorStyle.left = Math.min(Math.max(0, left), rect.width);
+      cursorStyle.top = Math.min(Math.max(0, top), rect.height);
+      const tmp = hsv2hsl(
+        hsl.h,
+        cursorStyle.left / rect.width * 100,
+        100 - cursorStyle.top / rect.height * 100
+      );
+      hsl.s = tmp.s;
+      hsl.l = tmp.l;
+    });
 
     return () => (
       <div class={['el-pallet']}>
-        <div class={['el-pallet__saturation']} style={{ background: `hsl(${hsl.h}, 100%, 50%)` }} onClick={handleClick}>
+        <div class="el-pallet__saturation" style={{ background: `hsl(${hsl.h}, 100%, 50%)` }} ref={svPanelRef}>
           <div class="el-pallet__saturation--white" />
           <div class="el-pallet__saturation--black" />
-          <div class="el-pallet__saturation--cursor" style={{top: `${cursorStyle.top}%`, left: `${cursorStyle.left}%`}}>
-            <div 
+          <div class="el-pallet__saturation--cursor" style={{ top: `${cursorStyle.top}px`, left: `${cursorStyle.left}px` }}>
+            <div
               style={{
                 width: '12px',
                 height: '12px',
@@ -77,7 +120,7 @@ export const Pallet = defineComponent({
           <div class={['el-pallet__control']}>
             <div class={['el-pallet__color']}>
               <div class="el-pallet__color--swatch">
-                <div class="active" style={{background: sampleColor.value}}/>
+                <div class="active" style={{ background: sampleColor.value }} />
                 <div class="background" />
               </div>
             </div>
