@@ -59,9 +59,20 @@ const hsv2rgb = function (h: number, s: number, v: number) {
   };
 };
 
-export const hsl2rgba = (h: number, s: number, l: number) => {
-  const hsv = hsl2hsv(h, s, l);
-  return hsv2rgb(hsv.h, hsv.s, hsv.h);
+
+export const hsl2rgb = (h: number, s: number, l: number) => {
+  l /= 100;
+  const a = s * Math.min(l, 1 - l) / 100;
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * color);
+  };
+  return {
+    r: f(0),
+    g: f(8),
+    b: f(4)
+  };
 };
 
 
@@ -101,3 +112,7 @@ export const rgb2hsl = (r: number, g: number, b: number) => {
   const hsv = rgb2hsv(r, g, b);
   return hsv2hsl(hsv.h, hsv.s, hsv.v);
 };
+
+export function hexFrom(d: number) {
+  return ('0' + (Math.round(d).toString(16))).slice(-2);
+}

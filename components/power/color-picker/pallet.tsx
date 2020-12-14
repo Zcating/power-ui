@@ -1,133 +1,76 @@
-import { computed, defineComponent, onMounted, onUnmounted, reactive, Ref, ref, toRef, watch } from 'vue';
-import { usePlatform } from 'vue-cdk';
+import { computed, defineComponent, ref, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
-import { addEvent } from 'vue-cdk/utils';
 import { Slider } from '../slider';
-import { hsl2hsv, hsl2rgba, hsv2hsl, rgb2hsl } from './utils';
-
-const useDraggable = (eleRef: Ref<HTMLElement | null>, onDrag: (event: MouseEvent) => void) => {
-  onMounted(() => {
-    const { DOCUMENT } = usePlatform();
-    const panel = eleRef.value;
-    if (!DOCUMENT || !panel) {
-      return;
-    }
-    const stopMouseDown = addEvent(panel, 'mousedown', () => {
-      let isDragging = false;
-      if (isDragging) {
-        return;
-      }
-      isDragging = true;
-      DOCUMENT.onselectstart = function () { return false; };
-      DOCUMENT.ondragstart = function () { return false; };
-
-      const removed = [
-        addEvent(DOCUMENT, 'mousemove', onDrag),
-        addEvent(DOCUMENT, 'mouseup', (event) => {
-          removed.forEach((value) => value());
-          document.onselectstart = null;
-          document.ondragstart = null;
-
-          isDragging = false;
-          onDrag(event);
-        })
-      ];
-    });
-    onUnmounted(() => {
-      stopMouseDown();
-    });
-  });
-};
+import { hsl2rgb, hexFrom, rgb2hsl } from './utils';
+import { SatPanel } from './sat-panel';
+import { ColorInput } from './color-input';
 
 export const Pallet = defineComponent({
   props: {
     modelValue: {
       type: String,
-      default: '#00000000'
+      default: '#ffffff33'
     }
   },
   emits: ['update:modelValue'],
   setup(props, ctx) {
-    const modelRef = watchRef(toRef(props, 'modelValue'), (value) => {
-      ctx.emit('update:modelValue', value);
-      console.log(value);
+    const modelRef = watchRef(
+      toRef(props, 'modelValue'),
+      (value) => {
+        ctx.emit('update:modelValue', value);
+        console.log('value', value);
+      },
+      (value) => {
+        const color = parseInt(value.substr(1, 8), 16);
+        alphaRef.value = color & 0xff;
+        hsl.value = rgb2hsl(color & 0xff000000, color & 0xff0000, color & 0xff00);
+      },
+    );
+
+    const color = parseInt(props.modelValue.substr(1, 8), 16);
+
+    const alphaRef = ref((color & 0xff) / 255 * 100);
+    const alphaString = computed(() => hexFrom(Math.round(alphaRef.value * 255 / 100)));
+    watch(alphaString, (value) => {
+      modelRef.value = `${modelRef.value.substr(0, 7)}${value}`;
     });
-    const hsl = reactive({
-      h: 100,
-      s: 100,
-      l: 35,
-      alpha: 100
-    });
-    function toHex(d: number) {
-      return ('0' + (d.toString(16))).slice(-2);
-    }
-    watch(() => hsl, (hslValue) => {
-      const rgb = hsl2rgba(hslValue.h, hslValue.l, hslValue.s);
-      modelRef.value = `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}${toHex(Math.round(hslValue.alpha * 255 / 100))}`;
+
+    const hsl = ref(rgb2hsl(color & 0xff000000, color & 0xff0000, color & 0xff00));
+    watch(hsl, (hslValue) => {
+      const rgb = hsl2rgb(hslValue.h, hslValue.s, hslValue.l);
+      modelRef.value = `#${hexFrom(rgb.r)}${hexFrom(rgb.g)}${hexFrom(rgb.b)}${alphaString.value}`;
     }, { deep: true });
 
+
     const hslColor = computed(() => {
-      return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+      const { h, s, l } = hsl.value;
+      return `hsl(${h}, ${s}%, ${l}%)`;
     });
 
-    const sampleColor = computed(() => {
-      return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${hsl.alpha}%)`;
-    });
-
-    const cursorStyle = reactive({
-      top: 0,
-      left: 0,
-    });
-
-    const svPanelRef = ref<HTMLDivElement | null>(null);
-    useDraggable(svPanelRef, (event: MouseEvent) => {
-      const svPanel = svPanelRef.value;
-      if (!svPanel) {
-        return;
-      }
-      const rect = svPanel.getBoundingClientRect();
-      const left = event.clientX - rect.left;
-      const top = event.clientY - rect.top;
-      cursorStyle.left = Math.min(Math.max(0, left), rect.width);
-      cursorStyle.top = Math.min(Math.max(0, top), rect.height);
-      const tmp = hsv2hsl(
-        hsl.h,
-        cursorStyle.left / rect.width * 100,
-        100 - cursorStyle.top / rect.height * 100
-      );
-      hsl.s = tmp.s;
-      hsl.l = tmp.l;
-    });
 
     return () => (
       <div class={['el-pallet']}>
-        <div class="el-pallet__saturation" style={{ background: `hsl(${hsl.h}, 100%, 50%)` }} ref={svPanelRef}>
-          <div class="el-pallet__saturation--white" />
-          <div class="el-pallet__saturation--black" />
-          <div class="el-pallet__saturation--cursor" style={{ top: `${cursorStyle.top}px`, left: `${cursorStyle.left}px` }}>
-            <div
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '6px',
-                boxShadow: 'rgb(255, 255, 255) 0px 0px 0px 1px inset',
-                transform: 'translate(-6px, -8px)',
-              }}
-            ></div>
-          </div>
-        </div>
+        <SatPanel
+          hue={hsl.value.h}
+          {...{
+            light: hsl.value.l,
+            'onUpdate:light': (value: number) => hsl.value.l = value,
+            sat: hsl.value.s,
+            'onUpdate:sat': (value: number) => hsl.value.s = value
+          }}
+        />
         <div class={['el-pallet__body']}>
           <div class={['el-pallet__control']}>
             <div class={['el-pallet__color']}>
               <div class="el-pallet__color--swatch">
-                <div class="active" style={{ background: sampleColor.value }} />
+                <div class="active" style={{ background: modelRef.value }} />
                 <div class="background" />
               </div>
             </div>
             <div class={['el-pallet__sliders']}>
               <div class="el-pallet__slider hue">
                 <Slider
-                  v-model={hsl.h}
+                  v-model={hsl.value.h}
                   enableTooltip={false}
                   max={359}
                   min={0}
@@ -141,23 +84,35 @@ export const Pallet = defineComponent({
               </div>
               <div class="el-pallet__slider alpha">
                 <Slider
-                  v-model={hsl.alpha}
+                  v-model={alphaRef.value}
                   enableTooltip={false}
                   max={100}
                   min={0}
                   step={0.1}
                   buttonClass={'el-pallet__slider--button'}
                   color={{
-                    runway: `linear-gradient(to right, rgba(255, 0, 4, 0) 0%, ${hslColor.value} 100%), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==") left center`,
+                    runway: `linear-gradient(to right, rgba(255, 255, 255, 0) 0%, ${hslColor.value} 100%), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==") left center`,
                     bar: 'rgba(0,0,0,0)'
                   }}
                 />
               </div>
             </div>
           </div>
-          <div>
-
-          </div>
+          <ColorInput
+          // {...{
+          //   hsl: hsl.value,
+          //   'onUpdate:hsl': (value) => {
+          //     console.log(value);
+          //     hsl.value.h = value.h;
+          //     hsl.value.l = value.l;
+          //     hsl.value.s = value.s;
+          //   },
+          //   alpha: alphaRef.value,
+          //   'onUpdate:alpha': (value) => {
+          //     alphaRef.value = value;
+          //   }
+          // }}
+          />
         </div>
       </div>
     );

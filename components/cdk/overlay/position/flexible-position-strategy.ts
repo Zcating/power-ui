@@ -4,6 +4,8 @@ import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
 import { getElement } from '../../utils';
 import { usePlatform } from '../../global';
+import { ResizeObserver } from '@juggle/resize-observer';
+import { useBoxResize } from 'vue-cdk/hook';
 interface Point {
   x: number;
   y: number;
@@ -51,6 +53,17 @@ export class FlexiblePositionStrategy extends PositionStrategy {
       if (!panel) {
         return;
       }
+      const observer = new ResizeObserver((entries) => {
+        // TODO: add optimize for throttle
+        const point = this._calculatePosition(entries[0].contentRect);
+        // set the current position style's value.
+        // the current position style is a 'ref'. 
+        const style = positionedStyle.value;
+        style.left = coerceCssPixelValue(point.x);
+        style.top = coerceCssPixelValue(point.y);
+      });
+      observer.observe(panel);
+
       const handleChange = () => {
         // TODO: add optimize for throttle
         const point = this._calculatePosition(panel);
@@ -61,17 +74,14 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         style.top = coerceCssPixelValue(point.y);
       };
 
-      // use next tick to prevent the origin ref unmounted error.
+
       onUpdated(() => {
         handleChange();
       });
 
       watch(visible, (value) => {
         if (value) {
-          nextTick(() => {
-            handleChange();
-            this.subscribe(handleChange);
-          });
+          this.subscribe(handleChange);
         } else {
           this.unsubscribe(handleChange);
         }
@@ -79,6 +89,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
       onUnmounted(() => {
         this.unsubscribe(handleChange);
+        observer.observe(panel);
       });
     });
     return {
@@ -153,14 +164,20 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     return this;
   }
 
-  private _calculatePosition(panel: HTMLElement): Point {
+  private _calculatePosition(panelOrRect: HTMLElement | DOMRect): Point {
     // get overlay rect
     const originRect = this._getOriginRect();
 
     // calculate the origin point
     const originPoint = this._getOriginPoint(originRect, this._positionPair);
 
-    const rect = panel.getBoundingClientRect();
+    let rect;
+    if (panelOrRect instanceof HTMLElement) {
+      rect = panelOrRect.getBoundingClientRect();
+    } else {
+      rect = panelOrRect;
+    }
+
     // calculate the overlay anchor point
     return this._getOverlayPoint(originPoint, this._positionPair, rect);
   }
