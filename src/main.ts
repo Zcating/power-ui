@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import App from './App';
 import router from './router';
-import { cdk } from 'vue-cdk/global';
+import { cdk } from 'vue-cdk';
 import { message, notification } from 'power-ui';
 import 'power-ui/theme-chalk/src/index.scss';
 

@@ -1,7 +1,7 @@
 import { computed, defineComponent, ref, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { Enum, Method } from 'vue-cdk/utils';
-import { CdkSelectionItem } from 'vue-cdk/selection';
+import { CdkSelectionItem } from 'vue-cdk';
 import { useRadioGroupData } from './radio-group';
 import { ElSize } from '../types';
 

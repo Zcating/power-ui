@@ -1,9 +1,8 @@
-import { CdkSelection, CdkSelectionRef } from 'vue-cdk/selection';
-import { Enum, List, Method } from 'vue-cdk/utils';
 import { defineComponent, InjectionKey, provide, Ref, toRef } from 'vue';
+import { CdkSelection, CdkSelectionRef } from 'vue-cdk';
+import { Enum, List, Method } from 'vue-cdk/utils';
 import { ElSize } from 'power-ui/types';
-import { SelectionValue } from 'vue-cdk/selection/types';
-import { MaybeArray } from 'vue-cdk/types';
+import { SelectionValue } from 'vue-cdk/collections/types';
 
 export interface CheckboxGroupData {
   textColor: Ref<string | undefined>;
@@ -44,7 +43,7 @@ export const CheckboxGroup = defineComponent({
     },
     onChange: {
       type: Method<(value: (string | number)[]) => void>()
-    }
+    },
   },
   emits: {
     'update:modelValue': (value: (string | number)[]) => !!value,

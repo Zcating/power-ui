@@ -1,5 +1,6 @@
 import { ResizeObserver, ResizeObserverEntry } from '@juggle/resize-observer';
 import {
+  ComponentPublicInstance,
   isRef,
   onBeforeUnmount,
   onMounted,
@@ -7,6 +8,7 @@ import {
   Ref,
   shallowRef,
 } from 'vue';
+import { getElement } from 'vue-cdk/utils';
 
 /**
  * run a function while resize
@@ -47,7 +49,7 @@ export function useResize(
 }
 
 export const useBoxResize = <T>(
-  doms: Ref<HTMLElement | null>,
+  doms: Ref<HTMLElement | ComponentPublicInstance | null>,
   initValue: T,
   callback: (entry: ResizeObserverEntry) => T
 ) => {
@@ -58,7 +60,7 @@ export const useBoxResize = <T>(
   });
 
   onMounted(() => {
-    const dom = doms.value;
+    const dom = getElement(doms.value);
     if (!dom) {
       return;
     }

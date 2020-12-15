@@ -1,7 +1,7 @@
 import { defineComponent, ref, toRef } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { Enum, Method, renderCondition } from 'vue-cdk/utils';
-import { CdkSelectionItem } from 'vue-cdk/selection';
+import { CdkSelectionItem } from 'vue-cdk';
 import { ElSize } from '../types';
 
 export const Checkbox = defineComponent({

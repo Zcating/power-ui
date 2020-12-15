@@ -1,17 +1,21 @@
-import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick } from 'vue';
+import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick, getCurrentInstance, shallowReactive, reactive, readonly } from 'vue';
 import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './types';
 import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
-import { getElement } from '../../utils';
-import { usePlatform } from '../../global';
+import { getElement, thenable } from '../../utils';
+import { usePlatform } from '../../platform';
 import { ResizeObserver } from '@juggle/resize-observer';
-import { useBoxResize } from 'vue-cdk/hook';
 interface Point {
   x: number;
   y: number;
 }
 
 export type FlexiblePositionOrigin = Element | Ref<ComponentPublicInstance | Element | undefined | null> | (Point & {
+  width?: number;
+  height?: number;
+});
+
+type FlexibleOrigin = Element | (Point & {
   width?: number;
   height?: number;
 });
@@ -48,15 +52,36 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
   setup(panelRef: Ref<HTMLElement | null>, visible: Ref<boolean>): OverlayProps {
     const positionedStyle = ref<CSSProperties>({ position: 'absolute' });
-    onMounted(() => {
+    // pass instance
+    const instance = getCurrentInstance();
+    onMounted(async () => {
+      await nextTick();
+
       const panel = panelRef.value;
       if (!panel) {
         return;
       }
+      const originOrPoint = this.getOriginOrPoint();
+      if (!originOrPoint) {
+        return;
+      }
+
+      if (originOrPoint instanceof Element) {
+        let left = originOrPoint.getBoundingClientRect().left;
+        onUpdated(() => {
+          if (visible.value) {
+            const other = originOrPoint.getBoundingClientRect().left;
+            if (left !== other) {
+              handleChange();
+              left = other;
+            }
+          }
+        }, instance);
+      }
+
       const observer = new ResizeObserver((entries) => {
-        console.log('fuck');
         // TODO: add optimize for throttle
-        const point = this._calculatePosition(entries[0].contentRect);
+        const point = this._calculatePosition(entries[0].contentRect, originOrPoint);
         // set the current position style's value.
         // the current position style is a 'ref'. 
         const style = positionedStyle.value;
@@ -67,18 +92,13 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
       const handleChange = () => {
         // TODO: add optimize for throttle
-        const point = this._calculatePosition(panel);
+        const point = this._calculatePosition(panel, originOrPoint);
         // set the current position style's value.
         // the current position style is a 'ref'. 
         const style = positionedStyle.value;
         style.left = coerceCssPixelValue(point.x);
         style.top = coerceCssPixelValue(point.y);
       };
-
-
-      onUpdated(() => {
-        handleChange();
-      });
 
       watch(visible, (value) => {
         if (value) {
@@ -87,13 +107,13 @@ export class FlexiblePositionStrategy extends PositionStrategy {
           this.unsubscribe(handleChange);
         }
       });
-
       onUnmounted(() => {
         this.unsubscribe(handleChange);
-        observer.observe(panel);
-      });
-    });
-    return {
+        observer.disconnect();
+      }, instance);
+    }, instance);
+
+    return readonly({
       positionedStyle,
       containerStyle: {
         position: 'fixed',
@@ -102,7 +122,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         width: '100vw',
         height: '100vh'
       }
-    };
+    });
   }
 
   subscribe(event: (e?: Event) => void): void {
@@ -165,9 +185,9 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     return this;
   }
 
-  private _calculatePosition(panelOrRect: HTMLElement | DOMRect): Point {
+  private _calculatePosition(panelOrRect: HTMLElement | DOMRect, origin: FlexibleOrigin): Point {
     // get overlay rect
-    const originRect = this._getOriginRect();
+    const originRect = this._getOriginRect(origin);
 
     // calculate the origin point
     const originPoint = this._getOriginPoint(originRect, this._positionPair);
@@ -226,22 +246,11 @@ export class FlexiblePositionStrategy extends PositionStrategy {
   }
 
   /** Returns the ClientRect of the current origin. */
-  private _getOriginRect(): ClientRect {
-    const origin = this._origin;
-    // Check for Element so SVG elements are also supported.
+  private _getOriginRect(origin: FlexibleOrigin): ClientRect {
     if (origin instanceof Element) {
       return origin.getBoundingClientRect();
     }
-
-    if (isRef(origin)) {
-      const element = getElement(origin.value);
-      if (element) {
-        return element.getBoundingClientRect();
-      } else {
-        throw Error('[cdk][flexible-position-strategy]Make sure your element is bound by ref param.');
-      }
-    }
-
+    // Origin is point
     const width = origin.width || 0;
     const height = origin.height || 0;
 
@@ -254,5 +263,20 @@ export class FlexiblePositionStrategy extends PositionStrategy {
       height,
       width
     };
+  }
+
+  private getOriginOrPoint() {
+    const origin = this._origin;
+
+    // Check for Element so SVG elements are also supported.
+    if (origin instanceof Element) {
+      return origin;
+    }
+
+    if (isRef(origin)) {
+      return getElement(origin.value);
+    }
+
+    return origin;
   }
 }

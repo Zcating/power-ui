@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import Platform from './platform';
+import { Platform } from '../platform';
 
 class Copy {
   textarea: HTMLTextAreaElement | undefined;
@@ -56,7 +56,7 @@ class Copy {
  * @export
  * @class Clipboard
  */
-export default class Clipboard {
+export class Clipboard {
   private doc: Document | undefined;
   nodeRef = ref<HTMLElement | null>(null);
   constructor(platform: Platform) {
@@ -73,7 +73,9 @@ export default class Clipboard {
    */
   copy(text: string) {
     // no doc no functionaility
-    if (!this.doc) return '';
+    if (!this.doc) {
+      return '';
+    }
     const copyEl = new Copy(text);
     const result = copyEl.copy();
     copyEl.destroy();

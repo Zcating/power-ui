@@ -1,10 +1,9 @@
 import { defineComponent } from 'vue';
-import BIDI from './global/bidirection.spec';
-import BP from './global/breakpoint.spec';
-import PLAT from './global/platform.spec';
-import CB from './global/clipboard.spec';
+import BIDI from './bidirection/bidirection.spec';
+import BP from './breakpoint/breakpoint.spec';
+import PLAT from './platform/platform.spec';
+import CB from './clipboard/clipboard.spec';
 import SB from './scrolling/scrollable.spec';
-import SELECTION from './selection/selection.spec';
 import ACCORDION from './accordion/accordion.spec';
 import TR from './tree/TreeNode.spec';
 import VS from './scrolling/virtual-scroll.spec';

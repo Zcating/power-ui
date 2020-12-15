@@ -1,5 +1,5 @@
 import { onBeforeUnmount, ref } from 'vue';
-import Platform from './platform';
+import { Platform } from '../platform';
 
 const breakPoints = {
   xs: '(max-width: 599.99px)',
@@ -17,7 +17,7 @@ const breakPoints = {
  * @export
  * @class
  */
-export default class {
+export class Breakpoint {
   private spanRef = ref<'xs' | 's' | 'm' | 'l' | 'xl'>('m');
   private directionRef = ref<'portrait' | 'landscape'>('landscape');
 

@@ -1,5 +1,5 @@
 import { defineComponent, ref, toRef, watch } from 'vue';
-import { CdkSelectionItem } from 'vue-cdk/selection';
+import { CdkSelectionItem } from 'vue-cdk';
 import { watchRef } from 'vue-cdk/hook';
 import { useDescMap } from '../utils';
 

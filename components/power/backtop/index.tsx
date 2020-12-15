@@ -9,7 +9,7 @@ import {
   InjectionKey,
   shallowRef,
 } from 'vue';
-import { usePlatform } from 'vue-cdk/global';
+import { usePlatform } from 'vue-cdk';
 import { useAnimationFrame, useScroll } from 'vue-cdk/hook/tools';
 import { Method } from 'vue-cdk/utils';
 

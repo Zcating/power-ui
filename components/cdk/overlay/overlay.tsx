@@ -3,10 +3,7 @@ import {
   Transition,
   defineComponent,
   inject,
-  nextTick,
-  onMounted,
   onUnmounted,
-  onUpdated,
   provide,
   ref,
   renderSlot,
@@ -15,7 +12,7 @@ import {
 } from 'vue';
 import { GlobalPositionStrategy, PositionStrategy } from './position';
 import { watchRef } from '../hook';
-import { usePlatform } from '../global';
+import { usePlatform } from '../platform';
 import './overlay.scss';
 
 /**
@@ -48,6 +45,7 @@ export const provideStrategy = (strategy: PositionStrategy) => {
  * @class Overlay
  */
 export const Overlay = defineComponent({
+  name: 'cdk-overlay',
   props: {
     visible: {
       type: Boolean,

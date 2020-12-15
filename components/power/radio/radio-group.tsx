@@ -1,7 +1,7 @@
 import { defineComponent, inject, InjectionKey, provide, Ref, ref, toRef, watch } from 'vue';
 import { DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, UP_ARROW } from 'vue-cdk/keycodes';
 import { Enum } from 'vue-cdk/utils';
-import { CdkSelection } from 'vue-cdk/selection';
+import { CdkSelection } from 'vue-cdk';
 import { ElSize } from '../types';
 
 export interface RadioGroupData {

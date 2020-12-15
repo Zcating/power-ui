@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue';
-import { useBidirection } from '.';
+import { useBidirection } from './index';
 
 export default defineComponent({
   name: 'bidirection-spec',

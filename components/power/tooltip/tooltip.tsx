@@ -1,9 +1,9 @@
 import { CSSProperties, Transition, VNode, cloneVNode, computed, defineComponent, onUnmounted, ref, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { ESCAPE } from 'vue-cdk/keycodes';
-import { usePlatform } from 'vue-cdk/global';
-import { FlexiblePositionStrategy, Overlay, provideStrategy } from 'vue-cdk';
-import { Enum, List, Model, addEvent, getElement, isValidElement, renderCondition } from 'vue-cdk/utils';
+import { FlexiblePositionStrategy, Overlay, provideStrategy, usePlatform } from 'vue-cdk';
+import { Enum, List, Model, addEvent, getElement, isValidElement } from 'vue-cdk/utils';
+
 import { ArrowPlacement, OVERLAY_POSITION_MAP, Placement, TriggerType } from './types';
 
 let tooltipCounter = 0;
@@ -63,8 +63,8 @@ export const Tooltip = defineComponent({
   ],
   setup(props, ctx) {
     const visible = watchRef(toRef(props, 'modelValue'), (value) => ctx.emit('update:modelValue', value));
-    const referenceRef = ref<HTMLElement | null>(null);
-    const popperRef = ref<HTMLElement | null>(null);
+    const referenceRef = ref<Element | null>(null);
+    const popperRef = ref<Element | null>(null);
     const strategy = new FlexiblePositionStrategy(referenceRef);
 
     watch(
@@ -259,7 +259,7 @@ export const Tooltip = defineComponent({
             x-placement={arrowPlacement}
           >
             {slots.content ? slots.content?.() : <span>{content}</span>}
-            {renderCondition(visibleArrow, <div x-arrow class="popper__arrow" style={arrowStyle}></div>)}
+            {visibleArrow ? <div x-arrow class="popper__arrow" style={arrowStyle}></div> : null}
           </div>
         </Transition>
       </Overlay>

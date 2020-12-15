@@ -1,5 +1,5 @@
 import { Ref, onBeforeMount, onMounted, ref } from 'vue';
-import { usePlatform } from '../global';
+import { usePlatform } from '../platform';
 import { noop } from '../types';
 
 /**

@@ -1,5 +1,5 @@
-import { computed, customRef, defineComponent, reactive, ref, toRef, watch, watchEffect } from 'vue';
-import { usePlatform } from 'vue-cdk/global';
+import { computed, customRef, defineComponent, reactive, ref, watch } from 'vue';
+import { usePlatform } from 'vue-cdk';
 import { watchRef } from 'vue-cdk/hook';
 import { Method, addEvent, toFixedNumber } from 'vue-cdk/utils';
 import { Tooltip } from '../tooltip';
@@ -119,14 +119,14 @@ export const SliderButton = defineComponent({
             const lengthPerStep = 100 / ((max - min) / steps);
             const stepCount = Math.round(position / lengthPerStep);
             const nextValue = toFixedNumber(stepCount * lengthPerStep * (max - min) * 0.01 + min, precision);
-            ctx.emit('update:modelValue', nextValue);            
+            ctx.emit('update:modelValue', nextValue);
           }
         };
         //
         watch(() => props.modelValue, (value) => {
           result.set(value / (props.max - props.min) * 100);
-        }, {immediate: true});
-        
+        }, { immediate: true });
+
         // whlie clicking runway, the position should change.
         watch(() => props.clickedPosition, (value) => result.set(value));
 
@@ -148,7 +148,9 @@ export const SliderButton = defineComponent({
 
     const handleMouseLeave = () => {
       state.hovering = false;
-      state.showTooltip = false;
+      if (!state.dragging) {
+        state.showTooltip = false;
+      }
     };
     // mouse event end
 

@@ -114,7 +114,7 @@ export class GlobalPositionStrategy extends PositionStrategy {
     panel: Ref<HTMLElement | null>,
     visible: Ref<boolean>
   ): OverlayProps {
-    const positionedStyle = ref<CSSProperties>({
+    const positionedStyle = {
       width: this._width,
       height: this._height,
       position: this._cssPosition,
@@ -122,7 +122,7 @@ export class GlobalPositionStrategy extends PositionStrategy {
       marginRight: this._rightOffset,
       marginTop: this._topOffset,
       marginBottom: this._bottomOffset,
-    });
+    };
     // container style must set display to flex.
     const containerStyle: CSSProperties = {
       top: 0,

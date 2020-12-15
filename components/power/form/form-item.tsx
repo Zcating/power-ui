@@ -1,7 +1,7 @@
 import { cloneVNode, computed, defineComponent, getCurrentInstance, reactive, ref, Transition } from 'vue';
 import { ElSize } from 'power-ui/types';
 import { coerceCssPixelValue } from 'vue-cdk/coercion';
-import { usePlatform } from 'vue-cdk/global';
+import { usePlatform } from 'vue-cdk';
 import { Enum, List, Model, renderCondition } from 'vue-cdk/utils';
 import { FormRef } from './form';
 import { useFormService } from './form.service';

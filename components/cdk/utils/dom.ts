@@ -22,11 +22,11 @@ export const isValidElement = (element: any) => {
   return element && typeof element === 'object' && element['__v_isVNode'] && typeof element.type !== 'symbol';
 };
 
-export function getElement(element: any): HTMLElement | null {
-  if (element instanceof HTMLElement) {
+export function getElement(element: any): Element | null {
+  if (element instanceof Element) {
     return element;
   }
-  if (element && element.$el instanceof HTMLElement) {
+  if (element && element.$el instanceof Element) {
     return element.$el;
   }
   return null;
@@ -34,9 +34,9 @@ export function getElement(element: any): HTMLElement | null {
 
 type JSVNode = VNode | JSX.Element | undefined
 
-type VueNode<T> = JSVNode | ((value: T) => JSVNode);
+type TypeNode<T> = JSVNode | ((value: T) => JSVNode);
 
-export const renderCondition = <T>(test: T, node: VueNode<T>, elseNode?: VueNode<T>) => {
+export const renderCondition = <T>(test: T, node: TypeNode<T>, elseNode?: TypeNode<T>) => {
   if (!!test) {
     return typeof node === 'function' ? node(test) : node;
   } else {

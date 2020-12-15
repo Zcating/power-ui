@@ -1,12 +1,12 @@
-import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, Ref, ref, toRef, UnwrapRef } from 'vue';
+import { computed, defineComponent, getCurrentInstance, nextTick, onMounted, Ref, ref, toRef } from 'vue';
 import { List, isEqual, renderCondition, Method } from 'vue-cdk/utils';
-import { CdkSelection } from 'vue-cdk/selection';
+import { CdkSelection } from 'vue-cdk';
 import { Tooltip } from '../tooltip';
 import { Input } from '../input';
 import { provideDescMap } from './utils';
-import { SelectionValue } from 'vue-cdk/selection/types';
-import { watchRef } from 'vue-cdk/hook';
+import { useBoxResize, watchRef } from 'vue-cdk/hook';
 
+type SelectionValue = string | number | (string | number)[]
 
 export const Select = defineComponent({
   name: 'po-select',
@@ -59,7 +59,8 @@ export const Select = defineComponent({
     onBlur: Method<(event: FocusEvent) => void>(),
     onFocus: Method<(event: FocusEvent) => void>(),
     onChange: Method<(event: Event) => void>(),
-    onInput: Method<(event: SelectionValue) => void>()
+    onInput: Method<(event: SelectionValue) => void>(),
+    'onUpdate:modelValue': Method<(event: SelectionValue) => void>(),
   },
 
   setup(props, ctx) {
@@ -104,20 +105,11 @@ export const Select = defineComponent({
       return tooltipVisible.value ? 'arrow-up is-reverse' : 'arrow-up';
     });
 
-    const inputWidth = ref(0);
-    onMounted(() => {
-      const instance = getCurrentInstance();
-      if (!(instance && instance.refs.reference)) {
-        return;
-      }
-      nextTick(() => {
-        inputWidth.value = (instance.refs.reference as any).$el.getBoundingClientRect().width;
-      });
-    });
+    const reference = ref<HTMLElement | null>(null);
+    const inputWidth = useBoxResize(reference, 0, (entry) => entry.contentRect.width);
 
     const handleBlur = (event: FocusEvent) => {
       ctx.emit('blur', event);
-      console.log('select-blur');
     };
 
     const handleFocus = (event: FocusEvent) => {
@@ -177,7 +169,7 @@ export const Select = defineComponent({
         >
           <div class={['el-select', size ? 'el-select--' + size : '']}>
             <Input
-              ref="reference"
+              ref={reference}
               v-model={selectedLabel.value}
               type="text"
               placeholder={placeholder}

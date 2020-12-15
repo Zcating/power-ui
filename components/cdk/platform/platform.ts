@@ -7,7 +7,7 @@ try {
   hasV8BreakIterator = false;
 }
 
-export default class Platform {
+export class Platform {
   /**
    * checkout if this is in browser envir
    *
