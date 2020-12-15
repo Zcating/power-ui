@@ -2,7 +2,7 @@ import { computed, defineComponent, ref, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { Slider } from '../slider';
 import { hsl2rgb, hexFrom, rgb2hsl } from './utils';
-import { SatPanel } from './sat-panel';
+import { SVPanel } from './sv-panel';
 import { ColorInput } from './color-input';
 
 export const Pallet = defineComponent({
@@ -16,10 +16,7 @@ export const Pallet = defineComponent({
   setup(props, ctx) {
     const modelRef = watchRef(
       toRef(props, 'modelValue'),
-      (value) => {
-        ctx.emit('update:modelValue', value);
-        console.log('value', value);
-      },
+      (value) => ctx.emit('update:modelValue', value),
       (value) => {
         const color = parseInt(value.substr(1, 8), 16);
         alphaRef.value = color & 0xff;
@@ -50,14 +47,12 @@ export const Pallet = defineComponent({
 
     return () => (
       <div class={['el-pallet']}>
-        <SatPanel
+        <SVPanel
           hue={hsl.value.h}
-          {...{
-            light: hsl.value.l,
-            'onUpdate:light': (value: number) => hsl.value.l = value,
-            sat: hsl.value.s,
-            'onUpdate:sat': (value: number) => hsl.value.s = value
-          }}
+          v-models={[
+            [hsl.value.l, 'light'],
+            [hsl.value.s, 'sat']
+          ]}
         />
         <div class={['el-pallet__body']}>
           <div class={['el-pallet__control']}>
@@ -99,20 +94,12 @@ export const Pallet = defineComponent({
             </div>
           </div>
           <ColorInput
-            v-models={[]}
-          // {...{
-          //   hsl: hsl.value,
-          //   'onUpdate:hsl': (value) => {
-          //     console.log(value);
-          //     hsl.value.h = value.h;
-          //     hsl.value.l = value.l;
-          //     hsl.value.s = value.s;
-          //   },
-          //   alpha: alphaRef.value,
-          //   'onUpdate:alpha': (value) => {
-          //     alphaRef.value = value;
-          //   }
-          // }}
+            v-models={[
+              [hsl.value.h, 'hue'],
+              [hsl.value.s, 'sat'],
+              [hsl.value.l, 'light'],
+              [alphaRef.value, 'alpha'],
+            ]}
           />
         </div>
       </div>

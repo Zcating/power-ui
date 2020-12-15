@@ -1,4 +1,4 @@
-import { computed, defineComponent, ref, toRef, watch } from 'vue';
+import { computed, defineComponent, reactive, Ref, ref, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { Method, Model } from 'vue-cdk/utils';
 import { hsl2rgb, rgb2hsl } from './utils';
@@ -44,7 +44,10 @@ export const ColorInput = defineComponent({
     };
 
     const createHSLACompo = (name: 'alpha' | 'hue' | 'sat' | 'light') => {
-      return watchRef(toRef(props, name), (value) => ctx.emit(`update:${name}`, value));
+      return watchRef(
+        toRef(props, name),
+        (value) => ctx.emit(`update:${name}`, value),
+      );
     };
 
     const alpha = createHSLACompo('alpha');
@@ -52,32 +55,39 @@ export const ColorInput = defineComponent({
     const sat = createHSLACompo('sat');
     const light = createHSLACompo('light');
 
-    const rgb = watchRef(
-      computed(() => hsl2rgb(hue.value, sat.value, light.value)),
-      (value) => {
-        const hsl = rgb2hsl(value.r, value.g, value.b);
-        hue.value = hsl.h;
-        sat.value = hsl.s;
-        light.value = hsl.l;
-      },
-      true
-    );
+    const rgb = reactive(hsl2rgb(hue.value, sat.value, light.value));
 
+    const formatInt = (value: string, radix = 10) => {
+      const num = parseInt(value, radix);
+      return isNaN(num) ? null : num;
+    };
+
+    const force = (e: any, theRef: Ref<number>) => {
+      if (!e.target.value) {
+        return;
+      }
+      const num = formatInt(e.target.value);
+      if (!num) {
+        e.target.value = theRef.value;
+      } else {
+        theRef.value = num;
+      }
+    };
 
     const switchStatus = () => {
       if (status.value === 1) {
         return (
           <div class="el-color-input__XXXA">
             <div class="item">
-              <input v-model={rgb.value.r} />
+              <input v-model={rgb.r} onChange={() => console.log(rgb.r)} />
               <div class="text">R</div>
             </div>
             <div class="item">
-              <input v-model={rgb.value.g} />
+              <input v-model={rgb.g} />
               <div class="text">G</div>
             </div>
             <div class="item">
-              <input v-model={rgb.value.b} />
+              <input v-model={rgb.b} />
               <div class="text">B</div>
             </div>
             <div class="item">
@@ -90,19 +100,31 @@ export const ColorInput = defineComponent({
         return (
           <div class="el-color-input__XXXA">
             <div class="item">
-              <input v-model={hue.value} />
+              <input
+                value={hue.value}
+                onInput={(e: any) => force(e, hue)}
+              />
               <div class="text">H</div>
             </div>
             <div class="item">
-              <input v-model={sat.value} />
+              <input
+                value={sat.value}
+                onInput={(e: any) => force(e, sat)}
+              />
               <div class="text">S</div>
             </div>
             <div class="item">
-              <input v-model={light.value} />
+              <input
+                value={light.value}
+                onInput={(e: any) => force(e, light)}
+              />
               <div class="text">L</div>
             </div>
             <div class="item">
-              <input v-model={alpha.value} />
+              <input
+                value={alpha.value}
+                onInput={(e: any) => force(e, alpha)}
+              />
               <div class="text">A</div>
             </div>
           </div>

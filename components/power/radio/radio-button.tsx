@@ -101,7 +101,6 @@ export const RadioButton = defineComponent({
               onFocus={() => updateFocus(true)}
               onBlur={() => updateFocus(false)}
               onChange={(e: any) => checkedRef.value = e.target?.checked ?? false}
-              name={name}
               disabled={disabled}
               tabindex={-1}
               checked={checked}

@@ -130,7 +130,8 @@ export const Select = defineComponent({
         autocomplete,
         disabled,
         size,
-        clearable
+        clearable,
+        name
       } = props;
       const content = () => (
         <CdkSelection

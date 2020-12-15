@@ -21,9 +21,9 @@ export const hsv2hsl = (hue: number, sat: number, val: number) => {
   sat = sat / 100;
   val = val / 100;
   return {
-    h: hue,
-    s: (sat * val / ((hue = (2 - sat) * val) < 1 ? hue : 2 - hue)) * 100 || 0,
-    l: hue * 50
+    h: Math.round(hue),
+    s: Math.round((sat * val / ((hue = (2 - sat) * val) < 1 ? hue : 2 - hue)) * 100 || 0),
+    l: Math.round(hue * 50)
   };
 };
 

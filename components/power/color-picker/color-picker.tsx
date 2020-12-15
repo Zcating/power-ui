@@ -1,4 +1,3 @@
-import { vi } from 'power-ui/lang';
 import { defineComponent, ref } from 'vue';
 import { Tooltip } from '../tooltip';
 import { Pallet } from './pallet';

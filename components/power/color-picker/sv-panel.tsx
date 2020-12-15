@@ -37,7 +37,7 @@ const useDraggable = (eleRef: Ref<HTMLElement | null>, onDrag: (event: MouseEven
   });
 };
 
-export const SatPanel = defineComponent({
+export const SVPanel = defineComponent({
   props: {
     hue: {
       type: Number,
@@ -49,7 +49,6 @@ export const SatPanel = defineComponent({
     },
     'onUpdate:sat': {
       type: Method<(v: number) => void>(),
-      default: () => { }
     },
     light: {
       type: Number,
@@ -57,7 +56,6 @@ export const SatPanel = defineComponent({
     },
     'onUpdate:light': {
       type: Method<(v: number) => void>(),
-      default: () => { }
     }
   },
   setup(props, ctx) {
@@ -81,7 +79,6 @@ export const SatPanel = defineComponent({
         props.hue,
         cursorStyle.left / rect.width * 100,
         100 - cursorStyle.top / rect.height * 100,
-
       );
       ctx.emit('update:sat', tmp.s);
       ctx.emit('update:light', tmp.l);

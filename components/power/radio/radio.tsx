@@ -100,7 +100,6 @@ export const Radio = defineComponent({
                 onChange={(e: any) => {
                   checkedRef.value = e.target?.checked ?? false;
                 }}
-                name={name}
                 disabled={disabled}
                 tabindex={-1}
                 checked={checkedRef.value}
