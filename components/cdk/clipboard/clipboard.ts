@@ -1,4 +1,3 @@
-import { ref } from 'vue';
 import { Platform } from '../platform';
 
 class Copy {
