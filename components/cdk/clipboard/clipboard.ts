@@ -3,14 +3,15 @@ import { Platform } from '../platform';
 
 class Copy {
   textarea: HTMLTextAreaElement | undefined;
-  constructor(text: string) {
-    this.textarea = document.createElement('textarea');
+  constructor(text: string, DOCUMENT: Document) {
+
+    this.textarea = DOCUMENT.createElement('textarea');
     this.textarea.style.position = 'fixed';
     this.textarea.style.top = '0';
     this.textarea.style.left = '-10000em';
     this.textarea.setAttribute('area-hidden', 'true');
     this.textarea.value = text;
-    document.body.appendChild(this.textarea);
+    DOCUMENT.body.appendChild(this.textarea);
   }
 
   /**
@@ -56,12 +57,14 @@ class Copy {
  * @export
  * @class Clipboard
  */
-export class Clipboard {
+export class CdkClipboard {
   private doc: Document | undefined;
-  nodeRef = ref<HTMLElement | null>(null);
-  constructor(platform: Platform) {
-    if (!platform.BROWSER) return;
-    this.doc = document;
+
+  constructor(platform?: Platform) {
+    if (!platform?.DOCUMENT) {
+      return;
+    }
+    this.doc = platform?.DOCUMENT ?? document;
   }
 
   /**
@@ -76,7 +79,7 @@ export class Clipboard {
     if (!this.doc) {
       return '';
     }
-    const copyEl = new Copy(text);
+    const copyEl = new Copy(text, this.doc);
     const result = copyEl.copy();
     copyEl.destroy();
     return result;

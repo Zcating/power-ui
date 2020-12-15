@@ -13,6 +13,7 @@ export default defineComponent({
       <>
         <textarea v-model={test.value} />
         <button onClick={clip}>clip</button>
+        <button v-cdkClip={test.value}>clip with directive</button>
       </>
     );
   },
