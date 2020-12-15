@@ -2,9 +2,9 @@ import { Checkbox } from 'power-ui/checkbox';
 import { defineComponent, reactive, toRef } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { List } from 'vue-cdk/utils';
-import {CollapseTransition} from '../transition';
+import { CollapseTransition } from '../transition';
 
-export const TreeNodeContent = defineComponent({
+export default defineComponent({
   props: {
     label: {
       type: String,

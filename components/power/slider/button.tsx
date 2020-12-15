@@ -57,13 +57,8 @@ export const SliderButton = defineComponent({
       default: false
     },
     onDrag: Method<(value: boolean) => void>(),
+    'onUpdate:modelValue': Method<(value: number) => void>()
   },
-
-  emits: {
-    'drag': (value: boolean) => true,
-    'update:modelValue': (value: number) => true
-  },
-
   setup(props, ctx) {
     const WINDOW = usePlatform().TOP!;
 

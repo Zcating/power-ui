@@ -1,7 +1,7 @@
-import { computed, defineComponent, reactive, shallowRef, toRef, watch } from 'vue';
+import { computed, defineComponent, reactive, toRef } from 'vue';
 import { List } from 'vue-cdk/utils';
 import { CdkTree, TreeNodeSlotData } from 'vue-cdk/tree';
-import { TreeNodeContent } from './tree-node-content';
+import Content from './content';
 import { watchRef } from 'vue-cdk/hook';
 
 
@@ -118,7 +118,7 @@ export const Tree = defineComponent({
             checkStrictly={checkStrictly}
             v-slots={{
               default: (data: TreeNodeSlotData<TreeNodeData>) => (
-                <TreeNodeContent
+                <Content
                   {...{
                     showCheckbox: true,
                     indent: data.level * props.indent,
