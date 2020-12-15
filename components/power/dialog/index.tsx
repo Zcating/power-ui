@@ -33,6 +33,9 @@ export const Dialog = defineComponent({
     beforeClose: Function,
     width: String,
   },
+  emits: [
+    'update:visible'
+  ],
   setup(props, ctx) {
     const visible = watchRef(toRef(props, 'visible'), (value) => {
       ctx.emit('update:visible', value);

@@ -68,6 +68,9 @@ export const Drawer = defineComponent({
     }
   },
 
+  emits: [
+    'update:visible'
+  ],
   setup(props, ctx) {
     const isHorizontal = computed(() => {
       const direction = props.direction;

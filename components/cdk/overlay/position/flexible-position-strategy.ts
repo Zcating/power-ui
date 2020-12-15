@@ -54,6 +54,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         return;
       }
       const observer = new ResizeObserver((entries) => {
+        console.log('fuck');
         // TODO: add optimize for throttle
         const point = this._calculatePosition(entries[0].contentRect);
         // set the current position style's value.

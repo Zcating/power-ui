@@ -1,4 +1,4 @@
-import { CSSProperties, Ref, ref } from 'vue';
+import { CSSProperties, Ref } from 'vue';
 
 
 export interface OverlayProps {
