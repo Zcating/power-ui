@@ -1,10 +1,11 @@
-import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick, getCurrentInstance, shallowReactive, reactive, readonly } from 'vue';
+import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick, getCurrentInstance, readonly } from 'vue';
 import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './types';
 import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
-import { getElement, thenable } from '../../utils';
+import { getElement } from '../../utils';
 import { usePlatform } from '../../platform';
 import { ResizeObserver } from '@juggle/resize-observer';
+
 interface Point {
   x: number;
   y: number;
