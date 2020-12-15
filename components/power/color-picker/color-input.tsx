@@ -1,25 +1,38 @@
-import { computed, defineComponent, ref, toRef } from 'vue';
+import { computed, defineComponent, ref, toRef, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { Method, Model } from 'vue-cdk/utils';
 import { hsl2rgb, rgb2hsl } from './utils';
 
 export const ColorInput = defineComponent({
   props: {
-    hsl: {
-      type: Model<{ h: number, s: number, l: number }>(),
-      default: {}
+    hue: {
+      type: Number,
+      default: 0
     },
-    'onUpdate:hsl': {
-      type: Method<(hsl: { h: number, s: number, l: number }) => void>(),
-      default: () => { }
+    sat: {
+      type: Number,
+      default: 0
     },
+    light: {
+      type: Number,
+      default: 0
+    },
+    'onUpdate:hue': {
+      type: Method<(event: number) => void>(),
+    },
+    'onUpdate:sat': {
+      type: Method<(event: number) => void>(),
+    },
+    'onUpdate:light': {
+      type: Method<(event: number) => void>(),
+    },
+
     alpha: {
       type: Number,
       default: 100
     },
     'onUpdate:alpha': {
       type: Method<(alpha: number) => void>(),
-      default: () => { }
     }
   },
   setup(props, ctx) {
@@ -30,27 +43,26 @@ export const ColorInput = defineComponent({
       status.value = tmp < 0 ? 3 + tmp : tmp;
     };
 
-    const alpha = watchRef(
-      toRef(props, 'alpha'),
-      (value) => ctx.emit('update:alpha', value)
-    );
+    const createHSLACompo = (name: 'alpha' | 'hue' | 'sat' | 'light') => {
+      return watchRef(toRef(props, name), (value) => ctx.emit(`update:${name}`, value));
+    };
 
-    const hslRef = watchRef(
-      toRef(props, 'hsl'),
-      (value) => {
-        ctx.emit('update:hsl', value);
-      },
-      true,
-    );
+    const alpha = createHSLACompo('alpha');
+    const hue = createHSLACompo('hue');
+    const sat = createHSLACompo('sat');
+    const light = createHSLACompo('light');
 
     const rgb = watchRef(
-      computed(() => {
-        const hsl = props.hsl;
-        return hsl2rgb(hsl.h, hsl.s, hsl.l);
-      }),
-      (value) => ctx.emit('update:hsl', rgb2hsl(value.r, value.g, value.b)),
+      computed(() => hsl2rgb(hue.value, sat.value, light.value)),
+      (value) => {
+        const hsl = rgb2hsl(value.r, value.g, value.b);
+        hue.value = hsl.h;
+        sat.value = hsl.s;
+        light.value = hsl.l;
+      },
       true
     );
+
 
     const switchStatus = () => {
       if (status.value === 1) {
@@ -78,15 +90,15 @@ export const ColorInput = defineComponent({
         return (
           <div class="el-color-input__XXXA">
             <div class="item">
-              <input v-model={hslRef.value.h} />
+              <input v-model={hue.value} />
               <div class="text">H</div>
             </div>
             <div class="item">
-              <input v-model={hslRef.value.s} />
+              <input v-model={sat.value} />
               <div class="text">S</div>
             </div>
             <div class="item">
-              <input v-model={hslRef.value.l} />
+              <input v-model={light.value} />
               <div class="text">L</div>
             </div>
             <div class="item">

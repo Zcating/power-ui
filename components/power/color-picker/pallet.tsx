@@ -99,6 +99,7 @@ export const Pallet = defineComponent({
             </div>
           </div>
           <ColorInput
+            v-models={[]}
           // {...{
           //   hsl: hsl.value,
           //   'onUpdate:hsl': (value) => {
