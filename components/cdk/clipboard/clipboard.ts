@@ -28,7 +28,9 @@ class Copy {
       this.textarea.select();
       this.textarea.setSelectionRange(0, this.textarea.value.length);
       success = document.execCommand('copy');
-      if (focus) focus.focus();
+      if (focus) {
+        focus.focus();
+      }
     } catch {
       // discard error
     }
