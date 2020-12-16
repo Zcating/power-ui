@@ -1,6 +1,5 @@
-
-// components
 import { App } from 'vue';
+
 import { cdkBidirection } from './bidirection';
 import { cdkBreakpoint } from './breakpoint';
 import { cdkViewport } from './viewport';

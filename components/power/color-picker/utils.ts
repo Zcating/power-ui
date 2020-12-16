@@ -136,7 +136,6 @@ export const rgb2hsl = (r: number, g: number, b: number) => {
     // Blue is max
     h = (r - g) / delta + 4;
   }
-  console.log(r);
   h = Math.round(h * 60);
 
   // Make negative hues positive behind 360°

@@ -67,19 +67,6 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         return;
       }
 
-      if (originOrPoint instanceof Element) {
-        let left = originOrPoint.getBoundingClientRect().left;
-        onUpdated(() => {
-          if (visible.value) {
-            const other = originOrPoint.getBoundingClientRect().left;
-            if (left !== other) {
-              handleChange();
-              left = other;
-            }
-          }
-        }, instance);
-      }
-
       const observer = new ResizeObserver((entries) => {
         // TODO: add optimize for throttle
         const point = this._calculatePosition(entries[0].contentRect, originOrPoint);
@@ -101,6 +88,22 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         style.top = coerceCssPixelValue(point.y);
       };
 
+      if (originOrPoint instanceof Element) {
+        (originOrPoint as HTMLElement).onmousedown = (event) => {
+          console.log(event);
+        };
+        let left = originOrPoint.getBoundingClientRect().left;
+        onUpdated(() => {
+          if (visible.value) {
+            const other = originOrPoint.getBoundingClientRect().left;
+            if (left !== other) {
+              handleChange();
+              left = other;
+            }
+          }
+        }, instance);
+      }
+
       watch(visible, (value) => {
         if (value) {
           this.subscribe(handleChange);
@@ -108,6 +111,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
           this.unsubscribe(handleChange);
         }
       });
+
       onUnmounted(() => {
         this.unsubscribe(handleChange);
         observer.disconnect();

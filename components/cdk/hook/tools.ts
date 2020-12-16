@@ -1,4 +1,3 @@
-import { ResizeObserver, ResizeObserverEntry } from '@juggle/resize-observer';
 import {
   ComponentPublicInstance,
   isRef,
@@ -8,6 +7,8 @@ import {
   Ref,
   shallowRef,
 } from 'vue';
+import { ResizeObserver, ResizeObserverEntry } from '@juggle/resize-observer';
+
 import { getElement } from 'vue-cdk/utils';
 
 /**

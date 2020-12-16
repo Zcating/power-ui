@@ -1,52 +1,38 @@
-import { defineComponent, inject, ref } from 'vue';
-const OverlayTester = defineComponent({
+import { CSSProperties, defineComponent, onMounted, ref, Teleport } from 'vue';
+export const OverlayTester = defineComponent({
   // name: 'overlay-spec',
-  // setup(_, ctx) {
-  //   const service = inject(overlayToken)!;
-  //   const target = ref<Element>();
+  setup(_, ctx) {
+    const originRef = ref<HTMLElement>();
+    const panelRef = ref<HTMLElement>();
+    const pannelStyle = ref<CSSProperties>({ position: 'absolute' });
 
-  //   const globalOverlayState = service.create({ 
-  //     strategy: service.createPositionStrategy('global').centerHorizontally().centerVertically() 
-  //   });
-  //   const GlobalOverlay = globalOverlayState.element;
-
-  //   const click = () => {
-  //     globalOverlayState.attach();
-  //   }
-
-  //   const flexibleOverlayState2 = service.create({
-  //     strategy: service.createPositionStrategy('flexible', target),
-  //   });
-  //   const FlexibleOverlay = flexibleOverlayState2.element;
-
-  //   const clickFlexiblePosition2 = () => {
-  //     flexibleOverlayState2.attach();
-  //   };
+    onMounted(() => {
+      const panelValue = panelRef.value;
+      const originValue = originRef.value;
+      if (!panelValue && !originValue) {
+        return;
+      }
 
 
-  //   return () => (
-  //     <>
-  //       <button onClick={click} style="display: block;" class="">click me</button>
-  //       <div style="position:absolute; top:300px; left:300px; height:150vh;">
-  //         <button
-  //           ref={target}
-  //           onClick={clickFlexiblePosition2}
-  //           style="display: block; position: absolute; top: 300px; left: 300px; width: 200px;"
-  //         >click flexible position</button>
-  //       </div>
-  //       <GlobalOverlay>
-  //         <div>'this is test'</div>
-  //       </GlobalOverlay>
-  //       <FlexibleOverlay>
-  //         <div style="background: red; position: absolute;height: 100px; width:100px;">'this is flexible test'</div>
-  //       </FlexibleOverlay>
-  //     </>
-  //   );
-  // }
+    });
+
+    return () => (
+      <>
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '200vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div ref={originRef}>origin</div>
+        </div>
+        <div ref={origin}>origin</div>
+        <Teleport to="#cdk-overlay-anchor">
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, height: '100vh', width: '100vw' }}>
+            <div ref={panelRef} style={pannelStyle.value}></div>
+          </div>
+        </Teleport>
+      </>
+    );
+  }
 });
 
 // export default OverlayTester;
-
 // let compo: VueWrapper<any>;
 // beforeEach(() => {
 //   compo = mount(OverlayTester);
