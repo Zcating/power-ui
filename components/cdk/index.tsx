@@ -16,6 +16,7 @@ export * from './platform';
 export * from './coercion';
 export * from './types';
 export * from './collections';
+export * from './coercion';
 
 export { useBreakpoint } from './breakpoint';
 export { useBidirection } from './bidirection';

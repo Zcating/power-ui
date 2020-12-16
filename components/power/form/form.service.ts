@@ -1,12 +1,21 @@
 import { inject, InjectionKey, provide, Ref, toRaw } from 'vue';
 import Schema, { ValidateError } from 'async-validator';
-import { FieldRules, FormRules } from './types';
+// cdk
 import { MaybeArray } from 'vue-cdk/types';
+
+import { FieldRules, FormRules } from './types';
+
 
 const token = Symbol() as InjectionKey<FormSerivce>;
 
 export const useFormService = () => inject(token, null);
 
+/**
+ * @class FormService
+ * 
+ * @description 
+ * 
+ */
 export class FormSerivce {
   private readonly pendingState: { [key in string]: any } = {};
   private readonly hookErrors: { [key in string]: (errors?: string[]) => any } = {};
@@ -20,11 +29,23 @@ export class FormSerivce {
     provide(token, this);
   }
 
+  /**
+   * 
+   */
   async validate() {
     const promises = Object.keys(this.hookErrors).map((key) => this.hookErrors[key]());
     return Promise.all(promises);
   }
 
+  /**
+   * @function bindValidate
+   * 
+   * @description 
+   * 
+   * @param name 
+   * @param fieldRules 
+   * @param hook 
+   */
   bindValidate(name: string, fieldRules: FieldRules | FieldRules[] | undefined, hook: (result: string[]) => void) {
     this.hookErrors[name] = async () => {
       const rules = [...this.getRuleArray(fieldRules), ...this.getRuleArray(this.rulesRef.value[name])];
@@ -33,6 +54,15 @@ export class FormSerivce {
     };
   }
 
+  /**
+   * @function reset 
+   * 
+   * @description rest the fields by names.
+   * 
+   * @param names fields to reset
+
+   * @memberof FormService
+   */
   reset(names: string[]) {
     for (const name of names) {
       const paths = name.split('.');
@@ -52,6 +82,18 @@ export class FormSerivce {
     }
   }
 
+
+  /**
+   * @function validateRules
+   * 
+   * @description validate 
+   * 
+   * @param name 
+   * @param rules 
+   * @param trigger 
+   * 
+   * @memberof FormService
+   */
   validateRules(name: string, rules: FieldRules | FieldRules[] | undefined, trigger: 'blur' | 'change') {
     return [
       ...this.getConditionRules(this.rulesRef.value[name], trigger),
@@ -59,6 +101,16 @@ export class FormSerivce {
     ];
   }
 
+  /**
+   * @function fieldValidate
+   * 
+   * @description 
+   * 
+   * @param name
+   * @param rules
+   * 
+   * @memberof FormService
+   */
   async fieldValidate(name: string, rules: FieldRules[]) {
     let result: string[] = [];
     try {
@@ -73,6 +125,16 @@ export class FormSerivce {
     return result;
   }
 
+  /**
+   * @function getConditionRules
+   * 
+   * @description 
+   * 
+   * @param rules 
+   * @param trigger 
+   * 
+   * @memberof FormService
+   */
   private getConditionRules(rules: FieldRules | FieldRules[] | undefined, trigger: 'blur' | 'change') {
     if (Array.isArray(rules)) {
       return rules.filter(value => this.isContain(value.trigger, trigger));
@@ -83,6 +145,12 @@ export class FormSerivce {
     }
   }
 
+  /**
+   * 
+   * @param rules 
+   * 
+   * @memberof FormService
+   */
   private getRuleArray(rules: FieldRules | FieldRules[] | undefined) {
     if (Array.isArray(rules)) {
       return rules;
@@ -93,6 +161,17 @@ export class FormSerivce {
     }
   }
 
+  /**
+   * @function isContain
+   * 
+   * @description to test if a value is equal to a value
+   *  or to test if a values contain a value.
+   * 
+   * @param values value or values
+   * @param target target rule
+   * 
+   * @memberof FormSerivce
+   */
   private isContain<T>(values: MaybeArray<T>, target: T) {
     return Array.isArray(values) ? values.indexOf(target) !== -1 : values === target;
   }

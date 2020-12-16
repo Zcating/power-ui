@@ -1,11 +1,17 @@
+// vendor
 import { cloneVNode, computed, defineComponent, getCurrentInstance, reactive, ref, Transition } from 'vue';
-import { ElSize } from 'power-ui/types';
-import { coerceCssPixelValue } from 'vue-cdk/coercion';
-import { usePlatform } from 'vue-cdk';
-import { Enum, List, Model, renderCondition } from 'vue-cdk/utils';
+import { RuleItem } from 'async-validator';
+
+// cdk
+import { usePlatform, coerceCssPixelValue } from 'vue-cdk';
+import { Enum, List, Model } from 'vue-cdk/utils';
+
+// power-ui
 import { FormRef } from './form';
 import { useFormService } from './form.service';
 import { FieldRules } from './types';
+import { ElSize } from '../types';
+
 
 export const FormItem = defineComponent({
   props: {
@@ -100,19 +106,26 @@ export const FormItem = defineComponent({
 
 
     /* Using form service */
-
+    // validate state
     const validate = reactive({ status: '', message: '' });
+
     const formService = useFormService();
+    // form service bind validate
     formService?.bindValidate(props.name, props.rules, (result: string[]) => {
       validate.status = result.length > 0 ? 'error' : 'success';
       validate.message = result[0] ?? '';
     });
 
+    // required rules abstract
+    const isRequired = (item: RuleItem[] | RuleItem | undefined) => {
+      return Array.isArray(item) ? item.some((value) => value.required) : item?.required;
+    };
+    // test required
     const required = computed(() => {
       const fieldRules = formService?.rulesRef.value[props.name];
       const { rules } = props;
-      const required1 = Array.isArray(fieldRules) ? fieldRules.some((value) => value.required) : fieldRules?.required;
-      const required2 = Array.isArray(rules) ? rules.some((value) => value.required) : rules?.required;
+      const required1 = isRequired(fieldRules);
+      const required2 = isRequired(rules);
       return !!(required1 || required2);
     });
 
@@ -134,6 +147,8 @@ export const FormItem = defineComponent({
       const showError = validateStatus === 'error' && showMessage && props.showMessage;
       const showLabel = props.label || ctx.slots.label;
       const itemSize = props.size || size;
+
+      // to add the blur & change events to the first child
       const children = (ctx.slots.default?.() ?? []);
       if (children.length > 0 && props.autoLink) {
         const firstChild = children[0];
@@ -169,8 +184,7 @@ export const FormItem = defineComponent({
             itemSize ? `el-form-item--${itemSize}` : ''
           ]}
         >
-          {renderCondition(
-            showLabel,
+          {showLabel ? (
             () => (
               <div class="el-form-item__label-wrap" style={wrapStyle.value}>
                 <label for={props.name} ref={labelRef} class="el-form-item__label" style={labelStyle.value}>
@@ -179,23 +193,23 @@ export const FormItem = defineComponent({
                 </label>
               </div>
             )
-          )}
-          <div class="el-form-item__content" style={contentStyle.value}>
+          ) : null}
+          <div
+            class="el-form-item__content"
+            style={contentStyle.value}
+          >
             {children}
             <Transition name="el-zoom-in-top">
-              {renderCondition(
-                showError,
-                () => (
-                  <div
-                    class={[
-                      'el-form-item__error',
-                      inlineError.value ? 'el-form-item__error--inline' : ''
-                    ]}
-                  >
-                    {validateMessage}
-                  </div>
-                )
-              )}
+              {showError ? (
+                <div
+                  class={[
+                    'el-form-item__error',
+                    inlineError.value ? 'el-form-item__error--inline' : ''
+                  ]}
+                >
+                  {validateMessage}
+                </div>
+              ) : null}
             </Transition>
           </div>
         </div>
