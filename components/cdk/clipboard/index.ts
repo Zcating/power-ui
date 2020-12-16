@@ -12,7 +12,7 @@ export const cdkClipboard: Plugin = {
   install(app: App, platform: Platform, noMixin: boolean) {
     const target = new CdkClipboard(platform);
     providePlugin(app, {
-      name: !noMixin ? '$clipboard' : '',
+      name: !noMixin ? 'clipboard' : '',
       token,
       target: new CdkClipboard(platform)
     });

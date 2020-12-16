@@ -10,7 +10,7 @@ export const useBreakpoint = () => useInjection(token);
 export const cdkBreakpoint: Plugin = {
   install(app: App, platform: Platform, noMixin: boolean) {
     providePlugin(app, {
-      name: !noMixin ? '$breakpoint' : '',
+      name: !noMixin ? 'breakpoint' : '',
       token,
       target: new Breakpoint(platform)
     });

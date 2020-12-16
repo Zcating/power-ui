@@ -12,7 +12,7 @@ An Vue3 UI Component Libary using design of Element-UI, inspired from Angular CD
 - [ ] cascader
 - [ ] checkbox
 - [ ] collapse
-- [ ] color-picker
+- [x] color-picker
 - [ ] container
 - [ ] date-picker
 - [ ] dropdown

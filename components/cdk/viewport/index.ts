@@ -10,7 +10,7 @@ export const useViewport = () => useInjection(token);
 export const cdkViewport: Plugin = {
   install(app: App, platform: Platform, noMixin: boolean) {
     providePlugin(app, {
-      name: !noMixin ? '$viewport' : '',
+      name: !noMixin ? 'viewport' : '',
       token,
       target: new ViewPort(platform)
     });

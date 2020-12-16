@@ -19,7 +19,7 @@ export const providePlugin = <T>(app: App, options: providePluginOptions<T>) => 
   if (options.name) {
     app.mixin({
       inject: {
-        [options.name]: options.token as symbol
+        [`$${options.name}`]: options.token as symbol
       }
     });
   }

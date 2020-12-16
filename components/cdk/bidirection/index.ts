@@ -10,7 +10,7 @@ export const useBidirection = () => useInjection(token);
 export const cdkBidirection: Plugin = {
   install(app: App, platform: Platform, noMixin: boolean) {
     providePlugin(app, {
-      name: !noMixin ? '$bidi' : '',
+      name: !noMixin ? 'bidi' : '',
       token,
       target: new Bidirection(platform)
     });

@@ -1,7 +1,7 @@
-import { computed, defineComponent, ref, toRef, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { Slider } from '../slider';
-import { hsl2rgb, hexFrom, rgb2hsl } from './utils';
+import { hsl2rgb, hexFrom, rgb2hsl, rgbaFromHashColor } from './utils';
 import { SVPanel } from './sv-panel';
 import { ColorInput } from './color-input';
 
@@ -14,36 +14,31 @@ export const Pallet = defineComponent({
   },
   emits: ['update:modelValue'],
   setup(props, ctx) {
+    const rgba = rgbaFromHashColor(props.modelValue);
+
+    const alphaRef = ref(rgba.a / 255 * 100);
+    const alphaString = computed(() => hexFrom(alphaRef.value / 100 * 255));
+    const hsl = ref(rgb2hsl(rgba.r, rgba.g, rgba.b));
+
     const modelRef = watchRef(
-      toRef(props, 'modelValue'),
-      (value) => ctx.emit('update:modelValue', value),
-      (value) => {
-        const color = parseInt(value.substr(1, 8), 16);
-        alphaRef.value = color & 0xff;
-        hsl.value = rgb2hsl(color & 0xff000000, color & 0xff0000, color & 0xff00);
-      },
+      computed(() => props.modelValue.toUpperCase()),
+      (value) => ctx.emit('update:modelValue', value)
     );
 
-    const color = parseInt(props.modelValue.substr(1, 8), 16);
-
-    const alphaRef = ref((color & 0xff) / 255 * 100);
-    const alphaString = computed(() => hexFrom(Math.round(alphaRef.value * 255 / 100)));
-    watch(alphaString, (value) => {
-      modelRef.value = `${modelRef.value.substr(0, 7)}${value}`;
-    });
-
-    const hsl = ref(rgb2hsl(color & 0xff000000, color & 0xff0000, color & 0xff00));
     watch(hsl, (hslValue) => {
       const rgb = hsl2rgb(hslValue.h, hslValue.s, hslValue.l);
       modelRef.value = `#${hexFrom(rgb.r)}${hexFrom(rgb.g)}${hexFrom(rgb.b)}${alphaString.value}`;
     }, { deep: true });
 
+    watch(alphaString, (value) => {
+      console.log(value);
+      modelRef.value = `${modelRef.value.substr(0, 7)}${value}`;
+    });
 
     const hslColor = computed(() => {
       const { h, s, l } = hsl.value;
       return `hsl(${h}, ${s}%, ${l}%)`;
     });
-
 
     return () => (
       <div class={['el-pallet']}>
@@ -99,6 +94,7 @@ export const Pallet = defineComponent({
               [hsl.value.s, 'sat'],
               [hsl.value.l, 'light'],
               [alphaRef.value, 'alpha'],
+              [modelRef.value, 'hex']
             ]}
           />
         </div>

@@ -109,10 +109,64 @@ const rgb2hsv = (r: number, g: number, b: number) => {
 };
 
 export const rgb2hsl = (r: number, g: number, b: number) => {
-  const hsv = rgb2hsv(r, g, b);
-  return hsv2hsl(hsv.h, hsv.s, hsv.v);
+  // Make r, g, and b fractions of 1
+  r = bound01(r, 255);
+  g = bound01(g, 255);
+  b = bound01(b, 255);
+
+  // Find greatest and smallest channel values
+  const cmin = Math.min(r, g, b);
+  const cmax = Math.max(r, g, b);
+  const delta = cmax - cmin;
+  let h = 0;
+  let s = 0;
+  let l = 0;
+
+  // Calculate hue
+  // No difference
+  if (delta === 0) {
+    h = 0;
+  } else if (cmax === r) {
+    // Red is max
+    h = ((g - b) / delta) % 6;
+  } else if (cmax === g) {
+    // Green is max
+    h = (b - r) / delta + 2;
+  } else {
+    // Blue is max
+    h = (r - g) / delta + 4;
+  }
+  console.log(r);
+  h = Math.round(h * 60);
+
+  // Make negative hues positive behind 360°
+  if (h < 0) {
+    h += 360;
+  }
+
+  // Calculate lightness
+  l = (cmax + cmin) / 2;
+
+  // Calculate saturation
+  s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+
+  // Multiply l and s by 100
+  s = +(s * 100).toFixed(1);
+  l = +(l * 100).toFixed(1);
+
+  return { h, s, l };
 };
 
 export function hexFrom(d: number) {
-  return ('0' + (Math.round(d).toString(16))).slice(-2);
+  return ('0' + (Math.round(d).toString(16).toUpperCase())).slice(-2);
+}
+
+export function rgbaFromHashColor(color: string) {
+  const num = parseInt(color.substr(1, 8), 16);
+  return {
+    r: (num >> 24) & 0xff,
+    g: (num >> 16) & 0xff,
+    b: (num >> 8) & 0xff,
+    a: (num & 0xff)
+  };
 }
