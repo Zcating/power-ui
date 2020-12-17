@@ -2,7 +2,7 @@ import { defineComponent, InjectionKey, provide, Ref, toRef } from 'vue';
 import { CdkSelection, CdkSelectionRef } from 'vue-cdk';
 import { Enum, List, Method } from 'vue-cdk/utils';
 import { ElSize } from 'power-ui/types';
-import { SelectionValue } from 'vue-cdk/collections/types';
+import { watchRef } from 'vue-cdk/hook';
 
 export interface CheckboxGroupData {
   textColor: Ref<string | undefined>;
@@ -44,17 +44,15 @@ export const CheckboxGroup = defineComponent({
     onChange: {
       type: Method<(value: (string | number)[]) => void>()
     },
-  },
-  emits: {
-    'update:modelValue': (value: (string | number)[]) => !!value,
-    'change': (value: (string | number)[]) => !!value
+    'onUpdate:modelValue': {
+      type: Method<(value: (string | number)[]) => void>()
+    }
   },
   setup(props, ctx) {
-    // multiple will always return array.
-    const handleSelected = (items: SelectionValue) => {
+    const modelRef = watchRef(toRef(props, 'modelValue'), (items) => {
       ctx.emit('update:modelValue', items as (string | number)[]);
       ctx.emit('change', items as (string | number)[]);
-    };
+    });
 
     provide(groupDataKey, {
       textColor: toRef(props, 'textColor'),
@@ -73,8 +71,7 @@ export const CheckboxGroup = defineComponent({
         <CdkSelection
           ref="selection"
           multiple={true}
-          modelValue={props.modelValue}
-          onSelected={handleSelected}
+          v-model={modelRef.value}
         >
           {ctx.slots.default?.()}
         </CdkSelection>

@@ -29,16 +29,18 @@ export const Checkbox = defineComponent({
     falseLabel: [String, Number],
     indeterminate: Boolean,
     onChange: Method<(value: boolean) => void>(),
+    'onUpdate:checked': Method<(value: boolean) => void>()
   },
   setup(props, ctx) {
-    const modelRef = watchRef(toRef(props, 'checked'), (value) => {
-      ctx.emit('update:checked', value);
-    });
-
+    const modelRef = watchRef(
+      toRef(props, 'checked'),
+      (value) => ctx.emit('update:checked', value)
+    );
 
     const handleChange = (event: any) => {
       const value = event?.target?.checked ?? false;
       modelRef.value = value;
+      console.log(props.value);
       props.onChange?.(value);
     };
 

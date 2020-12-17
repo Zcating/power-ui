@@ -4,15 +4,18 @@ import { Slider } from '../slider';
 import { hsl2rgb, hexFrom, rgb2hsl, rgbaFromHashColor } from './utils';
 import { SVPanel } from './sv-panel';
 import { ColorInput } from './color-input';
+import { Method } from 'vue-cdk/utils';
 
 export const Pallet = defineComponent({
   props: {
     modelValue: {
       type: String,
       default: '#ffffff33'
+    },
+    'onUpdate:modelValue': {
+      type: Method<(value: string) => void>(),
     }
   },
-  emits: ['update:modelValue'],
   setup(props, ctx) {
     const rgba = rgbaFromHashColor(props.modelValue);
 
@@ -31,7 +34,6 @@ export const Pallet = defineComponent({
     }, { deep: true });
 
     watch(alphaString, (value) => {
-      console.log(value);
       modelRef.value = `${modelRef.value.substr(0, 7)}${value}`;
     });
 

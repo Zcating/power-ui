@@ -119,17 +119,14 @@ export const Tree = defineComponent({
             v-slots={{
               default: (data: TreeNodeSlotData<TreeNodeData>) => (
                 <Content
-                  {...{
-                    showCheckbox: true,
-                    indent: data.level * props.indent,
-                    isLeaf: data.isLeaf,
-                    label: data.node.label,
-                    children: data.children,
-                    checked: data.state.checked,
-                    'onUpdate:checked': (value: boolean) => data.state.checked = value,
-                    expanded: data.state.expanded,
-                    'onUpdate:expanded': (value: boolean) => data.state.expanded = value,
-                  }}
+                  v-models={[
+                    [data.state.checked, 'checked'],
+                    [data.state.expanded, 'expanded']
+                  ]}
+                  showCheckbox={true}
+                  indent={data.level * props.indent}
+                  label={data.node.label}
+                  children={data.children}
                 />
               )
             }}
