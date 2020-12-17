@@ -10,7 +10,6 @@ export default defineComponent(() => {
           showIcon={true}
           type='error'
           onClose={() => {
-            console.log('closed');
           }}
         >
           this is test

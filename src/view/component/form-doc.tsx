@@ -20,9 +20,6 @@ export default defineComponent(() => {
     ]
   });
 
-  watch(() => data, (value) => {
-    console.log(value);
-  }, { deep: true });
   return () => {
     return (
       <div>

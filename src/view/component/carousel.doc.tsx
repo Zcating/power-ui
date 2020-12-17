@@ -11,7 +11,6 @@ export default defineComponent(() => {
     justifyContent: 'center',
     alignItems: 'center'
   });
-  console.log(Carousel);
   return () => (
     <Carousel>
       <div style={style('#364d79')}>1</div>

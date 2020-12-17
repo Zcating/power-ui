@@ -288,7 +288,6 @@ export const Rate = defineComponent({
         aria-valuemax={props.max}
         tabindex={0}
         onBlur={(value) => {
-          console.log(value);
           ctx.emit('blur', value);
         }}
         onFocus={(value) => ctx.emit('focus', value)}

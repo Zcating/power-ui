@@ -8,7 +8,6 @@ export default defineComponent(() => {
     label: `备选项 ${i}`,
     disabled: i % 4 === 0
   }));
-  console.log(data);
   return () => (
     <div>
       <Transfer dataSource={data}></Transfer>

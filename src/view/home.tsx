@@ -79,9 +79,7 @@ export default defineComponent({
             v-slots={{ title: () => 'sdfsdfdsf' }}
             showIcon={true}
             type='error'
-            onClose={() => {
-              console.log('closed');
-            }}
+            onClose={() => { }}
           >
             this is test
           </Alert>
