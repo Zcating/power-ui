@@ -190,7 +190,7 @@ export const Tooltip = defineComponent({
 
     onUnmounted(() => destroyFns.forEach(value => value()));
 
-    const popoverClass = computed(() => {
+    const popperClasses = computed(() => {
       const { popperClass } = props;
       const clazz = Array.isArray(popperClass) ? [...popperClass] : [popperClass];
       if (props.effect) {
@@ -201,7 +201,7 @@ export const Tooltip = defineComponent({
 
     return {
       eltype: 'tooltip',
-      popoverClass,
+      popperClasses,
       arrowStyle,
       arrowPlacement,
       airaHidden,
@@ -217,7 +217,7 @@ export const Tooltip = defineComponent({
       $slots: slots,
       arrowStyle,
       arrowPlacement,
-      popoverClass,
+      popperClasses,
       popperStyle,
       airaHidden,
       content,
@@ -254,7 +254,7 @@ export const Tooltip = defineComponent({
             role="tooltip"
             id={tooltipId}
             aria-hidden={airaHidden}
-            class={popoverClass}
+            class={popperClasses}
             style={popperStyle}
             x-placement={arrowPlacement}
           >

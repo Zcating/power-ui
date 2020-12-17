@@ -1,3 +1,4 @@
+import { transform } from 'lodash-es';
 import { computed, customRef, defineComponent, reactive, ref, watch } from 'vue';
 import { usePlatform } from 'vue-cdk';
 import { watchRef } from 'vue-cdk/hook';
@@ -197,32 +198,33 @@ export const SliderButton = defineComponent({
     return () => {
       const { wrapperStyle, hovering, dragging, formatValue } = state;
       return (
-        <div
-          class="el-slider__button-wrapper"
-          tabindex={0}
-          ref={buttonRef}
-          style={wrapperStyle}
-          onMouseenter={handleMouseEnter}
-          onMouseleave={handleMouseLeave}
-          onMousedown={handleDrag}
-          onTouchstart={handleDrag}
-          onFocus={handleMouseEnter}
-          onBlur={handleMouseLeave}
-        >
-          <Tooltip
-            v-model={state.showTooltip}
-            trigger="custom"
-            placement={props.vertical ? 'right' : 'top'}
-            v-slots={{
-              default: () => (
+        <Tooltip
+          v-model={state.showTooltip}
+          trigger="custom"
+          placement={props.vertical ? 'right' : 'top'}
+          popperStyle={{ transform: 'tanslateY(10px)' }}
+          v-slots={{
+            default: () => (
+              <div
+                class="el-slider__button-wrapper"
+                tabindex={0}
+                ref={buttonRef}
+                style={wrapperStyle}
+                onMouseenter={handleMouseEnter}
+                onMouseleave={handleMouseLeave}
+                onMousedown={handleDrag}
+                onTouchstart={handleDrag}
+                onFocus={handleMouseEnter}
+                onBlur={handleMouseLeave}
+              >
                 <div class={['el-slider__button', { 'hover': hovering, 'dragging': dragging }]} {...ctx.attrs} />
-              ),
-              content: () => (
-                <span style={{ textAlign: 'center' }}>{formatValue}</span>
-              )
-            }}
-          />
-        </div>
+              </div>
+            ),
+            content: () => (
+              <span style={{ textAlign: 'center' }}>{formatValue}</span>
+            )
+          }}
+        />
       );
     };
   }

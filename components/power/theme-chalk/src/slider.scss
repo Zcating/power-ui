@@ -6,7 +6,7 @@
 
 @include b(slider) {
   outline: none;
-  
+
   @include utils-clearfix;
 
   @include e(runway) {
@@ -97,7 +97,7 @@
     position: absolute;
     z-index: 100;
     top: $--slider-button-wrapper-offset;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     background-color: transparent;
     text-align: center;
     user-select: none;

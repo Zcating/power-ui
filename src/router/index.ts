@@ -16,9 +16,15 @@ import {
   CarouselDoc,
   ColorPickerDoc
 } from '../view/component';
+import { OverlayTester } from '../../components/cdk/overlay/overlay.spec';
+
 export default createRouter({
   history: createWebHashHistory(''),
   routes: [
+    {
+      path: '/test',
+      component: OverlayTester,
+    },
     {
       path: '/',
       component: Home,
@@ -75,6 +81,10 @@ export default createRouter({
           path: 'color-picker',
           name: 'color-picker',
           component: ColorPickerDoc
+        }, {
+          path: 'dropdown',
+          name: 'dropdown',
+          component: OverlayTester
         }, {
           path: ':name(.*)*',
           component: Pending

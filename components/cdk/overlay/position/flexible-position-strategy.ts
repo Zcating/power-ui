@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick, getCurrentInstance, readonly } from 'vue';
+import { CSSProperties, ComponentPublicInstance, Ref, isRef, ref, onMounted, onUpdated, onUnmounted, watch, nextTick, getCurrentInstance, readonly, onBeforeUnmount } from 'vue';
 import { ConnectionPosition, ConnectionPositionPair, HorizontalConnectionPos, VerticalConnectionPos } from './types';
 import { OverlayProps, PositionStrategy } from './position-strategy';
 import { coerceCssPixelValue } from '../../coercion';
@@ -53,8 +53,9 @@ export class FlexiblePositionStrategy extends PositionStrategy {
 
   setup(panelRef: Ref<HTMLElement | null>, visible: Ref<boolean>): OverlayProps {
     const positionedStyle = ref<CSSProperties>({ position: 'absolute' });
-    // pass instance
+    // passed instance
     const instance = getCurrentInstance();
+    // lift cycle
     onMounted(async () => {
       await nextTick();
 
@@ -67,20 +68,9 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         return;
       }
 
-      const observer = new ResizeObserver((entries) => {
+      const handleRectChange = (rect: DOMRect) => {
         // TODO: add optimize for throttle
-        const point = this._calculatePosition(entries[0].contentRect, originOrPoint);
-        // set the current position style's value.
-        // the current position style is a 'ref'. 
-        const style = positionedStyle.value;
-        style.left = coerceCssPixelValue(point.x);
-        style.top = coerceCssPixelValue(point.y);
-      });
-      observer.observe(panel);
-
-      const handleChange = () => {
-        // TODO: add optimize for throttle
-        const point = this._calculatePosition(panel, originOrPoint);
+        const point = this._calculatePosition(rect, originOrPoint);
         // set the current position style's value.
         // the current position style is a 'ref'. 
         const style = positionedStyle.value;
@@ -88,19 +78,22 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         style.top = coerceCssPixelValue(point.y);
       };
 
+      const handleChange = () => handleRectChange(panel.getBoundingClientRect());
+
+      const observer = new ResizeObserver((entries) => {
+        handleRectChange(entries[0].contentRect);
+      });
+      observer.observe(panel);
+
       if (originOrPoint instanceof Element) {
-        (originOrPoint as HTMLElement).onmousedown = (event) => {
-          console.log(event);
-        };
-        let left = originOrPoint.getBoundingClientRect().left;
-        onUpdated(() => {
-          if (visible.value) {
-            const other = originOrPoint.getBoundingClientRect().left;
-            if (left !== other) {
-              handleChange();
-              left = other;
-            }
-          }
+        // Only when the style changing, you can change
+        // the position.
+        const observer = new MutationObserver(handleChange);
+        observer.observe(originOrPoint, {
+          attributeFilter: ['style'],
+        });
+        onBeforeUnmount(() => {
+          observer.disconnect();
         }, instance);
       }
 
@@ -112,7 +105,7 @@ export class FlexiblePositionStrategy extends PositionStrategy {
         }
       });
 
-      onUnmounted(() => {
+      onBeforeUnmount(() => {
         this.unsubscribe(handleChange);
         observer.disconnect();
       }, instance);
@@ -205,10 +198,10 @@ export class FlexiblePositionStrategy extends PositionStrategy {
     }
 
     // calculate the overlay anchor point
-    return this._getOverlayPoint(originPoint, this._positionPair, rect);
+    return this._getOverlayPoint(originPoint, rect, this._positionPair);
   }
 
-  private _getOverlayPoint(originPoint: Point, position: ConnectionPositionPair, rect: DOMRect): Point {
+  private _getOverlayPoint(originPoint: Point, rect: DOMRect, position: ConnectionPositionPair): Point {
     let x: number;
     const { width, height } = rect;
     if (position.overlayX == 'center') {
