@@ -1,6 +1,5 @@
 import { ref, watch } from 'vue';
-import { usePlatform } from '../global';
-
+import { usePlatform } from '../platform';
 /**
  * get reactive value and controller in localstorage
  *
@@ -12,11 +11,11 @@ import { usePlatform } from '../global';
 export function localStorageRef<T>(init: T, key: string) {
   const value = ref(init);
 
-
   const WINDOW = usePlatform()?.TOP;
   if (!WINDOW) {
     return value;
   }
+
   const localStorage = WINDOW.localStorage;
 
   const initFromLocal = localStorage.getItem(key);
@@ -29,7 +28,7 @@ export function localStorageRef<T>(init: T, key: string) {
   }
   watch(value, (val) => {
     localStorage.setItem(key, JSON.stringify(val));
-  });
+  }, { flush: 'sync', immediate: true });
   return value;
 }
 
@@ -60,7 +59,7 @@ export function sessionStorageRef<T>(init: T, key: string) {
   }
   watch(value, (val) => {
     sessionStorage.setItem(key, JSON.stringify(val));
-  });
+  }, { flush: 'sync', immediate: true });
 
   return value;
 }
