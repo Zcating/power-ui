@@ -1,5 +1,5 @@
 import { Checkbox, CheckboxGroup } from 'power-ui/checkbox';
-import { computed, defineComponent, ref, shallowReactive, toRef, VNode, watch } from 'vue';
+import { computed, defineComponent, ref, toRef } from 'vue';
 import { watchRef } from 'vue-cdk/hook';
 import { List, Method } from 'vue-cdk/utils';
 import { TransferData } from './types';
@@ -32,16 +32,24 @@ export const TransferPanel = defineComponent({
     modelValue: {
       type: List<string>(),
       default: []
+    },
+    'onUpdate:modelValue': {
+      type: Method<(list: string[]) => void>()
     }
   },
+
   setup(props, ctx) {
     const keysRef = watchRef(
       toRef(props, 'modelValue'),
       (value) => {
+        console.log(value);
         ctx.emit('update:modelValue', value);
       }
     );
-
+    // const keysRef = toRef(props, 'modelValue');
+    // const keysChange = (value: (string | number)[]) => {
+    //   ctx.emit('update:modelValue', value);
+    // };
     const allChecked = ref(false);
     const enabledCount = computed(() => {
       const count = filterCount(props.dataSource, (data) => !data.disabled);
@@ -94,8 +102,12 @@ export const TransferPanel = defineComponent({
           <div class={['el-transfer-panel__body', hasFooter ? 'is-with-footer' : '']}>
             <CheckboxGroup
               class={['el-transfer-panel__list', filterable ? 'is-filterable' : '']}
-              v-model={keysRef.value}
               v-show={dataSource.length > 0}
+              // {...{
+              //   modelValue: keysRef.value,
+              //   'onUpdate:modelValue': keysChange
+              // }}
+              v-model={keysRef.value}
             >
               {dataSource.map((data) => (
                 <Checkbox
@@ -108,7 +120,6 @@ export const TransferPanel = defineComponent({
                 </Checkbox>
               ))}
             </CheckboxGroup>
-            <p class="el-transfer-panel__empty" v-show="hasNoMatch"></p>
             <p class="el-transfer-panel__empty" v-show={dataSource.length === 0}></p>
           </div>
         </div>

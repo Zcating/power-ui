@@ -104,12 +104,6 @@ export class CdkSelectionDispatcher {
     }
   }
 
-  watchData(hook: (data: SelectionValue, multiple: boolean) => void) {
-    watch([this.dataRef, this.multipleRef], (values) => {
-      hook(values[0] as SelectionValue, values[1] as boolean);
-    }, { immediate: true });
-  }
-
   private testEquals(data: SelectionValue, key: number | string): boolean {
     return Array.isArray(data) ? data.indexOf(key) !== -1 : data === key;
   }

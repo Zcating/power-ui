@@ -1,4 +1,4 @@
-import { computed, defineComponent, shallowRef, toRef } from 'vue';
+import { computed, defineComponent, ref, shallowRef, toRef } from 'vue';
 import { Button } from 'power-ui';
 import { watchRef } from 'vue-cdk/hook';
 import { List, renderCondition } from 'vue-cdk/utils';
@@ -26,7 +26,8 @@ export const Transfer = defineComponent({
       default: []
     },
     titles: {
-
+      type: List<string>(),
+      default: []
     },
     leftDefaultKeys: {
       type: List<string>(),
@@ -37,9 +38,9 @@ export const Transfer = defineComponent({
       default: []
     },
   },
+  emits: ['update:targetKey'],
   setup(props, ctx) {
     const targetKeyRef = watchRef(toRef(props, 'targetKey'), (value) => ctx.emit('update:targetKey', value));
-
     const leftValuesRef = watchRef(toRef(props, 'leftDefaultKeys'));
     const rightValuesRef = watchRef(toRef(props, 'rightDefaultKeys'));
 
@@ -55,15 +56,14 @@ export const Transfer = defineComponent({
       });
     });
 
+    // set target keys
     const addTo = (direction: 'left' | 'right') => {
       if (direction === 'left') {
         const rightValues = rightValuesRef.value;
-        targetKeyRef.value = targetKeyRef.value.filter((key) => {
-          return rightValues.indexOf(key) === -1;
-        });
+        targetKeyRef.value = targetKeyRef.value.filter((key) => rightValues.indexOf(key) === -1);
         rightValuesRef.value = [];
       } else {
-        targetKeyRef.value = Array.from(new Set([...leftValuesRef.value, ...targetKeyRef.value]));
+        targetKeyRef.value = [...leftValuesRef.value, ...targetKeyRef.value];
         leftValuesRef.value = [];
       }
     };
@@ -90,10 +90,7 @@ export const Transfer = defineComponent({
               disabled={rightValues.length === 0}
             >
               <i class="el-icon-arrow-left" />
-              {renderCondition(
-                buttonTexts[0],
-                (value) => <span>{value}</span>
-              )}
+              {buttonTexts[0] ? <span>{buttonTexts[0]}</span> : null}
             </Button>
             <Button
               type="primary"
@@ -101,10 +98,7 @@ export const Transfer = defineComponent({
               onClick={() => addTo('right')}
               disabled={leftValues.length === 0}
             >
-              {renderCondition(
-                buttonTexts[1],
-                (value) => <span>{value}</span>
-              )}
+              {buttonTexts[1] ? <span>{buttonTexts[1]}</span> : null}
               <i class="el-icon-arrow-right" />
             </Button>
           </div>

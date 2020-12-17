@@ -12,23 +12,24 @@ export function watchRef<T>(
   propValueChange?: (value: T, oldValue?: T) => void,
 ): Ref<T> {
   const vmodel = shallowRef(unref(propValue)) as Ref<T>;
+
+  if (typeof refChange === 'function') {
+    watch(vmodel, (value, oldValue) => {
+      refChange(value, oldValue);
+    }, { flush: 'sync' });
+  }
+
   // propValueChange?.(vmodel.value);
   if (isRef(propValue)) {
     watch(propValue, (value, oldValue) => {
       vmodel.value = value;
       propValueChange?.(value, oldValue);
-    }, { deep: false });
+    });
   } else {
     watch(() => propValue, (value, oldValue) => {
       vmodel.value = value;
       propValueChange?.(value, oldValue);
-    }, { deep: false });
-  }
-
-  if (typeof refChange === 'function') {
-    watch(vmodel, (value, oldValue) => {
-      refChange(value, oldValue);
-    }, { deep: false });
+    });
   }
 
   return vmodel;

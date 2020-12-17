@@ -22,27 +22,23 @@ export const CdkSelection = defineComponent({
       type: [String, Number, List<string | number>()],
       default: '',
     },
-    onSelected: Method<(value: SelectionValue) => void>(),
-  },
-  emits: {
-    'selected': (value: SelectionValue) => true,
-    'update:modelValue': (value: SelectionValue) => true,
+    'onUpdate:modelValue': {
+      type: Method<(value: SelectionValue) => void>()
+    },
+    onSelected: {
+      type: Method<(value: SelectionValue) => void>()
+    }
   },
   setup(props, ctx) {
-    const modelRef = watchRef(toRef(props, 'modelValue') as Ref<SelectionValue>);
-
-    const dispatcher = new CdkSelectionDispatcher(
-      toRef(props, 'multiple'),
-      modelRef
-    );
-
-    dispatcher.watchData((data) => {
+    const modelRef = watchRef(toRef(props, 'modelValue') as Ref<SelectionValue>, (data) => {
       if (!data) {
         return;
       }
       ctx.emit('update:modelValue', data);
       ctx.emit('selected', data);
     });
+
+    const dispatcher = new CdkSelectionDispatcher(toRef(props, 'multiple'), modelRef);
 
     const selectAll = (value: boolean) => {
       if (!props.multiple) {
