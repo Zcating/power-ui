@@ -1,8 +1,9 @@
-import { defineComponent, toRef } from 'vue';
+import { defineComponent, reactive, readonly, toRef, toRefs } from 'vue';
 import { Enum, Model } from 'vue-cdk/utils';
 import { ElSize } from 'power-ui/types';
 import { FormSerivce } from './form.service';
 import { LabelPosition, FormRules } from './types';
+import { provideFormStyle } from './form.style';
 
 
 export const Form = defineComponent({
@@ -50,28 +51,30 @@ export const Form = defineComponent({
       default: false
     }
   },
-  setup(props) {
+  setup(props, ctx) {
+
+    provideFormStyle(props);
 
     const formService = new FormSerivce(toRef(props, 'model'), toRef(props, 'rules'));
-
-    return {
+    ctx.expose({
       validate: () => formService.validate(),
       reset: (names: string[]) => formService.reset(names),
+    });
+
+    return () => {
+      const { labelPosition } = props;
+      return (
+        <form
+          class={[
+            'el-form',
+            labelPosition ? 'el-form--label-' + labelPosition : ''
+          ]}
+        >
+          {ctx.slots.default?.()}
+        </form>
+      );
     };
   },
-  render() {
-    const { labelPosition, $slots: slots } = this;
-    return (
-      <form
-        class={[
-          'el-form',
-          labelPosition ? 'el-form--label-' + labelPosition : ''
-        ]}
-      >
-        {slots.default?.()}
-      </form>
-    );
-  }
 });
 
 export type FormRef = InstanceType<typeof Form>;

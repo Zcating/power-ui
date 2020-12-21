@@ -1,7 +1,7 @@
-import { computed, defineComponent, ref, shallowRef, toRef } from 'vue';
+import { computed, defineComponent, toRef } from 'vue';
 import { Button } from 'power-ui';
 import { watchRef } from 'vue-cdk/hook';
-import { List, renderCondition } from 'vue-cdk/utils';
+import { List } from 'vue-cdk/utils';
 import { TransferPanel } from './transfer-panel';
 import { TransferData } from './types';
 

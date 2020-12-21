@@ -1,5 +1,5 @@
 // vendor
-import { cloneVNode, computed, defineComponent, getCurrentInstance, reactive, ref, Transition } from 'vue';
+import { cloneVNode, computed, defineComponent, reactive, ref, Transition, useContext } from 'vue';
 import { RuleItem } from 'async-validator';
 
 // cdk
@@ -7,11 +7,11 @@ import { usePlatform, coerceCssPixelValue } from 'vue-cdk';
 import { Enum, List, Model } from 'vue-cdk/utils';
 
 // power-ui
-import { FormRef } from './form';
 import { useFormService } from './form.service';
 import { FieldRules } from './types';
 import { ElSize } from '../types';
 
+import { useFormStyle } from './form.style';
 
 export const FormItem = defineComponent({
   props: {
@@ -48,8 +48,8 @@ export const FormItem = defineComponent({
     }
   },
   setup(props, ctx) {
-    const labelRef = ref<HTMLLabelElement | null>(null);
     const platform = usePlatform();
+    const labelRef = ref<HTMLLabelElement | null>(null);
     const computedWidth = computed(() => {
       const label = labelRef.value;
       if (label) {
@@ -69,12 +69,10 @@ export const FormItem = defineComponent({
       }
     });
 
-    const instance = getCurrentInstance();
+    const formStyle = useFormStyle();
+
     const labelStyle = computed(() => {
-      const {
-        labelPosition = undefined,
-        labelWidth = undefined
-      } = (instance?.proxy?.$parent as FormRef);
+      const { labelPosition, labelWidth } = formStyle;
 
       if (labelPosition === 'top') {
         return undefined;
@@ -84,7 +82,7 @@ export const FormItem = defineComponent({
 
     const contentStyle = computed(() => {
       const { label, width } = props;
-      const { labelPosition, inline, labelWidth } = (instance?.proxy?.$parent as FormRef);
+      const { labelPosition, inline, labelWidth } = formStyle;
       if (labelPosition === 'top' || inline || !(label || width)) {
         return;
       }
@@ -100,10 +98,8 @@ export const FormItem = defineComponent({
     });
 
     const inlineError = computed(() => {
-      const formInlineMsg = instance?.parent?.props.inlineMessage ?? true;
-      return typeof props.inlineMessage === 'boolean' ? props.inlineMessage : formInlineMsg;
+      return typeof props.inlineMessage === 'boolean' ? props.inlineMessage : formStyle.inlineMessage;
     });
-
 
     /* Using form service */
     // validate state
@@ -120,6 +116,7 @@ export const FormItem = defineComponent({
     const isRequired = (item: RuleItem[] | RuleItem | undefined) => {
       return Array.isArray(item) ? item.some((value) => value.required) : item?.required;
     };
+
     // test required
     const required = computed(() => {
       const fieldRules = formService?.rulesRef.value[props.name];
@@ -143,10 +140,10 @@ export const FormItem = defineComponent({
 
     return () => {
       const { message: validateMessage, status: validateStatus } = validate;
-      const { hideRequiredAsterisk = false, showMessage = false, size = undefined } = instance?.parent?.props as any;
-      const showError = validateStatus === 'error' && showMessage && props.showMessage;
-      const showLabel = props.label || ctx.slots.label;
-      const itemSize = props.size || size;
+      const { label, showMessage, size, } = props;
+      const showError = validateStatus === 'error' && formStyle.showMessage && showMessage;
+      const showLabel = label || ctx.slots.label;
+      const itemSize = size || formStyle.size;
 
       // to add the blur & change events to the first child
       const children = (ctx.slots.default?.() ?? []);
@@ -179,20 +176,18 @@ export const FormItem = defineComponent({
               'is-validating': validateStatus === 'validating',
               'is-success': validateStatus === 'success',
               'is-required': required.value,
-              'is-no-asterisk': hideRequiredAsterisk
+              'is-no-asterisk': formStyle.hideRequiredAsterisk
             },
             itemSize ? `el-form-item--${itemSize}` : ''
           ]}
         >
           {showLabel ? (
-            () => (
-              <div class="el-form-item__label-wrap" style={wrapStyle.value}>
-                <label for={props.name} ref={labelRef} class="el-form-item__label" style={labelStyle.value}>
-                  {ctx.slots.label?.()}
-                  {props.label}
-                </label>
-              </div>
-            )
+            <div class="el-form-item__label-wrap" style={wrapStyle.value}>
+              <label for={props.name} ref={labelRef} class="el-form-item__label" style={labelStyle.value}>
+                {ctx.slots.label?.()}
+                {props.label}
+              </label>
+            </div>
           ) : null}
           <div
             class="el-form-item__content"

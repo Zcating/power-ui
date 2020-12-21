@@ -1,5 +1,5 @@
+import { computed, defineComponent, inject } from 'vue';
 import { Enum, Method } from 'vue-cdk/utils';
-import { computed, defineComponent, inject, renderSlot } from 'vue';
 import { ElButtonNativeType, ElButtonType } from './types';
 
 export const Button = defineComponent({
@@ -37,7 +37,7 @@ export const Button = defineComponent({
     const formItem = inject('po-form-item', { disabled: false, size: '' });
     const buttonDisabled = computed(() => formItem.disabled || props.disabled);
     const buttonSize = computed(
-      () => formItem.size || props.size || inject('po-global-size')
+      () => formItem.size || props.size
     );
 
     return () => (
@@ -60,9 +60,9 @@ export const Button = defineComponent({
         onClick={(e) => ctx.emit('click', e)}
         {...ctx.attrs}
       >
-        {props.loading ? <i class='el-icon-loading' v-if='loading'></i> : null}
-        {props.icon && !props.loading ? <i class={props.icon}></i> : null}
-        {renderSlot(ctx.slots, 'default')}
+        {props.loading ? <i class='el-icon-loading' /> : null}
+        {props.icon && !props.loading ? <i class={props.icon} /> : null}
+        {ctx.slots.default?.()}
       </button>
     );
   },

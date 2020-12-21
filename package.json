@@ -4,7 +4,7 @@
   "author": "zcating",
   "scripts": {
     "serve": "vue-cli-service serve --port=10000",
-    "build": "vue-cli-service build --target lib --name power-ui ./lib/index.ts",
+    "build": "vue-cli-service build --target lib --name power-ui ./src/main.ts",
     "build:theme": "node scripts/bin/gen-cssfile && gulp build --gulpfile components/power/theme-chalk/gulpfile.js && cp-cli components/power/theme-chalk/lib lib/theme-chalk",
     "test:unit": "vue-cli-service test:unit",
     "lint": "eslint -c .eslintrc.js --fix ./src ./components",
