@@ -1,4 +1,4 @@
-import { defineComponent, reactive, readonly, toRef, toRefs } from 'vue';
+import { defineComponent, toRef } from 'vue';
 import { Enum, Model } from 'vue-cdk/utils';
 import { ElSize } from 'power-ui/types';
 import { FormSerivce } from './form.service';
@@ -77,4 +77,7 @@ export const Form = defineComponent({
   },
 });
 
-export type FormRef = InstanceType<typeof Form>;
+export type FormRef = InstanceType<typeof Form> & {
+  validate: () => void,
+  reset: (names: string[]) => void
+};

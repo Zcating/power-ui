@@ -27,7 +27,7 @@ export { Checkbox, CheckboxGroup, CheckboxButton, CheckboxGroupRef } from './che
 export { useMessage, message } from './message';
 export { useNotification, notification } from './notification';
 export { Transfer } from './transfer';
-export { Form, FormItem, FormRules } from './form';
+export { Form, FormItem, FormRules, FormRef } from './form';
 export { Tree, TreeNodeData } from './tree';
 export { Carousel } from './carousel';
 export { ColorPicker } from './color-picker';

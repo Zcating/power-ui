@@ -63,7 +63,7 @@ export class FormSerivce {
 
    * @memberof FormService
    */
-  reset(names: string[]) {
+  reset(names: string[] = []) {
     for (const name of names) {
       const paths = name.split('.');
 

@@ -8,9 +8,10 @@ import { usePlatform } from '../platform';
  * @param {string} key
  * @returns
  */
-export function localStorageRef<T>(init: T, key: string) {
+export function useLocalStorage<T>(init: T, key: string) {
   const value = ref(init);
 
+  // support ssr
   const WINDOW = usePlatform()?.TOP;
   if (!WINDOW) {
     return value;
@@ -40,9 +41,9 @@ export function localStorageRef<T>(init: T, key: string) {
  * @param {string} key
  * @returns
  */
-export function sessionStorageRef<T>(init: T, key: string) {
+export function useSessionStorage<T>(init: T, key: string) {
   const value = ref(init);
-
+  // support ssr
   const WINDOW = usePlatform()?.TOP;
   if (!WINDOW) {
     return value;

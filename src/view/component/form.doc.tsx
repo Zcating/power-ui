@@ -1,4 +1,4 @@
-import { defineComponent, reactive, shallowRef, watch } from 'vue';
+import { defineComponent, reactive, shallowRef } from 'vue';
 import { Form, FormItem, FormRules, Input, RadioGroup, Radio, Select, SelectOption, Rate } from 'power-ui';
 
 export default defineComponent(() => {

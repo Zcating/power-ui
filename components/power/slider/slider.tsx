@@ -79,8 +79,8 @@ export const Slider = defineComponent({
     const createSection = (value1: number, value2: number) => {
       return value1 > value2 ? [value2, value1] : [value1, value2];
     };
-    
-    const firstValue = watchRef(0,  (value) => {
+
+    const firstValue = watchRef(0, (value) => {
       if (props.range) {
         ctx.emit('update:modelValue', createSection(value, secondValue.value));
       } else {
@@ -213,7 +213,7 @@ export const Slider = defineComponent({
               clickedPosition={positions.first}
               precision={precision.value}
               enableTooltip={props.enableTooltip}
-              onDrag={handleDrag}              
+              onDrag={handleDrag}
             />
             {renderCondition(
               props.range,

@@ -1,5 +1,5 @@
-import { defineComponent, reactive, toRef } from 'vue';
-import { watchRef } from 'vue-cdk/hook';
+import { defineComponent, reactive } from 'vue';
+import { useVModel } from 'vue-cdk/hook';
 import { CdkAccordionDispatcher } from './accordion-dispatcher';
 import { AccordionItemState } from './types';
 
@@ -24,10 +24,7 @@ export const CdkAccordionItem = defineComponent({
   ],
   setup(props, ctx) {
     const state: AccordionItemState = reactive({
-      expanded: watchRef(
-        toRef(props, 'expanded'),
-        (value) => ctx.emit('update:expanded', value)
-      )
+      expanded: useVModel(props, 'expanded')
     });
 
     const dispatcher = CdkAccordionDispatcher.instance();

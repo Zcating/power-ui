@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from 'power-ui/index';
+import { Radio, RadioGroup } from 'power-ui';
 import { defineComponent, reactive } from 'vue';
 
 export const RadioDoc = defineComponent({

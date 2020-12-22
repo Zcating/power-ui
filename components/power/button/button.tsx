@@ -34,11 +34,8 @@ export const Button = defineComponent({
   emits: ['click'],
 
   setup(props, ctx) {
-    const formItem = inject('po-form-item', { disabled: false, size: '' });
-    const buttonDisabled = computed(() => formItem.disabled || props.disabled);
-    const buttonSize = computed(
-      () => formItem.size || props.size
-    );
+    const buttonDisabled = computed(() => props.disabled);
+    const buttonSize = computed(() => props.size);
 
     return () => (
       <button
